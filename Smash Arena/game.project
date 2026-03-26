@@ -1,0 +1,29 @@
+[bootstrap]
+main_collection = /main/main.collectionc
+
+[script]
+shared_state = 1
+
+[display]
+width = 390
+height = 780
+high_dpi = 1
+
+[android]
+input_method = HiddenInputField
+
+[physics]
+gravity_y = 0.0
+scale = 0.01
+debug = 1
+
+[html5]
+scale_mode = stretch
+
+[project]
+title = Smash Arena
+dependencies#0 = https://github.com/Insality/defold-event/archive/refs/tags/14.zip
+dependencies#1 = https://github.com/britzl/defold-orthographic/archive/master.zip
+dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip
+dependencies#3 = https://github.com/defold/extension-poki-sdk/archive/main.zip
+
