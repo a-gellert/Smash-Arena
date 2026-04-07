@@ -1,56 +1,75 @@
-function init(self)
-	-- Add initialization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
+-- unit.script
+local state = require "main.state"
 
-function final(self)
-	-- Add finalization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+go.property("team_type", 1) 
+go.property("max_hp", 100)
+go.property("damage", 20)
+go.property("level", 1)
+
+function init(self)
+	self.current_hp = self.max_hp
+	self.is_moving = false
+	self.damage_dealt = false
+	msg.post("/unit_manager#unit_manager", "register_unit", { team = self.team_type })
+	if self.team_type == 1 then
+		go.set("#platform", "tint", vmath.vector4(1, 0, 1, 1))
+	else
+
+			go.set("#platform", "tint", vmath.vector4(1, 1, 0, 1))
+	end
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
+	if not self.is_moving then return end
 
-function late_update(self, dt)
-	-- This function is called at the end of update cycle but before render
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
+	local vel = go.get("#collisionobject", "linear_velocity")
+	local speed = vmath.length(vel)
+	
 
-function fixed_update(self, dt)
-	-- This function is called if 'Fixed Update Frequency' is enabled in the Engine section of game.project
-	-- Can be coupled with fixed updates of the physics simulation if 'Use Fixed Timestep' is enabled in
-	-- Physics section of game.project
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
+	if speed < 0.5 then
+		self.is_moving = false
+		self.damage_dealt = false
+		go.set("#collisionobject", "linear_velocity", vmath.vector3(0, 0, 0))
+		msg.post("/unit_manager#unit_manager", "unit_stopped", { id = go.get_id() })
+	end
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Learn more: https://defold.com/manuals/message-passing/
-	-- Remove this function if not needed
-end
+	
+	if message_id == hash("apply_impulse") then
+		self.is_moving = true
+		self.damage_dealt = false
 
-function on_input(self, action_id, action)
-	-- Add input-handling code here. The game object this script is attached to
-	-- must have acquired input focus:
-	--
-	--    msg.post(".", "acquire_input_focus")
-	--
-	-- All mapped input bindings will be received. Mouse and touch input will
-	-- be received regardless of where on the screen it happened.
-	-- Learn more: https://defold.com/manuals/input/
-	-- Remove this function if not needed
-end
+		-- Нормализуем вектор и задаём прямую скорость (пикселей/сек)
+		local move_speed = 600  -- Подбери под свой размер карты
+		local dir = vmath.normalize(message.vector)
+		go.set("#collisionobject", "linear_velocity", dir * move_speed)
 
-function on_reload(self)
-	-- Add reload-handling code here
-	-- Learn more: https://defold.com/manuals/hot-reload/
-	-- Remove this function if not needed
+		print("[FLY] Старт полёта. Скорость: " .. move_speed)
+
+
+	elseif message_id == hash("contact_point_response") then
+		if state.current_team == self.team_type and not self.damage_dealt and message.group == hash("unit") then
+			msg.post(message.other_id, "take_damage", { amount = self.damage })
+			--self.damage_dealt = true
+			print("[COLLISION] Урон нанесён: " .. self.damage)
+		end
+
+	elseif state.current_team ~= self.team_type and message_id == hash("take_damage") then
+		self.current_hp = self.current_hp - message.amount
+		go.cancel_animations("#sprite", "tint")
+		go.set("#sprite", "tint", vmath.vector4(1, 0, 0, 1))
+		go.animate("#sprite", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(1, 1, 1, 1), go.EASING_OUTQUAD, 0.2)
+		local p = go.get_world_position()
+		-- Немного рандомим позицию, чтобы цифры не слипались
+		p.x = p.x + math.random(-20, 20)
+
+		local damage_obj = factory.create("#damage_factory", p)
+		-- Передаем текст в label созданного объекта
+		label.set_text(msg.url(nil, damage_obj, "label"), "-" .. tostring(message.amount))
+		if self.current_hp <= 0 then
+			msg.post("/unit_manager#unit_manager", "unit_died", { id = go.get_id(), team = self.team_type })
+			go.delete()
+		end
+	end
 end

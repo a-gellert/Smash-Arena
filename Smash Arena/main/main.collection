@@ -3,8 +3,62 @@ instances {
   id: "camera"
   prototype: "/orthographic/camera.go"
 }
+instances {
+  id: "unit_1_1t"
+  prototype: "/entities/unit/unit.go"
+}
+instances {
+  id: "unit_1_2t"
+  prototype: "/entities/unit/unit.go"
+  position {
+    y: -90.0
+  }
+  component_properties {
+    id: "unit"
+    properties {
+      id: "team_type"
+      value: "2.0"
+      type: PROPERTY_TYPE_NUMBER
+    }
+  }
+}
+instances {
+  id: "unit_2_1t"
+  prototype: "/entities/unit/unit.go"
+  position {
+    y: 79.0
+  }
+}
 collection_instances {
   id: "arena"
   collection: "/entities/arena/arena.collection"
+  scale3 {
+    x: 1.1
+    y: 1.1
+  }
 }
 scale_along_z: 0
+embedded_instances {
+  id: "unit_manager"
+  data: "components {\n"
+  "  id: \"unit_manager\"\n"
+  "  component: \"/main/utils/unit_manager.script\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "input_manager"
+  data: "components {\n"
+  "  id: \"input_manager\"\n"
+  "  component: \"/main/utils/input_manager.script\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "gui"
+  data: "components {\n"
+  "  id: \"game\"\n"
+  "  component: \"/main/game.gui\"\n"
+  "}\n"
+  ""
+}

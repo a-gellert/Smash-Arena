@@ -1,0 +1,82 @@
+-- unit_manager.script
+local state = require "main.state"
+
+-- Состояния менеджера
+local teams = { [1] = {}, [2] = {} }
+local team_indices = { [1] = 1, [2] = 1 } -- Храним индекс для каждой команды отдельно
+local function activate_next_unit(self)
+	-- 1. Определяем текущую команду
+	local team = teams[self.current_team]
+
+	-- 2. Проверяем, есть ли вообще юниты в этой команде (на случай если всех убили)
+	if #team == 0 then
+		self.current_team = (self.current_team == 1) and 2 or 1
+		team = teams[self.current_team]
+	end
+
+	-- 3. Берем юнита по сохраненному индексу этой команды
+	local idx = team_indices[self.current_team]
+	local next_unit = team[idx]
+
+	if next_unit then
+		print("Ход команды: " .. self.current_team .. " | Юнит индекс: " .. idx)
+		msg.post("/input_manager#input_manager", "set_target", { id = next_unit })
+
+		-- 4. Подготавливаем индекс для СЛЕДУЮЩЕГО раза, когда эта команда будет ходить
+		team_indices[self.current_team] = idx + 1
+		if team_indices[self.current_team] > #team then
+			team_indices[self.current_team] = 1 -- Зацикливаем внутри команды
+		end
+
+		-- 5. СТРОГО ПЕРЕКЛЮЧАЕМ КОМАНДУ для следующего хода
+		self.current_team = (self.current_team == 1) and 2 or 1
+
+	else
+		print("Ошибка: В команде " .. self.current_team .. " нет доступных юнитов")
+	end
+end
+function init(self)
+	-- Инициализируем рандом (важно для Defold)
+	math.randomseed(os.time())
+
+	self.current_team = math.random(1, 2)
+	state.current_team = self.current_team
+
+	-- Даем 0.1 сек всем юнитам на регистрацию, прежде чем начать первый ход
+	timer.delay(0.1, false, function()
+		print("Старт игры! Начинает команда: " .. self.current_team)
+		activate_next_unit(self)
+	end)
+end
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("register_unit") then
+		table.insert(teams[message.team], sender)
+		-- Запуск первого хода, когда зарегистрирован хотя бы один игрок
+		--if #teams[1] == 1 and message.team == 1 then
+		--	activate_next_unit(self)
+		--end
+
+	elseif message_id == hash("unit_stopped") then
+		print("Юнит остановился. Передача хода...")
+		timer.delay(0.5, false, function()
+			activate_next_unit(self)
+			state.switch_turn()
+		end)
+
+	elseif message_id == hash("unit_died") then
+		local team = teams[message.team]
+		for i, id in ipairs(team) do
+			if id == message.id then
+				table.remove(team, i)
+				print("Юнит удален из очереди. Осталось в команде: " .. #team)
+				break
+			end
+		end
+		-- Если команда пуста — Game Over
+		if #team == 0 then
+			print("Команда " .. message.team .. " проиграла!")
+		end
+	end
+end
