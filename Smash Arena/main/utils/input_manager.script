@@ -56,19 +56,24 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("set_target") then
-		-- 1. Сбрасываем масштаб предыдущего юнита (если он был)
+		-- 1. Сначала сбрасываем масштаб СТАРОГО юнита, если он был
 		if self.target_id then
-			-- Анимируем возвращение к обычному размеру
-		--	go.animate(self.target_id, "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), go.EASING_OUTELASTIC, 0.3)
+			-- Проверяем go.exists, чтобы не пытаться анимировать удаленного юнита
+			if go.exists(self.target_id) then
+			--	go.animate(self.target_id, "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), go.EASING_OUTELASTIC, 0.3)
+			end
 		end
 
+		-- 2. Записываем НОВУЮ цель (может быть nil)
 		self.target_id = message.id
-		self.is_active = true
+		self.is_active = (self.target_id ~= nil) -- Активируем ввод только если цель есть
 
-		-- 2. Подсвечиваем новый активный юнит
-		-- Используем vmath.vector3(1.2, 1.2, 1) для анимации масштаба по всем осям
-	--	go.animate(self.target_id, "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.2, 1.2, 1), go.EASING_OUTELASTIC, 0.5)
-
-		print("Цель установлена: " .. self.target_id)
+		-- 3. Если новая цель существует, подсвечиваем её
+		if self.target_id then
+		--	go.animate(self.target_id, "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.2, 1.2, 1), go.EASING_OUTELASTIC, 0.5)
+			print("Цель установлена: ", self.target_id) -- Используй запятую вместо ".." для безопасности
+		else
+			print("Цель сброшена (ход ИИ)")
+		end
 	end
 end

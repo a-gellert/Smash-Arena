@@ -4,35 +4,58 @@ local state = require "main.state"
 -- Состояния менеджера
 local teams = { [1] = {}, [2] = {} }
 local team_indices = { [1] = 1, [2] = 1 } -- Храним индекс для каждой команды отдельно
-local function activate_next_unit(self)
-	-- 1. Определяем текущую команду
-	local team = teams[self.current_team]
 
-	-- 2. Проверяем, есть ли вообще юниты в этой команде (на случай если всех убили)
+-- В начало unit_manager.script
+local function perform_ai_turn(self, ai_unit_id)
+	print("ИИ обдумывает ход для: " .. ai_unit_id)
+
+	-- 1. Находим все цели (юниты команды 1)
+	local player_units = teams[1]
+	if #player_units == 0 then return end
+
+	-- 2. Выбираем случайную цель из команды игрока
+	local target_unit_id = player_units[math.random(1, #player_units)]
+
+	-- 3. Рассчитываем вектор от ИИ-юнита к цели
+	local ai_pos = go.get_world_position(ai_unit_id)
+	local target_pos = go.get_world_position(target_unit_id)
+	local direction = target_pos - ai_pos
+
+	-- 4. Нормализуем и добавляем силу
+	if vmath.length(direction) > 0 then
+		local impulse_vector = vmath.normalize(direction) * 50000 -- Та же сила, что у игрока
+
+		-- Имитируем задержку "раздумий" перед ударом
+		timer.delay(1.2, false, function()
+			print("ИИ стреляет!")
+			msg.post(ai_unit_id, "apply_impulse", { vector = impulse_vector })
+		end)
+	end
+end
+local function activate_next_unit(self)
+	local team_id = state.current_team
+	local team = teams[team_id]
+
 	if #team == 0 then
-		self.current_team = (self.current_team == 1) and 2 or 1
-		team = teams[self.current_team]
+		state.switch_turn()
+		return activate_next_unit(self) -- Рекурсивно пробуем следующую команду
 	end
 
-	-- 3. Берем юнита по сохраненному индексу этой команды
-	local idx = team_indices[self.current_team]
+	local idx = team_indices[team_id]
 	local next_unit = team[idx]
 
 	if next_unit then
-		print("Ход команды: " .. self.current_team .. " | Юнит индекс: " .. idx)
-		msg.post("/input_manager#input_manager", "set_target", { id = next_unit })
-
-		-- 4. Подготавливаем индекс для СЛЕДУЮЩЕГО раза, когда эта команда будет ходить
-		team_indices[self.current_team] = idx + 1
-		if team_indices[self.current_team] > #team then
-			team_indices[self.current_team] = 1 -- Зацикливаем внутри команды
+		-- Если ходит игрок (Команда 1)
+		if team_id == 1 then
+			msg.post("/input_manager#input_manager", "set_target", { id = next_unit })
+		else
+			-- Если ходит ИИ (Команда 2)
+			msg.post("/input_manager#input_manager", "set_target", { id = nil }) -- Блокируем ввод игрока
+			perform_ai_turn(self, next_unit)
 		end
 
-		-- 5. СТРОГО ПЕРЕКЛЮЧАЕМ КОМАНДУ для следующего хода
-		self.current_team = (self.current_team == 1) and 2 or 1
-
-	else
-		print("Ошибка: В команде " .. self.current_team .. " нет доступных юнитов")
+		-- Обновляем индекс для команды
+		team_indices[team_id] = (idx % #team) + 1
 	end
 end
 function init(self)
@@ -58,12 +81,19 @@ function on_message(self, message_id, message, sender)
 		--	activate_next_unit(self)
 		--end
 
+		-- в unit_manager.script
 	elseif message_id == hash("unit_stopped") then
-		print("Юнит остановился. Передача хода...")
-		timer.delay(0.5, false, function()
+		-- Блокируем любые действия на время паузы
+		print("--- СИСТЕМА: Пауза симуляции ---")
+
+		timer.delay(0.8, false, function()
+			state.switch_turn() -- Сначала меняем ГЛОБАЛЬНЫЙ стейт
+			self.current_team = state.current_team -- Синхронизируем локальный
+
+			print("--- СИСТЕМА: Новый ход команды " .. self.current_team .. " ---")
 			activate_next_unit(self)
-			state.switch_turn()
 		end)
+
 
 	elseif message_id == hash("unit_died") then
 		local team = teams[message.team]

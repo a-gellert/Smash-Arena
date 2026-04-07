@@ -6,7 +6,7 @@ embedded_components {
   id: "collisionobject"
   type: "collisionobject"
   data: "type: COLLISION_OBJECT_TYPE_DYNAMIC\n"
-  "mass: 1.0\n"
+  "mass: 2.0\n"
   "friction: 0.1\n"
   "restitution: 1.0\n"
   "group: \"unit\"\n"
@@ -30,7 +30,7 @@ embedded_components {
   ""
 }
 embedded_components {
-  id: "sprite"
+  id: "hp_back"
   type: "sprite"
   data: "default_animation: \"pixel\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
@@ -40,10 +40,13 @@ embedded_components {
   "}\n"
   ""
   position {
-    y: 30.0
+    x: -24.0
+    y: 32.0
+    z: 0.5
   }
   scale {
-    x: 10.0
+    x: 12.0
+    y: 1.2
   }
 }
 embedded_components {
@@ -65,5 +68,28 @@ embedded_components {
   scale {
     x: 1.7
     y: 1.7
+  }
+}
+embedded_components {
+  id: "hp_fill"
+  type: "sprite"
+  data: "default_animation: \"pixel\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "size {\n"
+  "  x: 4.0\n"
+  "  y: 4.0\n"
+  "}\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/druid/druid.atlas\"\n"
+  "}\n"
+  ""
+  position {
+    x: -23.0
+    y: 32.0
+    z: 0.6
+  }
+  scale {
+    x: 11.5
   }
 }

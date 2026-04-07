@@ -6,6 +6,9 @@ instances {
 instances {
   id: "unit_1_1t"
   prototype: "/entities/unit/unit.go"
+  position {
+    x: -32.0
+  }
 }
 instances {
   id: "unit_1_2t"
@@ -26,6 +29,7 @@ instances {
   id: "unit_2_1t"
   prototype: "/entities/unit/unit.go"
   position {
+    x: 32.0
     y: 79.0
   }
 }
