@@ -6,7 +6,7 @@ embedded_components {
   id: "collisionobject"
   type: "collisionobject"
   data: "type: COLLISION_OBJECT_TYPE_DYNAMIC\n"
-  "mass: 2.0\n"
+  "mass: 1.0\n"
   "friction: 0.1\n"
   "restitution: 1.0\n"
   "group: \"unit\"\n"
@@ -22,9 +22,9 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 27.5\n"
+  "  data: 25.0\n"
   "}\n"
-  "linear_damping: 0.5\n"
+  "linear_damping: 0.7\n"
   "angular_damping: 1.0\n"
   "locked_rotation: true\n"
   ""
@@ -66,8 +66,8 @@ embedded_components {
   "}\n"
   ""
   scale {
-    x: 1.7
-    y: 1.7
+    x: 1.5
+    y: 1.5
   }
 }
 embedded_components {

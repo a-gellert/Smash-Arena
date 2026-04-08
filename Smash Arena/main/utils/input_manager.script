@@ -1,79 +1,157 @@
 -- main/utils/input_manager.script
 
+-- init
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	self.target_id = nil
-	self.is_active = true
+
+	self.line_id   = msg.url(nil, "/prediction_line",  nil)
+	self.ghost_id  = msg.url(nil, "/prediction_ghost", nil)
+
+	-- Два боковых луча — отдельные объекты линий, полупрозрачные
+	self.line_left_id  = msg.url(nil, "/prediction_line_left",  nil)
+	self.line_right_id = msg.url(nil, "/prediction_line_right", nil)
+
+	msg.post(self.line_id,       "disable")
+	msg.post(self.ghost_id,      "disable")
+	msg.post(self.line_left_id,  "disable")
+	msg.post(self.line_right_id, "disable")
+
+	self.LINE_SPRITE_W  = 1
+	self.LINE_SPRITE_H  = 1
+	self.LINE_THICKNESS = 4
+	self.BALL_RADIUS    = 25
+	
+
+	self.target_id   = nil
+	self.is_active   = false
 	self.is_dragging = false
-	self.start_pos = vmath.vector3()
-	self.max_force = 50000 -- Максимальный импульс
+	self.start_pos   = vmath.vector3()
+end
+-- Позиционирует объект-линию между двумя мировыми точками
+local function place_line(line_id, from, to, thickness, alpha, sw, sh)
+	local diff = to - from
+	local dist = vmath.length(diff)
+	if dist < 1 then msg.post(line_id, "disable") return end
+
+	local angle = math.atan2(diff.y, diff.x)
+	local mid   = from + diff * 0.5
+
+	go.set_position(mid, line_id)
+	go.set_rotation(vmath.quat_rotation_z(angle), line_id)
+	go.set_scale(vmath.vector3(dist / sw, thickness / sh, 1), line_id)
+	-- Прозрачность через tint (alpha в четвёртом канале)
+	go.set(msg.url(line_id.socket, line_id.path, "line"), "tint",
+	vmath.vector4(1, 1, 1, alpha))
+	msg.post(line_id, "enable")
 end
 
+local function update_prediction(self, from, dir)
+	local groups   = { hash("wall"), hash("unit") }
+	local max_dist = 1500
+	local r        = self.BALL_RADIUS - 2 -- Радиус для расчёта (без зазоров)
+	local th       = self.LINE_THICKNESS
+	local sw, sh   = self.LINE_SPRITE_W, self.LINE_SPRITE_H
+
+	-- Перпендикуляр для боковых лучей
+	local perp = vmath.vector3(-dir.y, dir.x, 0)
+
+	local ray_origins = {
+		{ pos = from,            id = self.line_id,       alpha = 0.4 },
+		{ pos = from + perp * r, id = self.line_left_id,  alpha = 0.15 },
+		{ pos = from - perp * r, id = self.line_right_id, alpha = 0.15 },
+	}
+
+	-- Скрываем всё перед расчётом
+	msg.post(self.ghost_id, "disable")
+	for _, ray in ipairs(ray_origins) do msg.post(ray.id, "disable") end
+
+	local final_dist = max_dist
+	local hit_result = nil
+	local hitting_ray_index = 1
+
+	-- 1. Находим САМОЕ БЛИЗКОЕ столкновение среди всех лучей
+	for i, ray in ipairs(ray_origins) do
+		local res = physics.raycast(ray.pos + dir * 2, ray.pos + dir * max_dist, groups)
+		if res then
+			local d = vmath.length(res.position - ray.pos)
+			if d < final_dist then
+				final_dist = d
+				hit_result = res
+				hitting_ray_index = i
+			end
+		end
+	end
+
+	-- 2. Рисуем все линии под одну длину (чтобы пучок был ровным)
+	for i, ray in ipairs(ray_origins) do
+		local line_end = ray.pos + dir * final_dist
+		-- Если твоя place_line работает корректно, вызываем её
+		place_line(ray.id, ray.pos, line_end, th, ray.alpha, sw, sh)
+		msg.post(ray.id, "enable")
+	end
+
+	-- 3. Ставим Госта (Фантома)
+	if hit_result then
+		-- Вычисляем позицию центра шара в момент удара.
+		-- Если ударился центральный луч (index 1) - всё просто.
+		-- Если боковой - нужно сместить hit_pos обратно к центру.
+		local offset = ray_origins[hitting_ray_index].pos - from
+		local ghost_pos = hit_result.position - offset + hit_result.normal * 1 -- минимальный отступ от стены
+		print(hit_result.normal)
+		-- Если это стена, смещаем на радиус, чтобы круг не "тонул"
+		if hit_result.group == hash("wall") or hit_result.group == hash("unit") then
+			ghost_pos = hit_result.position - offset
+		end
+
+		ghost_pos.z = from.z + 0.1 -- чуть выше юнита
+		go.set_position(ghost_pos, self.ghost_id)
+		msg.post(self.ghost_id, "enable")
+	end
+end
 function on_input(self, action_id, action)
 	if not self.target_id or not self.is_active then return end
 
 	if action_id == hash("touch") then
 		if action.pressed then
-			self.start_pos = vmath.vector3(action.x, action.y, 0)
+			self.start_pos   = vmath.vector3(action.x, action.y, 0)
 			self.is_dragging = true
 
 		elseif action.released and self.is_dragging then
 			self.is_dragging = false
-			local end_pos = vmath.vector3(action.x, action.y, 0)
-			local drag_vector = self.start_pos - end_pos
-			local length = vmath.length(drag_vector)
+			msg.post(self.line_id,       "disable")
+			msg.post(self.ghost_id,      "disable")
+			msg.post(self.line_left_id,  "disable")
+			msg.post(self.line_right_id, "disable")
 
-			if length > 0 then
-				local normalized_vector = vmath.normalize(drag_vector)
-
-				msg.post(self.target_id, "apply_impulse", { vector = normalized_vector * 50000 })
+			local drag = self.start_pos - vmath.vector3(action.x, action.y, 0)
+			if vmath.length(drag) > 10 then
+				msg.post(self.target_id, "apply_impulse", {
+					vector = vmath.normalize(drag)
+				})
 				self.is_active = false
-			end			
+			end
+
 		elseif self.is_dragging then
-			-- РИСУЕМ ЛИНИЮ ПРИЦЕЛИВАНИЯ
-			local current_pos = vmath.vector3(action.x, action.y, 0)
+			local cur              = vmath.vector3(action.x, action.y, 0)
 			local target_world_pos = go.get_world_position(self.target_id)
+			local drag             = self.start_pos - cur
 
-			-- Вычисляем вектор отскока (инвертированный драг)
-			local diff = self.start_pos - current_pos
-			local line_end = target_world_pos + diff
-
-			-- Рисуем линию от центра юнита в сторону будущего полета
-			msg.post("@render:", "draw_line", { 
-				start_point = target_world_pos, 
-				end_point = line_end, 
-				color = vmath.vector4(1, 1, 1, 1) 
-			})
+			if vmath.length(drag) > 5 then
+				update_prediction(self, target_world_pos, vmath.normalize(drag))
+			else
+				msg.post(self.line_id,       "disable")
+				msg.post(self.ghost_id,      "disable")
+				msg.post(self.line_left_id,  "disable")
+				msg.post(self.line_right_id, "disable")
+			end
 		end
-		end
-
-		
-	
+	end
 end
-
-
--- input_manager.script
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("set_target") then
-		-- 1. Сначала сбрасываем масштаб СТАРОГО юнита, если он был
-		if self.target_id then
-			-- Проверяем go.exists, чтобы не пытаться анимировать удаленного юнита
-			if go.exists(self.target_id) then
-			--	go.animate(self.target_id, "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), go.EASING_OUTELASTIC, 0.3)
-			end
-		end
-
-		-- 2. Записываем НОВУЮ цель (может быть nil)
 		self.target_id = message.id
-		self.is_active = (self.target_id ~= nil) -- Активируем ввод только если цель есть
-
-		-- 3. Если новая цель существует, подсвечиваем её
-		if self.target_id then
-		--	go.animate(self.target_id, "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.2, 1.2, 1), go.EASING_OUTELASTIC, 0.5)
-			print("Цель установлена: ", self.target_id) -- Используй запятую вместо ".." для безопасности
-		else
-			print("Цель сброшена (ход ИИ)")
-		end
+		self.is_active = (self.target_id ~= nil)
+		print(self.target_id and "Цель: " .. tostring(self.target_id) or "Цель сброшена")
 	end
 end

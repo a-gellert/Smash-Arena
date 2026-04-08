@@ -66,8 +66,9 @@ function init(self)
 	state.current_team = self.current_team
 
 	-- Даем 0.1 сек всем юнитам на регистрацию, прежде чем начать первый ход
-	timer.delay(0.1, false, function()
+	timer.delay(0.25, false, function()
 		print("Старт игры! Начинает команда: " .. self.current_team)
+		msg.post("/gui#game", "show_turn_msg", { team = self.current_team })
 		activate_next_unit(self)
 	end)
 end
@@ -86,14 +87,19 @@ function on_message(self, message_id, message, sender)
 		-- Блокируем любые действия на время паузы
 		print("--- СИСТЕМА: Пауза симуляции ---")
 
-		timer.delay(0.8, false, function()
+		
+		timer.delay(1, false, function()
 			state.switch_turn() -- Сначала меняем ГЛОБАЛЬНЫЙ стейт
 			self.current_team = state.current_team -- Синхронизируем локальный
 
 			print("--- СИСТЕМА: Новый ход команды " .. self.current_team .. " ---")
+			msg.post("/gui#game", "show_turn_msg", { team = self.current_team })
 			activate_next_unit(self)
 		end)
 
+		timer.delay(0.5, false, function ()
+
+		end)
 
 	elseif message_id == hash("unit_died") then
 		local team = teams[message.team]

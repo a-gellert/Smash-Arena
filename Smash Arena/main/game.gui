@@ -1,3 +1,8 @@
+script: "/main/game.gui_script"
+fonts {
+  name: "druid_text_bold"
+  font: "/druid/fonts/druid_text_bold.font"
+}
 nodes {
   position {
     x: 195.0
@@ -54,6 +59,19 @@ nodes {
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
   enabled: false
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "druid_text_bold"
+  id: "turn_text"
+  parent: "main_box"
+  inherit_alpha: true
+  alpha: 0.0
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

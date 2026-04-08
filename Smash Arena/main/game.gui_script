@@ -1,0 +1,20 @@
+-- hud.gui_script
+function on_message(self, message_id, message, sender)
+	if message_id == hash("show_turn_msg") then
+		local node = gui.get_node("turn_text")
+
+		-- 1. Устанавливаем текст (с учетом номера команды)
+		gui.set_text(node, "ХОД КОМАНДЫ " .. tostring(message.team))
+
+		-- 2. Мгновенно делаем текст непрозрачным и чуть увеличиваем для эффекта "удара"
+		gui.set_color(node, vmath.vector4(1, 1, 1, 1))
+		gui.set_scale(node, vmath.vector3(1.5, 1.5, 1))
+
+		-- 3. Анимация: возвращаем масштаб к обычному
+		gui.animate(node, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4)
+
+		-- 4. Анимация: исчезновение (alpha) через паузу
+		-- Задержка 1.0 сек, само затухание 0.5 сек
+		gui.animate(node, "color.w", 0, gui.EASING_INQUAD, 0.5, 1.0)
+	end
+end
