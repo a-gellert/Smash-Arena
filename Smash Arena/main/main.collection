@@ -4,36 +4,6 @@ instances {
   prototype: "/orthographic/camera.go"
 }
 instances {
-  id: "unit_1_1t"
-  prototype: "/entities/unit/unit.go"
-  position {
-    x: -32.0
-  }
-}
-instances {
-  id: "unit_1_2t"
-  prototype: "/entities/unit/unit.go"
-  position {
-    y: -90.0
-  }
-  component_properties {
-    id: "unit"
-    properties {
-      id: "team_type"
-      value: "2.0"
-      type: PROPERTY_TYPE_NUMBER
-    }
-  }
-}
-instances {
-  id: "unit_2_1t"
-  prototype: "/entities/unit/unit.go"
-  position {
-    x: 32.0
-    y: 79.0
-  }
-}
-instances {
   id: "prediction_ghost"
   prototype: "/entities/prediction/prediction.go"
 }
@@ -46,14 +16,6 @@ collection_instances {
   }
 }
 scale_along_z: 0
-embedded_instances {
-  id: "unit_manager"
-  data: "components {\n"
-  "  id: \"unit_manager\"\n"
-  "  component: \"/main/utils/unit_manager.script\"\n"
-  "}\n"
-  ""
-}
 embedded_instances {
   id: "input_manager"
   data: "components {\n"
@@ -136,6 +98,20 @@ embedded_instances {
   "  position {\n"
   "    z: -0.5\n"
   "  }\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "game_manager"
+  data: "components {\n"
+  "  id: \"game_manager\"\n"
+  "  component: \"/main/utils/game_manager.script\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"unit_factory\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/entities/unit/unit.go\\\"\\n"
+  "\"\n"
   "}\n"
   ""
 }

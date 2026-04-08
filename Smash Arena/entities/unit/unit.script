@@ -1,108 +1,112 @@
 -- unit.script
 local state = require "main.state"
+local unit_manager = require "main.unit_manager" -- Для регистрации в БД
 
 go.property("team_type", 1) 
 go.property("max_hp", 100)
 go.property("damage", 20)
 go.property("level", 1)
-local time = 2
+
+-- Кэшируем URL гейм-менеджера, чтобы не искать его каждый раз
+local GAME_MANAGER = "main:/game_manager" 
 
 function init(self)
 	self.current_hp = self.max_hp
 	self.is_moving = false
 	self.damage_dealt = false
-	go.set("#hp_fill", "tint", vmath.vector4(1, 0.15, 0.15, 1))
-	msg.post("/unit_manager#unit_manager", "register_unit", { team = self.team_type })
-	if self.team_type == 1 then
-		go.set("#platform", "tint", vmath.vector4(1, 0, 1, 1))
-	else
+	self.stop_timer = 0
 
-			go.set("#platform", "tint", vmath.vector4(1, 1, 0, 1))
+	-- Визуал HP
+	go.set("#hp_fill", "tint", vmath.vector4(1, 0.15, 0.15, 1))
+
+	-- 1. Регистрация в данных (Lua-модуль)
+	unit_manager.register_unit(go.get_id(), self.team_type)
+
+	-- 2. Цвета команд
+	if self.team_type == 1 then
+		go.set("#platform", "tint", vmath.vector4(1, 1, 0, 1)) -- Желтые (игрок)
+	else
+		go.set("#platform", "tint", vmath.vector4(1, 0, 1, 1)) -- Фиолетовые (враг)
 	end
 	self.color = go.get("#platform", "tint")
 end
+
 local function update_hp_bar(self)
-	local quota = self.current_hp / self.max_hp
-	print(quota)
-	-- Ограничиваем, чтобы не ушло в минус
-	quota = math.max(0, quota)
-	-- Меняем масштаб зеленой полоски по X
+	local quota = math.max(0, self.current_hp / self.max_hp)
 	go.set("#hp_fill", "scale.x", 11.5 * quota)
 end
+
 local function show_damage_fx(self, amount)
 	local p = go.get_world_position()
-	-- Немного рандомим позицию, чтобы цифры не слипались
 	p.x = p.x + math.random(-30, 30)
 	p.y = p.y + 20
+	-- Создаем цифры урона через фабрику в гейм-объекте юнита
 	local damage_obj = factory.create("#damage_factory", p)
-	-- Передаем текст в label созданного объекта
 	label.set_text(msg.url(nil, damage_obj, "label"), "-" .. tostring(amount))
 end
+
 function update(self, dt)
 	if not self.is_moving then return end
 
 	local vel = go.get("#collisionobject", "linear_velocity")
 	local speed = vmath.length(vel)
-	
-time = time - dt
-if time > 0 then return end
-	if speed < 0.1 then
+
+	if self.stop_timer > 0 then
+		self.stop_timer = self.stop_timer - dt
+		return
+	end
+
+	-- Если скорость упала - сообщаем гейм-менеджеру
+	if speed < 0.2 then 
 		self.is_moving = false
 		self.damage_dealt = false
 		go.set("#collisionobject", "linear_velocity", vmath.vector3(0, 0, 0))
-		msg.post("/unit_manager#unit_manager", "unit_stopped", { id = go.get_id() })
+
+		-- Оповещаем Game Manager, что этот юнит закончил движение
+		msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
 	end
 end
 
 function on_message(self, message_id, message, sender)
 
-	-- 1. ЛОГИКА ПОЛЁТА (Импульс)
+	-- 1. Импульс от игрока или ИИ
 	if message_id == hash("apply_impulse") then
-		time = 2
+		self.stop_timer = 0.5 
 		self.is_moving = true
-		self.damage_dealt = false -- Сбрасываем флаг атаки для нового броска
+		self.damage_dealt = false 
 
-		local move_speed = 600 
+		local move_speed = 1200 
+		-- Вектор уже должен приходить нормализованным из менеджера, но на всякий случай:
 		local dir = vmath.normalize(message.vector)
 		go.set("#collisionobject", "linear_velocity", dir * move_speed)
-		print("[FLY] Старт полёта от " .. go.get_id())
 
-		-- 2. ЛОГИКА АТАКИ (Я во что-то врезался)
+		-- 2. Столкновение (Атака)
 	elseif message_id == hash("contact_point_response") then
-		-- Условия атаки:
-		-- - Я двигаюсь (is_moving)
-		-- - Сейчас ход МОЕЙ команды (state.current_team == self.team_type)
-		-- - Я еще не наносил урон в этом полете (not self.damage_dealt)
-		-- - Я врезался именно в юнита
-		if state.current_team == self.team_type 
-		and  message.group == hash("unit") then
+		if message.group == hash("unit") then
+			-- Проверяем команду цели
+			local target_url = msg.url(nil, message.other_id, "unit")
+			local target_team = go.get(target_url, "team_type")
 
-			-- Проверяем, что цель — ВРАГ (не своя команда)
-			local target_team = go.get(msg.url(nil, message.other_id, "unit"), "team_type")
 			if target_team ~= self.team_type then
-			--	self.damage_dealt = true -- Помечаем, что атака совершена (чтобы не бить 10 раз за полет)
+				-- Чтобы не спамить уроном, можно включить damage_dealt
 				msg.post(message.other_id, "take_damage", { amount = self.damage })
-				print("[ATTACK] Юнит " .. go.get_id() .. " ударил врага " .. message.other_id)
 			end
 		end
 
-		-- 3. ЛОГИКА ПОЛУЧЕНИЯ УРОНА (В меня врезались)
+		-- 3. Получение урона
 	elseif message_id == hash("take_damage") then
-		-- Условие получения урона:
-		-- - Сейчас ход НЕ МОЕЙ команды (state.current_team ~= self.team_type)
 		if state.current_team ~= self.team_type then
+
 			self.current_hp = self.current_hp - message.amount
+		self.current_hp = self.current_hp - message.amount
+		update_hp_bar(self)
+		show_damage_fx(self, message.amount)
 
-			-- Визуальные эффекты
-			update_hp_bar(self)
-			show_damage_fx(self, message.amount) -- Вынеси создание цифр в функцию для чистоты
-
-			if self.current_hp <= 0 then
-				msg.post("/unit_manager#unit_manager", "unit_died", { id = go.get_id(), team = self.team_type })
-				go.delete()
-			end
-		else
-			print("[BLOCK] Игнорируем урон (дружественный огонь или свой ход)")
+		if self.current_hp <= 0 then
+			-- Сообщаем менеджеру о смерти, чтобы он удалил нас из очереди
+			msg.post(GAME_MANAGER, "unit_died", { id = go.get_id(), team = self.team_type })
+			go.delete()
 		end
+	end
 	end
 end

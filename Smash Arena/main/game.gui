@@ -13,7 +13,7 @@ nodes {
     y: 780.0
   }
   type: TYPE_BOX
-  id: "main_box"
+  id: "main_game"
   adjust_mode: ADJUST_MODE_STRETCH
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
@@ -21,7 +21,7 @@ nodes {
 }
 nodes {
   position {
-    y: 345.0
+    y: 339.0
   }
   size {
     x: 390.0
@@ -35,7 +35,7 @@ nodes {
   id: "header"
   yanchor: YANCHOR_TOP
   adjust_mode: ADJUST_MODE_STRETCH
-  parent: "main_box"
+  parent: "main_game"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
 }
@@ -55,7 +55,7 @@ nodes {
   id: "footer"
   yanchor: YANCHOR_TOP
   adjust_mode: ADJUST_MODE_STRETCH
-  parent: "main_box"
+  parent: "main_game"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
   enabled: false
@@ -69,9 +69,54 @@ nodes {
   text: "<text>"
   font: "druid_text_bold"
   id: "turn_text"
-  parent: "main_box"
+  parent: "main_game"
   inherit_alpha: true
   alpha: 0.0
+}
+nodes {
+  position {
+    x: 195.0
+    y: 390.0
+  }
+  size {
+    x: 390.0
+    y: 780.0
+  }
+  type: TYPE_BOX
+  id: "main_menu"
+  adjust_mode: ADJUST_MODE_STRETCH
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -181.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_BOX
+  id: "play_btn"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Play"
+  font: "druid_text_bold"
+  id: "text"
+  parent: "play_btn"
+  inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT

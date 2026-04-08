@@ -18,3 +18,34 @@ function on_message(self, message_id, message, sender)
 		gui.animate(node, "color.w", 0, gui.EASING_INQUAD, 0.5, 1.0)
 	end
 end
+
+function init(self)
+	-- Говорим движку: "Эй, я хочу слушать мышь и экран!"
+	msg.post(".", "acquire_input_focus")
+end
+
+function on_input(self, action_id, action)
+	-- Для дебага: раскомментируй строку ниже, чтобы видеть, идут ли клики вообще
+	-- print("Клик: ", action_id)
+
+	if action_id == hash("touch") and action.pressed then
+		local play_btn = gui.get_node("play_btn")
+
+		-- Проверяем, попал ли клик в рамки кнопки
+		if gui.pick_node(play_btn, action.x, action.y) then
+			print("Кнопка PLAY нажата!")
+
+			-- Скрываем меню
+			gui.set_enabled(gui.get_node("main_menu"), false)
+
+			-- Запускаем игру (проверь, чтобы путь совпадал с твоим!)
+			msg.post("main:/game_manager", "init_battle")
+
+			-- Опционально: отдаем фокус, чтобы меню больше не ловило клики во время игры
+			msg.post(".", "release_input_focus")
+
+			-- return true значит, что мы "съели" этот клик и он не пойдет дальше
+			return true
+		end
+	end
+end

@@ -1,0 +1,117 @@
+-- main/game_manager.script
+local unit_manager = require "main.unit_manager"
+local state = require "main.state"
+
+-- Приватная функция для ИИ внутри менеджера
+local function perform_ai_turn(self, ai_unit_id)
+	print("ИИ обдумывает ход для: " .. tostring(ai_unit_id))
+
+	local player_units = unit_manager.teams[1]
+	if #player_units == 0 then return end
+
+	-- Выбираем цель и считаем вектор
+	local target_unit_id = player_units[math.random(1, #player_units)]
+
+	-- Проверка на существование объектов перед расчетом
+	if not go.exists(ai_unit_id) or not go.exists(target_unit_id) then return end
+
+	local ai_pos = go.get_world_position(ai_unit_id)
+	local target_pos = go.get_world_position(target_unit_id)
+	local direction = target_pos - ai_pos
+
+	if vmath.length(direction) > 0 then
+		local impulse_vector = vmath.normalize(direction)
+
+		timer.delay(1.2, false, function()
+			print("ИИ стреляет!")
+			msg.post(ai_unit_id, "apply_impulse", { vector = impulse_vector })
+		end)
+	end
+end
+
+local function activate_next_unit(self)
+	local team_id = state.current_team
+	local team = unit_manager.teams[team_id]
+
+	-- Если в команде никого нет, пробуем сменить ход
+	if #team == 0 then
+		state.switch_turn()
+		-- Если и во второй команде никого, значит игра окончена
+		if #unit_manager.teams[state.current_team] == 0 then
+			print("ВСЕ ЮНИТЫ УНИЧТОЖЕНЫ")
+			return 
+		end
+		return activate_next_unit(self)
+	end
+
+	local idx = unit_manager.team_indices[team_id]
+	if idx > #team then idx = 1 end -- Защита от выхода за границы после смерти юнита
+
+	local next_unit = team[idx]
+
+	if next_unit then
+		print("--- ХОД КОМАНДЫ " .. team_id .. " (Юнит: " .. tostring(next_unit) .. ") ---")
+
+		if team_id == 1 then
+			-- Ход игрока
+			msg.post("main:/input_manager", "set_target", { id = next_unit })
+		else
+			-- Ход ИИ
+			msg.post("main:/input_manager", "set_target", { id = nil })
+			perform_ai_turn(self, next_unit)
+		end
+
+		-- Обновляем индекс для следующего раза
+		unit_manager.team_indices[team_id] = (idx % #team) + 1
+	end
+end
+
+function init(self)
+	math.randomseed(os.time())
+	self.screen_w = sys.get_config_int("display.width", 390)
+	self.screen_h = sys.get_config_int("display.height", 780)
+end
+
+function on_message(self, message_id, message, sender)
+	-- 1. Создание битвы
+	if message_id == hash("init_battle") then
+		unit_manager.reset()
+
+		local padding_x = self.screen_w / 6
+		-- Позиции относительно центра, если коллекция центрирована, или абсолютные
+		local player_y = -150
+		local enemy_y = 150
+
+		for i = 1, 4 do
+			local p_id = factory.create("#unit_factory", vmath.vector3(padding_x * i - 128, player_y, 0), nil, { team_type = 1 })
+			-- Регистрация происходит автоматически в unit.script через unit_manager.register_unit
+		end
+
+		for i = 1, 4 do
+			factory.create("#unit_factory", vmath.vector3(padding_x * i -128, enemy_y, 0), nil, { team_type = 2 })
+		end
+		
+		timer.delay(0.25, false, function()
+			print("Старт игры! Начинает команда: " .. state.current_team)
+			msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
+			activate_next_unit(self)
+		end)
+	end
+
+	-- 2. Юнит остановился -> Смена хода
+	if message_id == hash("unit_stopped") then
+		timer.delay(1.0, false, function()
+			state.switch_turn()
+			msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
+			activate_next_unit(self)
+		end)
+	end
+
+	-- 3. Юнит умер
+	if message_id == hash("unit_died") then
+		unit_manager.remove_unit(message.id, message.team)
+		if #unit_manager.teams[message.team] == 0 then
+			print("КОМАНДА " .. message.team .. " ПРОИГРАЛА!")
+		end
+	end
+end
