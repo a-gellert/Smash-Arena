@@ -32,21 +32,21 @@ embedded_components {
 embedded_components {
   id: "hp_back"
   type: "sprite"
-  data: "default_animation: \"pixel\"\n"
+  data: "default_animation: \"pixel_copy\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/druid/druid.atlas\"\n"
+  "  texture: \"/assets/atlas/gui.atlas\"\n"
   "}\n"
   ""
   position {
-    x: -24.0
+    x: -16.0
     y: 32.0
     z: 0.5
   }
   scale {
-    x: 12.0
-    y: 1.2
+    x: 32.0
+    y: 4.0
   }
 }
 embedded_components {
@@ -73,7 +73,7 @@ embedded_components {
 embedded_components {
   id: "hp_fill"
   type: "sprite"
-  data: "default_animation: \"pixel\"\n"
+  data: "default_animation: \"pixel_copy\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 4.0\n"
@@ -81,15 +81,16 @@ embedded_components {
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/druid/druid.atlas\"\n"
+  "  texture: \"/assets/atlas/gui.atlas\"\n"
   "}\n"
   ""
   position {
-    x: -23.0
+    x: -15.5
     y: 32.0
     z: 0.6
   }
   scale {
-    x: 11.5
+    x: 31.0
+    y: 3.6
   }
 }

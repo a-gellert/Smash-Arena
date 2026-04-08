@@ -1,4 +1,8 @@
 images {
   image: "/assets/sprites/pixel.png"
 }
+images {
+  image: "/assets/sprites/pixel_copy.png"
+  pivot_x: 0.0
+}
 extrude_borders: 2

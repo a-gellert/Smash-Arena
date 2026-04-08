@@ -3,7 +3,7 @@ local state = require "main.state"
 local unit_manager = require "main.unit_manager" -- Для регистрации в БД
 
 go.property("team_type", 1) 
-go.property("max_hp", 100)
+go.property("max_hp", 145)
 go.property("damage", 20)
 go.property("level", 1)
 
@@ -33,7 +33,7 @@ end
 
 local function update_hp_bar(self)
 	local quota = math.max(0, self.current_hp / self.max_hp)
-	go.set("#hp_fill", "scale.x", 11.5 * quota)
+	go.set("#hp_fill", "scale.x", 31 * quota)
 end
 
 local function show_damage_fx(self, amount)
@@ -75,7 +75,7 @@ function on_message(self, message_id, message, sender)
 		self.is_moving = true
 		self.damage_dealt = false 
 
-		local move_speed = 1200 
+		local move_speed = 1800 
 		-- Вектор уже должен приходить нормализованным из менеджера, но на всякий случай:
 		local dir = vmath.normalize(message.vector)
 		go.set("#collisionobject", "linear_velocity", dir * move_speed)
