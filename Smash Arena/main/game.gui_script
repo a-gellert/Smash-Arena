@@ -1,51 +1,232 @@
--- hud.gui_script
-function on_message(self, message_id, message, sender)
-	if message_id == hash("show_turn_msg") then
-		local node = gui.get_node("turn_text")
+-- game.gui_script
+local data = require "main.heroes_data"
+-- Предполагаем, что здесь лежат данные игрока (инвентарь, уровни, текущая колода)
+-- Если модуля нет, создай его или используй глобальную таблицу для теста
+local player = {
+	active_squad = { 1, 2, 3, 4 }, -- Первые 4 героя по умолчанию
+	inventory = {}, -- Тут можно хранить кол-во карточек
+	levels = {}     -- Тут уровни
+}
 
-		-- 1. Устанавливаем текст (с учетом номера команды)
-		gui.set_text(node, "ХОД КОМАНДЫ " .. tostring(message.team))
+-- Константы разметки инвентаря
+local ITEM_SIZE = 80
+local GRID_COLS = 4
+local PADDING = 10
 
-		-- 2. Мгновенно делаем текст непрозрачным и чуть увеличиваем для эффекта "удара"
-		gui.set_color(node, vmath.vector4(1, 1, 1, 1))
-		gui.set_scale(node, vmath.vector3(1.5, 1.5, 1))
+--------------------------
+-- Утилитарные функции
+--------------------------
 
-		-- 3. Анимация: возвращаем масштаб к обычному
-		gui.animate(node, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4)
-
-		-- 4. Анимация: исчезновение (alpha) через паузу
-		-- Задержка 1.0 сек, само затухание 0.5 сек
-		gui.animate(node, "color.w", 0, gui.EASING_INQUAD, 0.5, 1.0)
+local function show_screen(self, screen_name)
+	local screens = { "main_menu", "lobby_screen", "main_game", "endgame_screen" }
+	for _, name in ipairs(screens) do
+		gui.set_enabled(gui.get_node(name), name == screen_name)
 	end
 end
 
+local function show_tab(self, tab_name)
+	local tabs = { "tab_play", "tab_inventory", "tab_settings" }
+	for _, name in ipairs(tabs) do
+		gui.set_enabled(gui.get_node(name), name == tab_name)
+	end
+end
+
+-- Обновление информации о герое в Info Box
+local function update_info_box(self, hero_id)
+	local hero = data.heroes[hero_id]
+	local level = player.levels[hero_id] or 1
+	local stats = data.get_stats(hero_id, level)
+
+	gui.set_text(gui.get_node("unit_name"), data.strings[hero.name_key].ru)
+
+	-- Заменяем плейсхолдер ability_value на реальное число
+	local desc = data.strings[hero.desc_key].ru:gsub("ability_value", tostring(hero.ability_value))
+	gui.set_text(gui.get_node("unit_description"), desc)
+
+	gui.set_text(gui.get_node("unit_hp_txt"), "HP: " .. stats.hp)
+	gui.set_text(gui.get_node("unit_damage_txt"), "DMG: " .. stats.damage)
+	gui.set_text(gui.get_node("unit_speed_txt"), "SPD: " .. string.format("%.1f", stats.speed))
+
+	-- Показываем Info Box, если он был скрыт
+	gui.set_enabled(gui.get_node("info_box"), true)
+end
+
+-- Обновление иконок активной колоды
+local function refresh_active_deck(self)
+	for i = 1, 4 do
+		local hero_id = player.active_squad[i]
+		local slot_node = gui.get_node("active_slot_" .. i)
+		-- Здесь можно менять текстуру/цвет в зависимости от героя
+		-- Пока просто красим в цвет редкости (заглушка)
+		local rarity = data.heroes[hero_id].rarity
+		local color = vmath.vector4(0.5, 0.5, 0.5, 1) -- По умолчанию
+		if rarity == 2 then color = vmath.vector4(0.2, 0.6, 1, 1) end
+		if rarity == 3 then color = vmath.vector4(0.7, 0.2, 1, 1) end
+		gui.set_color(slot_node, color)
+	end
+end
+
+local function start_lobby_search(self)
+	show_screen(self, "lobby_screen")
+	local search_time = 1.5 + math.random() * 1.5
+
+	timer.delay(search_time, false, function()
+		print("Противник найден!")
+		show_screen(self, "main_game")
+		msg.post("main:/game_manager", "init_battle")
+	end)
+end
+
+--------------------------
+-- Жизненный цикл
+--------------------------
+
 function init(self)
-	-- Говорим движку: "Эй, я хочу слушать мышь и экран!"
 	msg.post(".", "acquire_input_focus")
+
+	self.all_cards_nodes = {} -- Ссылки на созданные карточки
+	self.selected_hero_id = nil
+	self.is_waiting_for_swap = false
+
+	-- 1. Скрываем ненужное
+	show_screen(self, "main_menu")
+	show_tab(self, "tab_play")
+	gui.set_enabled(gui.get_node("info_box"), false)
+
+	-- 2. Заполняем all_cards карточками из heroes_data
+	-- Внутри функции init(self)
+	local parent = gui.get_node("all_cards")
+	for i = 1, #data.heroes do
+		local hero = data.heroes[i]
+
+		-- Получаем шаблон
+		local template_node = gui.get_node("unit_card_template")
+		local nodes = gui.clone_tree(template_node)
+
+		-- Ищем корневую ноду клона. 
+		-- Если unit_card_template — это и есть корневой бокс, берем его:
+		local root = nodes[hash("unit_card_template")] 
+
+		-- Если не нашло, попробуем альтернативный вариант (если внутри есть дочерняя нода root)
+		if not root then
+			root = nodes[hash("unit_card_template")]
+		end
+
+		if root then
+			gui.set_parent(root, parent)
+			gui.set_enabled(root, true)
+
+			-- Сетка 4x4
+			local row = math.floor((i - 1) / GRID_COLS)
+			local col = (i - 1) % GRID_COLS
+			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING), -row * (ITEM_SIZE + PADDING), 0)
+			gui.set_position(root, pos)
+
+			table.insert(self.all_cards_nodes, { node = root, hero_id = hero.id })
+		else
+			-- Если всё равно nil, выводим ошибку в консоль для дебага
+			print("ОШИБКА: Не удалось найти корневую ноду в клоне для героя ID: " .. hero.id)
+		end
+	end
+
+	-- 3. Рисуем начальную колоду
+	refresh_active_deck(self)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("show_turn_msg") then
+		local node = gui.get_node("turn_text")
+		gui.set_text(node, "ХОД КОМАНДЫ " .. tostring(message.team))
+		gui.set_color(node, vmath.vector4(1, 1, 1, 1))
+		gui.set_scale(node, vmath.vector3(1.5, 1.5, 1))
+		gui.animate(node, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4)
+		gui.animate(node, "color.w", 0, gui.EASING_INQUAD, 0.5, 1.0)
+
+	elseif message_id == hash("update_queue") then
+		for i=1, 8 do
+			local icon_node = gui.get_node("unit_icon_" .. i)
+			if message.queue[i] then
+				gui.set_enabled(icon_node, true)
+			else
+				gui.set_enabled(icon_node, false)
+			end
+		end
+
+	elseif message_id == hash("game_over") then
+		show_screen(self, "endgame_screen")
+		gui.set_text(gui.get_node("result_label"), message.win and "VICTORY" or "DEFEAT")
+	end
 end
 
 function on_input(self, action_id, action)
-	-- Для дебага: раскомментируй строку ниже, чтобы видеть, идут ли клики вообще
-	-- print("Клик: ", action_id)
-
 	if action_id == hash("touch") and action.pressed then
-		local play_btn = gui.get_node("play_btn")
 
-		-- Проверяем, попал ли клик в рамки кнопки
-		if gui.pick_node(play_btn, action.x, action.y) then
-			print("Кнопка PLAY нажата!")
-
-			-- Скрываем меню
-			gui.set_enabled(gui.get_node("main_menu"), false)
-
-			-- Запускаем игру (проверь, чтобы путь совпадал с твоим!)
-			msg.post("main:/game_manager", "init_battle")
-
-			-- Опционально: отдаем фокус, чтобы меню больше не ловило клики во время игры
-			msg.post(".", "release_input_focus")
-
-			-- return true значит, что мы "съели" этот клик и он не пойдет дальше
+		-- А. НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ И ВКЛАДКАМИ
+		if gui.pick_node(gui.get_node("btn_play"), action.x, action.y) then
+			start_lobby_search(self)
 			return true
+		elseif gui.pick_node(gui.get_node("tab_btn_1"), action.x, action.y) then
+			show_tab(self, "tab_play")
+		elseif gui.pick_node(gui.get_node("tab_btn_2"), action.x, action.y) then
+			show_tab(self, "tab_inventory")
+		elseif gui.pick_node(gui.get_node("tab_btn_3"), action.x, action.y) then
+			show_tab(self, "tab_settings")
+		end
+
+		-- Б. ЛОГИКА ИНВЕНТАРЯ
+		if gui.is_enabled(gui.get_node("tab_inventory")) then
+
+			-- 1. Выбор карточки из общего списка
+			for _, item in ipairs(self.all_cards_nodes) do
+				if gui.pick_node(item.node, action.x, action.y) then
+					self.selected_hero_id = item.hero_id
+					self.is_waiting_for_swap = false
+					update_info_box(self, item.hero_id)
+					return true
+				end
+			end
+
+			-- 2. Кнопка USE
+			if gui.pick_node(gui.get_node("use_btn"), action.x, action.y) and self.selected_hero_id then
+				self.is_waiting_for_swap = true
+				print("Выберите слот в активной колоде для замены...")
+				return true
+			end
+
+			-- 3. Замена в активной колоде
+			if self.is_waiting_for_swap then
+				for i = 1, 4 do
+					if gui.pick_node(gui.get_node("active_slot_" .. i), action.x, action.y) then
+						player.active_squad[i] = self.selected_hero_id
+						self.is_waiting_for_swap = false
+						refresh_active_deck(self)
+						print("Колода обновлена!")
+						return true
+					end
+				end
+			end
+
+			-- 4. Кнопка IMPROVE (заглушка)
+			if gui.pick_node(gui.get_node("improve_btn"), action.x, action.y) then
+				print("Улучшение пока не реализовано")
+			end
+		end
+
+		-- В. УПРАВЛЕНИЕ В БОЮ
+		if gui.is_enabled(gui.get_node("main_game")) then
+			if gui.pick_node(gui.get_node("quit_btn"), action.x, action.y) then
+				msg.post("main:/game_manager", "cleanup_battle")
+				show_screen(self, "main_menu")
+				return true
+			end
+		end
+
+		-- Г. ЭКРАН РЕЗУЛЬТАТОВ
+		if gui.is_enabled(gui.get_node("endgame_screen")) then
+			if gui.pick_node(gui.get_node("back_to_menu_btn"), action.x, action.y) then
+				show_screen(self, "main_menu")
+				return true
+			end
 		end
 	end
 end
