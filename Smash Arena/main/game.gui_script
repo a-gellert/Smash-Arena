@@ -119,7 +119,7 @@ function init(self)
 			-- Сетка 4x4
 			local row = math.floor((i - 1) / GRID_COLS)
 			local col = (i - 1) % GRID_COLS
-			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING), -row * (ITEM_SIZE + PADDING), 0)
+			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING) -135, -row * (ITEM_SIZE + PADDING) + 135, 0)
 			gui.set_position(root, pos)
 
 			table.insert(self.all_cards_nodes, { node = root, hero_id = hero.id })
@@ -162,17 +162,21 @@ function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
 
 		-- А. НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ И ВКЛАДКАМИ
+		if gui.is_enabled(gui.get_node("tab_play")) and   gui.is_enabled(gui.get_node("main_menu"))then
 		if gui.pick_node(gui.get_node("btn_play"), action.x, action.y) then
 			start_lobby_search(self)
 			return true
-		elseif gui.pick_node(gui.get_node("tab_btn_1"), action.x, action.y) then
+		end
+	end
+		if gui.is_enabled(gui.get_node("main_menu")) then
+		if gui.pick_node(gui.get_node("tab_btn_1"), action.x, action.y) then
 			show_tab(self, "tab_play")
 		elseif gui.pick_node(gui.get_node("tab_btn_2"), action.x, action.y) then
 			show_tab(self, "tab_inventory")
 		elseif gui.pick_node(gui.get_node("tab_btn_3"), action.x, action.y) then
 			show_tab(self, "tab_settings")
 		end
-
+	end
 		-- Б. ЛОГИКА ИНВЕНТАРЯ
 		if gui.is_enabled(gui.get_node("tab_inventory")) then
 
@@ -189,7 +193,14 @@ function on_input(self, action_id, action)
 			-- 2. Кнопка USE
 			if gui.pick_node(gui.get_node("use_btn"), action.x, action.y) and self.selected_hero_id then
 				self.is_waiting_for_swap = true
+				gui.set_enabled(gui.get_node("info_box"), false)
 				print("Выберите слот в активной колоде для замены...")
+				return true
+			end
+
+			
+			if gui.pick_node(gui.get_node("close_info_box_btn"), action.x, action.y) and self.selected_hero_id then
+				gui.set_enabled(gui.get_node("info_box"), false)
 				return true
 			end
 
@@ -215,6 +226,7 @@ function on_input(self, action_id, action)
 		-- В. УПРАВЛЕНИЕ В БОЮ
 		if gui.is_enabled(gui.get_node("main_game")) then
 			if gui.pick_node(gui.get_node("quit_btn"), action.x, action.y) then
+				
 				msg.post("main:/game_manager", "cleanup_battle")
 				show_screen(self, "main_menu")
 				return true

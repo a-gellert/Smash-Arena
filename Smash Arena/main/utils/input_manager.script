@@ -152,6 +152,5 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("set_target") then
 		self.target_id = message.id
 		self.is_active = (self.target_id ~= nil)
-		print(self.target_id and "Цель: " .. tostring(self.target_id) or "Цель сброшена")
 	end
 end

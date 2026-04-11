@@ -71,7 +71,17 @@ function init(self)
 	self.screen_w = sys.get_config_int("display.width", 390)
 	self.screen_h = sys.get_config_int("display.height", 780)
 end
-
+local function check_and_switch(self)
+	if unit_manager.is_everyone_stopped() then
+		-- Все замерли, переключаем ход
+		state.switch_turn()
+		msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
+		activate_next_unit(self)
+	else
+		-- Кто-то еще катится, проверяем снова через 0.2 сек
+		timer.delay(0.2, false, check_and_switch)
+	end
+end
 function on_message(self, message_id, message, sender)
 	-- 1. Создание битвы
 	if message_id == hash("init_battle") then
@@ -83,12 +93,12 @@ function on_message(self, message_id, message, sender)
 		local enemy_y = 150
 
 		for i = 1, 4 do
-			local p_id = factory.create("#unit_factory", vmath.vector3(padding_x * i - 128, player_y, 0), nil, { team_type = 1 })
+			local p_id = factory.create("#unit_factory", vmath.vector3(padding_x * i - 128, player_y, 0), nil, { team_type = 1, hero_id = state.active_deck[i] })
 			-- Регистрация происходит автоматически в unit.script через unit_manager.register_unit
 		end
 
 		for i = 1, 4 do
-			factory.create("#unit_factory", vmath.vector3(padding_x * i -128, enemy_y, 0), nil, { team_type = 2 })
+			factory.create("#unit_factory", vmath.vector3(padding_x * i -128, enemy_y, 0), nil, { team_type = 2, hero_id = state.active_deck[i]  })
 		end
 		
 		timer.delay(0.25, false, function()
@@ -100,18 +110,71 @@ function on_message(self, message_id, message, sender)
 
 	-- 2. Юнит остановился -> Смена хода
 	if message_id == hash("unit_stopped") then
-		timer.delay(1.0, false, function()
-			state.switch_turn()
-			msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
-			activate_next_unit(self)
-		end)
+		-- Когда ОДИН юнит замер, запускаем проверку ВСЕГО поля с небольшой задержкой
+		timer.delay(0.5, false, check_and_switch)
 	end
 
 	-- 3. Юнит умер
 	if message_id == hash("unit_died") then
-		unit_manager.remove_unit(message.id, message.team)
-		if #unit_manager.teams[message.team] == 0 then
-			print("КОМАНДА " .. message.team .. " ПРОИГРАЛА!")
+		local victim_id = message.id
+		local killer_id = message.killer_id -- Мы начали передавать это в take_damage
+
+		-- Если убийца существует (это не смерть от стены или скрипта)
+		if killer_id and go.exists(killer_id) then
+			-- Проверяем, есть ли у убийцы умение Жнеца
+			local killer_url = msg.url(nil, killer_id, "unit")
+			local ability = go.get(killer_url, "ability_method")
+			local heal_amount = go.get(killer_url, "ability_value")
+
+			if ability == "life_steal_kill" then
+				print("Жнец совершил убийство и восстанавливает силы!")
+				msg.post(killer_id, "heal", { amount = heal_amount })
+
+				-- Визуальный эффект Жатвы (красная вспышка на Жнеце)
+				go.set(killer_url, "tint", vmath.vector4(1, 0, 0, 1))
+				go.animate(killer_url, "tint", vmath.vector4(1, 1, 1, 1), gui.EASING_INOUTQUAD, 0.5)
+			end
 		end
+
+		-- Стандартная логика удаления из очередей
+		unit_manager.remove_unit(victim_id, message.team)
+	end
+	if message_id == hash("trigger_wave") then
+		local wave_pos = message.pos
+		local radius = 150 -- Радиус поражения волны
+		local force_mult = message.force -- Базовая сила из абилки (ability_value)
+		local owner_id = message.owner_id
+
+		print("Танк выпускает волну!")
+
+		-- Перебираем всех юнитов через наш менеджер
+		for target_id, _ in pairs(unit_manager.all_units) do
+			-- Не бьем сами себя
+			if target_id ~= owner_id then
+				local target_pos = go.get_world_position(target_id)
+				local dist = vmath.length(target_pos - wave_pos)
+
+				if dist < radius then
+					-- Расчет направления отталкивания
+					local dir = vmath.normalize(target_pos - wave_pos)
+					-- Чем дальше юнит, тем слабее толчок (затухание)
+					local falloff = (radius - dist) / radius
+					local final_impulse = dir * force_mult * falloff * 5000
+
+					-- Применяем физический импульс
+					msg.post(msg.url(nil, target_id, "collisionobject"), "apply_impulse", {
+						position = target_pos,
+						impulse = final_impulse
+					})
+
+					-- Наносим урон (из ability_value)
+					msg.post(target_id, "take_damage", { 
+						amount = force_mult, 
+						attacker_id = owner_id 
+					})
+				end
+			end
+		end
+		-- Здесь можно спавнить визуальный эффект кольца/волны
 	end
 end

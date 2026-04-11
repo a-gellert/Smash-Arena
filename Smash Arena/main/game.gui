@@ -800,6 +800,9 @@ nodes {
   inherit_alpha: true
 }
 nodes {
+  position {
+    x: -2000.0
+  }
   size {
     x: 80.0
     y: 80.0
@@ -831,7 +834,6 @@ nodes {
   parent: "tab_inventory"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
-  enabled: false
 }
 nodes {
   position {
@@ -958,7 +960,7 @@ nodes {
 }
 nodes {
   position {
-    x: -8.0
+    x: -35.0
     y: 22.0
   }
   scale {
@@ -966,7 +968,7 @@ nodes {
     y: 0.3
   }
   size {
-    x: 50.0
+    x: 100.0
     y: 50.0
   }
   color {
@@ -985,12 +987,11 @@ nodes {
     y: 0.3019608
     z: 0.3019608
   }
-  line_break: true
   parent: "box"
 }
 nodes {
   position {
-    x: -8.0
+    x: -35.0
     y: 7.0
   }
   scale {
@@ -998,7 +999,7 @@ nodes {
     y: 0.3
   }
   size {
-    x: 50.0
+    x: 100.0
     y: 50.0
   }
   color {
@@ -1016,12 +1017,11 @@ nodes {
     y: 0.3019608
     z: 0.3019608
   }
-  line_break: true
   parent: "box"
 }
 nodes {
   position {
-    x: -8.0
+    x: -35.0
     y: -8.0
   }
   scale {
@@ -1029,7 +1029,7 @@ nodes {
     y: 0.3
   }
   size {
-    x: 50.0
+    x: 100.0
     y: 50.0
   }
   color {
@@ -1047,7 +1047,6 @@ nodes {
     y: 0.3019608
     z: 0.3019608
   }
-  line_break: true
   parent: "box"
 }
 nodes {
@@ -1084,6 +1083,21 @@ nodes {
   }
   type: TYPE_BOX
   id: "use_btn"
+  parent: "info_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 128.0
+    y: 78.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  type: TYPE_BOX
+  id: "close_info_box_btn"
   parent: "info_box"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO

@@ -73,4 +73,17 @@ function M.get_stats(hero_id, level)
 	}
 end
 
+-- Получение имени
+function M.get_name(hero_id, lang)
+	lang = lang or "ru" -- По умолчанию русский, если не указан
+	local hero = M.heroes[hero_id]
+
+	if hero and hero.name_key then
+		local string_entry = M.strings[hero.name_key]
+		return string_entry and string_entry[lang] or "Unknown"
+	end
+
+	return "Hero Not Found"
+end
+
 return M

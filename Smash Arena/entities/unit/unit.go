@@ -40,13 +40,13 @@ embedded_components {
   "}\n"
   ""
   position {
-    x: -16.0
+    x: -20.0
     y: 32.0
     z: 0.5
   }
   scale {
-    x: 32.0
-    y: 4.0
+    x: 40.0
+    y: 7.0
   }
 }
 embedded_components {
@@ -85,12 +85,55 @@ embedded_components {
   "}\n"
   ""
   position {
-    x: -15.5
+    x: -19.0
     y: 32.0
     z: 0.6
   }
   scale {
-    x: 31.0
-    y: 3.6
+    x: 38.0
+    y: 5.0
+  }
+}
+embedded_components {
+  id: "sprite"
+  type: "sprite"
+  data: "default_animation: \"ui_circle_32\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/druid/druid.atlas\"\n"
+  "}\n"
+  ""
+  position {
+    z: 0.2
+  }
+}
+embedded_components {
+  id: "name"
+  type: "label"
+  data: "size {\n"
+  "  x: 128.0\n"
+  "  y: 32.0\n"
+  "}\n"
+  "color {\n"
+  "  x: 0.0\n"
+  "  y: 0.0\n"
+  "  z: 0.0\n"
+  "}\n"
+  "outline {\n"
+  "  x: 0.5019608\n"
+  "  y: 0.5019608\n"
+  "  z: 0.5019608\n"
+  "}\n"
+  "text: \"Label\"\n"
+  "font: \"/druid/fonts/druid_text_bold.font\"\n"
+  "material: \"/builtins/fonts/label-df.material\"\n"
+  ""
+  position {
+    z: 0.7
+  }
+  scale {
+    x: 0.3
+    y: 0.3
   }
 }
