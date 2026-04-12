@@ -97,7 +97,7 @@ local function update_prediction(self, from, dir)
 		-- Если боковой - нужно сместить hit_pos обратно к центру.
 		local offset = ray_origins[hitting_ray_index].pos - from
 		local ghost_pos = hit_result.position - offset + hit_result.normal * 1 -- минимальный отступ от стены
-		print(hit_result.normal)
+		
 		-- Если это стена, смещаем на радиус, чтобы круг не "тонул"
 		if hit_result.group == hash("wall") or hit_result.group == hash("unit") then
 			ghost_pos = hit_result.position - offset

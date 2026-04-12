@@ -7,7 +7,7 @@ M.TEAM_ENEMY = 2
 
 -- Данные игрока
 -- Массив из 4 элементов (ID героев из data.lua)
-M.active_deck = { 1, 2, 3, 4 } 
+M.active_deck = { 8, 5, 9, 10 } 
 
 -- Текущее состояние боя
 M.current_team = M.TEAM_PLAYER -- Кто ходит сейчас

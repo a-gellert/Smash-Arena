@@ -68,7 +68,7 @@ end
 
 local function start_lobby_search(self)
 	show_screen(self, "lobby_screen")
-	local search_time = 1.5 + math.random() * 1.5
+	local search_time =  0.1--1.5 + math.random() * 1.5
 
 	timer.delay(search_time, false, function()
 		print("Противник найден!")

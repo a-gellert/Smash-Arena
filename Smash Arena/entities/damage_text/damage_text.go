@@ -15,16 +15,16 @@ embedded_components {
   "  z: 0.101960786\n"
   "}\n"
   "outline {\n"
-  "  x: 0.7019608\n"
-  "  y: 0.7019608\n"
-  "  z: 0.7019608\n"
+  "  x: 1.0\n"
+  "  y: 1.0\n"
+  "  z: 1.0\n"
   "}\n"
   "text: \"-25\"\n"
   "font: \"/druid/fonts/druid_text_bold.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.6
+    y: 0.6
   }
 }

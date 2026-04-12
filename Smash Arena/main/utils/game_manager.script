@@ -117,26 +117,22 @@ function on_message(self, message_id, message, sender)
 	-- 3. Юнит умер
 	if message_id == hash("unit_died") then
 		local victim_id = message.id
-		local killer_id = message.killer_id -- Мы начали передавать это в take_damage
+		local killer_url = message.killer_id -- Это уже URL (userdata)
 
-		-- Если убийца существует (это не смерть от стены или скрипта)
-		if killer_id and go.exists(killer_id) then
-			-- Проверяем, есть ли у убийцы умение Жнеца
-			local killer_url = msg.url(nil, killer_id, "unit")
-			local ability = go.get(killer_url, "ability_method")
-			local heal_amount = go.get(killer_url, "ability_value")
+		-- 1. Проверяем, что убийца — это существующий юнит
+		-- Используем pcall, чтобы игра не вылетала, если killer_url не имеет скрипта "unit"
+		local ok, ability = pcall(go.get, killer_url, "ability_method")
 
-			if ability == "life_steal_kill" then
-				print("Жнец совершил убийство и восстанавливает силы!")
-				msg.post(killer_id, "heal", { amount = heal_amount })
+		if ok and ability == "life_steal_kill" then
+			-- 2. Если это Жнец, вытягиваем значение лечения
+			local heal_val = go.get(killer_url, "ability_value")
 
-				-- Визуальный эффект Жатвы (красная вспышка на Жнеце)
-				go.set(killer_url, "tint", vmath.vector4(1, 0, 0, 1))
-				go.animate(killer_url, "tint", vmath.vector4(1, 1, 1, 1), gui.EASING_INOUTQUAD, 0.5)
-			end
+			-- 3. Отправляем сообщение о лечении
+			msg.post(killer_url, "heal", { amount = heal_val })
+			print("Жатва: Жнец вылечен на " .. heal_val)
 		end
 
-		-- Стандартная логика удаления из очередей
+		-- Стандартная очистка
 		unit_manager.remove_unit(victim_id, message.team)
 	end
 	if message_id == hash("trigger_wave") then

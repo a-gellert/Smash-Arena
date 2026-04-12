@@ -3,19 +3,19 @@ local state = require "main.state"
 local data = require "main.heroes_data"
 local unit_manager = require "main.unit_manager" -- Для регистрации в БД
 
-go.property("team_type", 1) 
+go.property("team_type", 1)
 go.property("max_hp", 145)
 go.property("damage", 20)
 go.property("hero_id", 1)
 go.property("level", 1)
 
 -- Кэшируем URL гейм-менеджера, чтобы не искать его каждый раз
-local GAME_MANAGER = "main:/game_manager" 
+local GAME_MANAGER = "main:/game_manager"
 
 function init(self)
 	local base_data = data.heroes[self.hero_id]
 	local stats = data.get_stats(self.hero_id, self.level)
-	
+
 	self.max_hp = stats.hp
 	self.current_hp = self.max_hp
 	self.damage = stats.damage
@@ -79,8 +79,8 @@ local function heal(self, amount)
 	local missing_hp = self.max_hp - self.current_hp
 
 	-- 2. Если лечить нечего (уже фулл хп), просто выходим
-	if missing_hp <= 0 then 
-		return 
+	if missing_hp <= 0 then
+		return
 	end
 
 	-- 3. Выбираем меньшее из: "сколько просят" или "сколько не хватает"
@@ -107,7 +107,7 @@ function update(self, dt)
 	end
 
 	-- Если скорость упала - сообщаем гейм-менеджеру
-	if speed < 0.1 then 
+	if speed < 0.1 then
 		self.is_moving = false
 		go.set("#collisionobject", "linear_velocity", vmath.vector3(0, 0, 0))
 
@@ -115,40 +115,41 @@ function update(self, dt)
 		if self.ability_method == "heal_on_stop" then
 			heal(self, self.ability_value)
 			print("heal")
-		
+
 			timer.delay(1, false, function()
 				msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
 			end)
 			-- УМЕНИЕ: Танк (Wave/Heavy Impact - отталкивание в конце хода)
-	elseif self.ability_method == "heavy_impact" then
+		elseif self.ability_method == "heavy_impact" then
 			-- Посылаем сообщение всем в радиусе (реализуется через доп. коллизию или менеджер)
-			msg.post(GAME_MANAGER, "trigger_wave", { pos = go.get_world_position(), owner_id = go.get_id(), force = self.ability_value })
+			msg.post(GAME_MANAGER, "trigger_wave",
+				{ pos = go.get_world_position(), owner_id = go.get_id(), force = self.ability_value })
 
 			timer.delay(2, false, function()
 				msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
 			end)
 		else
-		-- Оповещаем Game Manager, что этот юнит закончил движение
-		msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
+			-- Оповещаем Game Manager, что этот юнит закончил движение
+			msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
+		end
 	end
-end
 end
 
 function on_message(self, message_id, message, sender)
-
 	-- 1. Импульс от игрока или ИИ
 	if message_id == hash("apply_impulse") then
 		self.stop_timer = 1
 		self.is_moving = true
-		self.damage_dealt = false 
+		self.damage_dealt = false
 		local base_move_speed = 1000 * self.speed_multiplier
 
 		-- Если нас заморозил Маг Льда
 		if self.is_frozen then
 			base_move_speed = base_move_speed * 0.5
 			self.is_frozen = false -- Эффект на один ход
+			print("frozen" .. base_move_speed)
 		end
-		
+
 		-- Вектор уже должен приходить нормализованным из менеджера, но на всякий случай:
 		local dir = vmath.normalize(message.vector)
 		go.set("#collisionobject", "linear_velocity", dir * base_move_speed)
@@ -174,15 +175,15 @@ function on_message(self, message_id, message, sender)
 				if self.ability_method == "life_leech" then
 					local life_steal = math.floor(final_damage * (self.ability_value / 100))
 					heal(self, life_steal)
-				end
 
-				-- УМЕНИЕ: Маг Льда (Freeze)
-				if self.ability_method == "freeze_hit" then
+					-- УМЕНИЕ: Маг Льда (Freeze)	
+				elseif self.ability_method == "freeze_hit" then
 					msg.post(message.other_id, "apply_freeze", { slow_factor = self.ability_value / 100 })
 				end
 			else
 				-- УМЕНИЕ: Монах (Prayer - хил союзника при контакте)
 				if self.ability_method == "touch_heal" then
+					print("touch_heal" .. self.ability_value)
 					msg.post(message.other_id, "heal", { amount = self.ability_value })
 				end
 			end
@@ -196,30 +197,28 @@ function on_message(self, message_id, message, sender)
 				show_damage_fx(self, "MISS", false)
 				return
 			end
-		self.current_hp = self.current_hp - message.amount
-		update_hp_bar(self)
-		show_damage_fx(self, message.amount, false)
+			self.current_hp = self.current_hp - message.amount
+			update_hp_bar(self)
+			show_damage_fx(self, message.amount, false)
 
-		if self.current_hp <= 0 then
-			-- УМЕНИЕ: Подрывник (Explosion on death)
-			if self.ability_method == "death_explosion" then
-			--	msg.post(GAME_MANAGER, "trigger_explosion", { pos = go.get_world_position(), damage = self.ability_value })
+			if self.current_hp <= 0 then
+				-- УМЕНИЕ: Подрывник (Explosion on death)
+				if self.ability_method == "death_explosion" then
+					--	msg.post(GAME_MANAGER, "trigger_explosion", { pos = go.get_world_position(), damage = self.ability_value })
+				end
+				-- Сообщаем менеджеру о смерти, чтобы он удалил нас из очереди
+				msg.post(GAME_MANAGER, "unit_died", { id = go.get_id(), killer_id = sender, team = self.team_type })
+				go.delete()
 			end
-			-- Сообщаем менеджеру о смерти, чтобы он удалил нас из очереди
-			msg.post(GAME_MANAGER, "unit_died", { id = go.get_id(), team = self.team_type })
-			go.delete()
 		end
-	
-elseif message_id == hash("apply_freeze") then
-	if self.ability_method == "stationary_shield"  then
-		show_damage_fx(self, "BLOCK", false)
-		return
+	elseif message_id == hash("apply_freeze") and state.current_team ~= self.team_type then
+		if self.ability_method == "stationary_shield" then
+			show_damage_fx(self, "BLOCK", false)
+			return
+		end
+		self.is_frozen = true
+		print("isfrozen")
+	elseif message_id == hash("heal") and state.current_team == self.team_type then
+		heal(self, message.amount)
 	end
-	self.is_frozen = true
-	-- Можно изменить цвет на голубой для индикации
-
-elseif message_id == hash("heal") then
-	heal(self, message.amount)
-end
-end
 end

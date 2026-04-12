@@ -5,7 +5,7 @@ function init(self)
 	go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, pos.y + 50, go.EASING_OUTQUAD, 0.5)
 
 	-- Анимируем исчезновение (прозрачность)
-	go.animate("#label", "color.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INQUAD, 0.5, 0, function()
+	go.animate("#label", "color.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INQUAD, 0.75, 0, function()
 		go.delete() -- Удаляем объект, когда анимация кончилась
 	end)
 end
