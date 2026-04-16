@@ -38,34 +38,18 @@ local function show_info_box(self, hero_id, current_hp, max_hp, level)
 	-- Меняем иконку (предполагаем, что имя кадра в атласе совпадает с hero_id или прописано в data)
 --	gui.play_flipbook(gui.get_node("info_unit_icon"), hash("hero_" .. hero_id))
 end
+-- В game.gui_script
 local function refresh_queue_panel(self)
-	-- Проходим по всем 8 слотам (4 игрока + 4 врага)
 	for i = 1, 8 do
 		local node_idx = i
-		local team_id = (i <= 4) and 1 or 2
-		local unit_idx = (i <= 4) and i or (i - 4)
+		local unit_id = unit_manager.get_id_by_index(node_idx) -- берем из менеджера
 
-		-- Достаем ID юнита из менеджера
-		local unit_id = unit_manager.teams[team_id][unit_idx]
-		local icon_node = gui.get_node("unit_icon_" .. node_idx)
-		local text_node = gui.get_node("unit_icon_text_" .. node_idx)
-		-- Если у тебя есть узел для самой картинки внутри иконки:
-		local img_node = gui.get_node("ico_" .. node_idx) 
-
-		if unit_id and unit_manager.unit_data[unit_id] then
-			local data_cache = unit_manager.unit_data[unit_id]
-
-			gui.set_enabled(icon_node, true)
-
-			-- 1. Обновляем текст ХП
-			gui.set_text(text_node, data_cache.hp .. "/" .. data_cache.max_hp)
-
-			-- 2. Устанавливаем иконку героя (если еще не установлена)
-			-- Чтобы не дергать смену текстуры каждый кадр, можно добавить проверку
-		--	gui.play_flipbook(img_node, hash("hero_mini_" .. data_cache.hero_id))
-		else
-			-- Если юнита нет в этом слоте или он умер — скрываем иконку
-			gui.set_enabled(icon_node, false)
+		if unit_id then
+			-- БЕРЕМ ИЗ ТАБЛИЦЫ ЛУА, А НЕ ЧЕРЕЗ go.get
+			local data = unit_manager.unit_statuses[unit_id] 
+			if data then
+				gui.set_text(gui.get_node("unit_icon_text_" .. node_idx), data.hp .. "/" .. data.max_hp)
+			end
 		end
 	end
 end
