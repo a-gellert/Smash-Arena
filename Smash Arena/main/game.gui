@@ -13,544 +13,6 @@ nodes {
     y: 780.0
   }
   type: TYPE_BOX
-  id: "main_game"
-  adjust_mode: ADJUST_MODE_STRETCH
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-  visible: false
-}
-nodes {
-  position {
-    y: 364.0
-  }
-  size {
-    x: 390.0
-    y: 50.0
-  }
-  color {
-    x: 0.6
-    y: 0.7019608
-  }
-  type: TYPE_BOX
-  id: "header"
-  yanchor: YANCHOR_TOP
-  adjust_mode: ADJUST_MODE_STRETCH
-  parent: "main_game"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 160.0
-  }
-  size {
-    x: 44.0
-    y: 44.0
-  }
-  color {
-    x: 0.3019608
-    y: 0.4
-    z: 0.8
-  }
-  type: TYPE_BOX
-  id: "quit_btn"
-  parent: "header"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -350.0
-  }
-  size {
-    x: 390.0
-    y: 80.0
-  }
-  color {
-    y: 0.8
-    z: 0.8
-  }
-  type: TYPE_BOX
-  id: "queue_panel"
-  yanchor: YANCHOR_TOP
-  adjust_mode: ADJUST_MODE_STRETCH
-  parent: "main_game"
-  inherit_alpha: true
-  alpha: 0.33
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 97.5
-  }
-  size {
-    x: 195.0
-    y: 80.0
-  }
-  color {
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_BOX
-  id: "box1"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -97.5
-  }
-  size {
-    x: 195.0
-    y: 80.0
-  }
-  color {
-    x: 0.6
-    y: 0.7019608
-  }
-  type: TYPE_BOX
-  id: "box2"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -170.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_1"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_1"
-  parent: "unit_icon_1"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_1"
-  line_break: true
-  parent: "unit_icon_1"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: -122.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_2"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_2"
-  parent: "unit_icon_2"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_2"
-  line_break: true
-  parent: "unit_icon_2"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: -74.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_3"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_3"
-  parent: "unit_icon_3"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_3"
-  line_break: true
-  parent: "unit_icon_3"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: -26.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_4"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_4"
-  parent: "unit_icon_4"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_4"
-  line_break: true
-  parent: "unit_icon_4"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: 26.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_5"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_5"
-  parent: "unit_icon_5"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_5"
-  line_break: true
-  parent: "unit_icon_5"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: 74.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_6"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_6"
-  parent: "unit_icon_6"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_6"
-  line_break: true
-  parent: "unit_icon_6"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: 122.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_7"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_7"
-  parent: "unit_icon_7"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_7"
-  line_break: true
-  parent: "unit_icon_7"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: 170.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_8"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 40.0
-    y: 40.0
-  }
-  type: TYPE_BOX
-  id: "ico_8"
-  parent: "unit_icon_8"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.2
-    y: 0.2
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_8"
-  line_break: true
-  parent: "unit_icon_8"
-  inherit_alpha: true
-}
-nodes {
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "<text>"
-  font: "druid_text_bold"
-  id: "turn_text"
-  parent: "main_game"
-  alpha: 0.0
-}
-nodes {
-  position {
-    x: 195.0
-    y: 390.0
-  }
-  size {
-    x: 390.0
-    y: 780.0
-  }
-  type: TYPE_BOX
   id: "lobby_screen"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
@@ -1371,6 +833,941 @@ nodes {
   font: "druid_text_bold"
   id: "prestige_txt2"
   parent: "almaz_block"
+}
+nodes {
+  position {
+    x: 195.0
+    y: 390.0
+  }
+  size {
+    x: 390.0
+    y: 780.0
+  }
+  type: TYPE_BOX
+  id: "main_game"
+  adjust_mode: ADJUST_MODE_STRETCH
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
+}
+nodes {
+  position {
+    y: 364.0
+  }
+  size {
+    x: 390.0
+    y: 50.0
+  }
+  color {
+    x: 0.6
+    y: 0.7019608
+  }
+  type: TYPE_BOX
+  id: "header"
+  yanchor: YANCHOR_TOP
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "main_game"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 160.0
+  }
+  size {
+    x: 44.0
+    y: 44.0
+  }
+  color {
+    x: 0.3019608
+    y: 0.4
+    z: 0.8
+  }
+  type: TYPE_BOX
+  id: "quit_btn"
+  parent: "header"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -350.0
+  }
+  size {
+    x: 390.0
+    y: 80.0
+  }
+  color {
+    y: 0.8
+    z: 0.8
+  }
+  type: TYPE_BOX
+  id: "queue_panel"
+  yanchor: YANCHOR_TOP
+  adjust_mode: ADJUST_MODE_STRETCH
+  parent: "main_game"
+  inherit_alpha: true
+  alpha: 0.33
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 97.5
+  }
+  size {
+    x: 195.0
+    y: 80.0
+  }
+  color {
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_BOX
+  id: "box1"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -97.5
+  }
+  size {
+    x: 195.0
+    y: 80.0
+  }
+  color {
+    x: 0.6
+    y: 0.7019608
+  }
+  type: TYPE_BOX
+  id: "box2"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -170.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_1"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_1"
+  parent: "unit_icon_1"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "10/120"
+  font: "druid_text_bold"
+  id: "unit_icon_text_1"
+  line_break: true
+  parent: "unit_icon_1"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -122.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_2"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_2"
+  parent: "unit_icon_2"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_2"
+  line_break: true
+  parent: "unit_icon_2"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -74.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_3"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_3"
+  parent: "unit_icon_3"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_3"
+  line_break: true
+  parent: "unit_icon_3"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -26.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_4"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_4"
+  parent: "unit_icon_4"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_4"
+  line_break: true
+  parent: "unit_icon_4"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 26.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_5"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_5"
+  parent: "unit_icon_5"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_5"
+  line_break: true
+  parent: "unit_icon_5"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 74.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_6"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_6"
+  parent: "unit_icon_6"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_6"
+  line_break: true
+  parent: "unit_icon_6"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 122.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_7"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_7"
+  parent: "unit_icon_7"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_7"
+  line_break: true
+  parent: "unit_icon_7"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 170.0
+  }
+  size {
+    x: 44.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_8"
+  parent: "queue_panel"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 10.0
+  }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  id: "ico_8"
+  parent: "unit_icon_8"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -22.0
+  }
+  scale {
+    x: 0.2
+    y: 0.2
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_icon_text_8"
+  line_break: true
+  parent: "unit_icon_8"
+  inherit_alpha: true
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "druid_text_bold"
+  id: "turn_text"
+  parent: "main_game"
+  alpha: 0.0
+}
+nodes {
+  size {
+    x: 390.0
+    y: 780.0
+  }
+  type: TYPE_BOX
+  id: "end_screen_panel"
+  parent: "main_game"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+  visible: false
+}
+nodes {
+  size {
+    x: 390.0
+    y: 512.0
+  }
+  type: TYPE_BOX
+  id: "end_screen"
+  parent: "end_screen_panel"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 200.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.4
+    z: 0.8
+  }
+  type: TYPE_TEXT
+  text: "Victory"
+  font: "druid_text_bold"
+  id: "end_screen_title"
+  pivot: PIVOT_N
+  outline {
+    x: 0.8
+    y: 0.8
+    z: 0.8
+  }
+  parent: "end_screen"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -50.0
+  }
+  size {
+    x: 200.0
+    y: 200.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.3019608
+    z: 0.101960786
+  }
+  type: TYPE_BOX
+  id: "chest_icon"
+  parent: "end_screen"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 50.0
+    y: 112.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  color {
+    y: 0.9019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "gold_award"
+  parent: "end_screen"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 54.0
+  }
+  scale {
+    x: 0.75
+    y: 0.75
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "50"
+  font: "druid_text_bold"
+  id: "gold_award_txt"
+  parent: "gold_award"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -82.0
+    y: 112.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  color {
+    y: 0.6
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "exp_award"
+  parent: "end_screen"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 54.0
+  }
+  scale {
+    x: 0.75
+    y: 0.75
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "50"
+  font: "druid_text_bold"
+  id: "exp_award_txt"
+  parent: "exp_award"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -200.0
+  }
+  size {
+    x: 128.0
+    y: 64.0
+  }
+  color {
+    x: 0.6
+    y: 0.7019608
+  }
+  type: TYPE_BOX
+  id: "end_match_btn"
+  parent: "end_screen"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 300.0
+    y: 200.0
+  }
+  color {
+    x: 0.4
+    y: 0.4
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "info_unit"
+  parent: "main_game"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+}
+nodes {
+  position {
+    x: -101.0
+    y: 46.0
+  }
+  size {
+    x: 80.0
+    y: 80.0
+  }
+  type: TYPE_BOX
+  id: "info_unit_icon"
+  parent: "info_unit"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -54.0
+    y: 68.0
+  }
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 200.0
+    y: 50.0
+  }
+  color {
+    z: 0.7019608
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "info_unit_name"
+  pivot: PIVOT_W
+  parent: "info_unit"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -54.0
+    y: 47.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 600.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "Wall: Heals ability_value HP after stopping.Wall: Heals ability_value HP after stopping."
+  font: "druid_text_bold"
+  id: "info_unit_description"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  line_break: true
+  parent: "info_unit"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -101.0
+    y: -26.0
+  }
+  size {
+    x: 80.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "box3"
+  parent: "info_unit"
+  inherit_alpha: true
+  alpha: 0.35
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -35.0
+    y: 22.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "100\n"
+  ""
+  font: "druid_text_bold"
+  id: "info_unit_hp_txt"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  parent: "box3"
+}
+nodes {
+  position {
+    x: -35.0
+    y: 7.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "20"
+  font: "druid_text_bold"
+  id: "info_unit_damage_txt"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  parent: "box3"
+}
+nodes {
+  position {
+    x: -35.0
+    y: -8.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "10"
+  font: "druid_text_bold"
+  id: "info_unit_speed_txt"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  parent: "box3"
+}
+nodes {
+  size {
+    x: 390.0
+    y: 780.0
+  }
+  type: TYPE_BOX
+  id: "info_overlay"
+  parent: "info_unit"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
+}
+nodes {
+  position {
+    x: 128.0
+    y: 78.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  type: TYPE_BOX
+  id: "close_info_unit_box_btn"
+  parent: "info_unit"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 200.0
+  }
+  type: TYPE_BOX
+  id: "info_bg"
+  parent: "info_unit"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  visible: false
 }
 nodes {
   position {

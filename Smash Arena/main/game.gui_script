@@ -1,6 +1,7 @@
 -- game.gui_script
 local state = require "main.state"
 local data = require "main.heroes_data"
+local unit_manager = require "main.unit_manager"
 -- Предполагаем, что здесь лежат данные игрока (инвентарь, уровни, текущая колода)
 -- Если модуля нет, создай его или используй глобальную таблицу для теста
 local player = {
@@ -17,6 +18,57 @@ local PADDING = 10
 --------------------------
 -- Утилитарные функции
 --------------------------
+local function hide_info_box(self)
+	gui.set_enabled(gui.get_node("info_unit"), false)
+end
+-- Функция заполнения окна данными (наш "Report Builder")
+local function show_info_box(self, hero_id, current_hp, max_hp, level)
+	local hero_base = data.heroes[hero_id]
+	local stats = data.get_stats(hero_id, level)
+
+	gui.set_enabled(gui.get_node("info_unit"), true)
+
+	-- Заполняем текстовые поля
+	gui.set_text(gui.get_node("info_unit_name"), data.get_name(hero_id, "ru"))
+	gui.set_text(gui.get_node("info_unit_description"), data.get_description(hero_id, "ru"))
+	gui.set_text(gui.get_node("info_unit_hp_txt"), "HP: " .. current_hp .. "/" .. max_hp)
+	gui.set_text(gui.get_node("info_unit_damage_txt"), "Урон: " .. stats.damage)
+	gui.set_text(gui.get_node("info_unit_speed_txt"), "Скорость: " .. (stats.speed or "Норм"))
+
+	-- Меняем иконку (предполагаем, что имя кадра в атласе совпадает с hero_id или прописано в data)
+--	gui.play_flipbook(gui.get_node("info_unit_icon"), hash("hero_" .. hero_id))
+end
+local function refresh_queue_panel(self)
+	-- Проходим по всем 8 слотам (4 игрока + 4 врага)
+	for i = 1, 8 do
+		local node_idx = i
+		local team_id = (i <= 4) and 1 or 2
+		local unit_idx = (i <= 4) and i or (i - 4)
+
+		-- Достаем ID юнита из менеджера
+		local unit_id = unit_manager.teams[team_id][unit_idx]
+		local icon_node = gui.get_node("unit_icon_" .. node_idx)
+		local text_node = gui.get_node("unit_icon_text_" .. node_idx)
+		-- Если у тебя есть узел для самой картинки внутри иконки:
+		local img_node = gui.get_node("ico_" .. node_idx) 
+
+		if unit_id and unit_manager.unit_data[unit_id] then
+			local data_cache = unit_manager.unit_data[unit_id]
+
+			gui.set_enabled(icon_node, true)
+
+			-- 1. Обновляем текст ХП
+			gui.set_text(text_node, data_cache.hp .. "/" .. data_cache.max_hp)
+
+			-- 2. Устанавливаем иконку героя (если еще не установлена)
+			-- Чтобы не дергать смену текстуры каждый кадр, можно добавить проверку
+		--	gui.play_flipbook(img_node, hash("hero_mini_" .. data_cache.hero_id))
+		else
+			-- Если юнита нет в этом слоте или он умер — скрываем иконку
+			gui.set_enabled(icon_node, false)
+		end
+	end
+end
 local function run_tutorial_logic(self)
 	if state.tutorial_step == 1 then
 		-- Показываем стрелку на кнопку "В БОЙ"
@@ -89,6 +141,7 @@ local function start_lobby_search(self)
 		print("Противник найден!")
 		show_screen(self, "main_game")
 		msg.post("main:/game_manager", "init_battle")
+		refresh_queue_panel(self)
 	end)
 end
 
@@ -107,7 +160,8 @@ function init(self)
 	show_screen(self, "main_menu")
 	show_tab(self, "tab_play")
 	gui.set_enabled(gui.get_node("info_box"), false)
-
+	hide_info_box(self)
+	self.active_hero_for_info = nil -- Храним, кого сейчас "инспектируем"
 	-- 2. Заполняем all_cards карточками из heroes_data
 	-- Внутри функции init(self)
 	local parent = gui.get_node("all_cards")
@@ -175,6 +229,41 @@ end
 
 function on_input(self, action_id, action)
 	if action_id == hash("touch") and action.pressed then
+		--Закрытие при клике на кнопку или на оверлей (мимо окошка)
+		if gui.is_enabled(gui.get_node("info_unit")) then
+			local info_bg = gui.get_node("info_bg")
+			local close_btn = gui.get_node("close_info_unit_box_btn")
+
+			if gui.pick_node(close_btn, action.x, action.y) or not gui.pick_node(info_bg, action.x, action.y) then
+				hide_info_box(self)
+				return true
+			end
+		end
+
+		-- Логика клика по иконкам очереди
+		for i = 1, 8 do
+			local node = gui.get_node("unit_icon_" .. i)
+			if gui.is_enabled(node) and gui.pick_node(node, action.x, action.y) then
+
+				local team_id = (i <= 4) and 1 or 2
+				local unit_idx = (i <= 4) and i or (i - 4)
+				local unit_id = unit_manager.teams[team_id][unit_idx]
+
+				-- Читаем из кэша unit_manager
+				local cached_data = unit_manager.unit_data[unit_id]
+
+				if cached_data then
+					show_info_box(self, 
+					cached_data.hero_id, 
+					cached_data.hp, 
+					cached_data.max_hp, 
+					cached_data.level
+				)
+			end
+			return true
+		end
+	end
+
 
 		-- А. НАВИГАЦИЯ МЕЖДУ ЭКРАНАМИ И ВКЛАДКАМИ
 		if gui.is_enabled(gui.get_node("tab_play")) and   gui.is_enabled(gui.get_node("main_menu"))then
@@ -249,7 +338,7 @@ function on_input(self, action_id, action)
 		end
 
 		-- Г. ЭКРАН РЕЗУЛЬТАТОВ
-		if gui.is_enabled(gui.get_node("show_end_screen")) then
+		if gui.is_enabled(gui.get_node("endgame_screen")) then
 			if gui.pick_node(gui.get_node("back_to_menu_btn"), action.x, action.y) then
 				show_screen(self, "main_menu")
 				return true

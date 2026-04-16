@@ -37,7 +37,11 @@ function init(self)
 	go.set("#outline", "tint.w", 0)
 	
 	-- 1. Регистрация в данных (Lua-модуль)
-	unit_manager.register_unit(go.get_id(), self.team_type)
+	unit_manager.register_unit(go.get_id(), 
+	self.team_type, 
+	self.hero_id, 
+	self.level or 1, 
+	self.current_hp)
 
 	-- 2. Цвета команд
 	if self.team_type == 1 then
@@ -206,6 +210,7 @@ function on_message(self, message_id, message, sender)
 				return
 			end
 			self.current_hp = self.current_hp - message.amount
+			unit_manager.update_hp(go.get_id(), self.current_hp)
 			update_hp_bar(self)
 			show_damage_fx(self, message.amount, false)
 

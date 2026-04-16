@@ -72,7 +72,10 @@ function M.get_stats(hero_id, level)
 		upgrade_cost = math.floor(prog.upgrade_cost_base * (prog.cost_multiplier ^ lvl_factor))
 	}
 end
-
+function M.get_description(hero_id, lang)
+	local hero = M.heroes[hero_id]
+	return hero and hero["desc_" .. (lang or "ru")] or "Описание отсутствует."
+end
 -- Получение имени
 function M.get_name(hero_id, lang)
 	lang = lang or "ru" -- По умолчанию русский, если не указан
