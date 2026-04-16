@@ -36,16 +36,16 @@ M.strings = {
 -- Характеристики героев
 -- Масса и Скорость - это множители для физики Defold
 M.heroes = {
-	[1] = { id = 1, rarity = 1 , name_key = "paladin_name", desc_key = "paladin_desc", hp = 110, damage = 15, mass = 2.5, speed_mult = 0.8,ability_value = 5, ability_method  = "heal_on_stop" },
-	[2] = { id = 2, rarity = 1 , name_key = "berserker_name", desc_key = "berserker_desc", hp = 124, damage = 22, mass = 1.2, speed_mult = 1.2,ability_value = 25, ability_method  = "rage_damage" },
-	[3] = { id = 3, rarity = 1 , name_key = "tank_name", desc_key = "tank_desc", hp = 158, damage = 12, mass = 5.0, speed_mult = 1.0 ,ability_value = 10, ability_method  = "heavy_impact" },
-	[4] = { id = 4, rarity = 2 , name_key = "reaper_name", desc_key = "reaper_desc", hp = 80, damage = 19, mass = 0.8, speed_mult = 1.4,ability_value = 20, ability_method  = "life_steal_kill" },
+	[1] = { id = 1, rarity = 1 , name_key = "paladin_name", desc_key = "paladin_desc", hp = 110, damage = 15, mass = 2.5, speed_mult = 1.1,ability_value = 5, ability_method  = "heal_on_stop" },
+	[2] = { id = 2, rarity = 1 , name_key = "berserker_name", desc_key = "berserker_desc", hp = 84, damage = 22, mass = 1.2, speed_mult = 1.3,ability_value = 25, ability_method  = "rage_damage" },
+	[3] = { id = 3, rarity = 1 , name_key = "tank_name", desc_key = "tank_desc", hp = 128, damage = 12, mass = 5.0, speed_mult = 1.0 ,ability_value = 10, ability_method  = "heavy_impact" },
+	[4] = { id = 4, rarity = 2 , name_key = "reaper_name", desc_key = "reaper_desc", hp = 60, damage = 19, mass = 0.8, speed_mult = 1.4,ability_value = 20, ability_method  = "life_steal_kill" },
 	[5] = { id = 5, rarity = 2 , name_key = "ice_mage_name", desc_key = "ice_mage_desc", hp = 75, damage = 14, mass = 1.1, speed_mult = 1.0,ability_value = 30, ability_method  = "freeze_hit" },
 	[6] = { id = 6, rarity = 2 , name_key = "bomber_name", desc_key = "bomber_desc", hp = 74, damage = 22, mass = 1.0, speed_mult = 1.1,ability_value = 50, ability_method  = "death_explosion" },
-	[7] = { id = 7, rarity = 2 , name_key = "monk_name", desc_key = "monk_desc", hp = 102, damage = 17, mass = 1.5, speed_mult = 1.3,ability_value = 10, ability_method  = "touch_heal" },
+	[7] = { id = 7, rarity = 2 , name_key = "monk_name", desc_key = "monk_desc", hp = 94, damage = 17, mass = 1.5, speed_mult = 1.3,ability_value = 10, ability_method  = "touch_heal" },
 	[8] = { id = 8, rarity = 3 , name_key = "vampire_name", desc_key = "vampire_desc", hp = 116, damage = 19, mass = 1.1, speed_mult = 1.2,ability_value = 30, ability_method  = "life_leech" },
-	[9] = { id = 9, rarity = 3 , name_key = "golem_name", desc_key = "golem_desc", hp = 138, damage = 14, mass = 8.0, speed_mult = 0.4,ability_value = 100, ability_method  = "stationary_shield" },
-	[10] = { id = 10, rarity = 3 , name_key = "wraith_name", desc_key = "wraith_desc", hp = 77, damage = 21, mass = 0.5, speed_mult = 1.5,ability_value = 25, ability_method  = "evasion" }
+	[9] = { id = 9, rarity = 3 , name_key = "golem_name", desc_key = "golem_desc", hp = 138, damage = 14, mass = 8.0, speed_mult = 1.2,ability_value = 100, ability_method  = "stationary_shield" },
+	[10] = { id = 10, rarity = 3 , name_key = "wraith_name", desc_key = "wraith_desc", hp = 57, damage = 21, mass = 0.5, speed_mult = 1.5,ability_value = 25, ability_method  = "evasion" }
 }
 
 -- Прогрессия (универсальные множители для всех для начала)

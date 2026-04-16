@@ -22,6 +22,7 @@ function init(self)
 	self.ability_value = base_data.ability_value
 	self.ability_method = base_data.ability_method
 	self.speed_multiplier = stats.speed
+	self.is_dead = false
 
 	self.is_moving = false
 	self.damage_dealt = false
@@ -30,7 +31,11 @@ function init(self)
 
 	-- Визуал HP
 	go.set("#hp_fill", "tint", vmath.vector4(1, 0.15, 0.15, 1))
-
+	
+	go.cancel_animations("#outline", "tint")
+	-- Уводим альфу в 0
+	go.set("#outline", "tint.w", 0)
+	
 	-- 1. Регистрация в данных (Lua-модуль)
 	unit_manager.register_unit(go.get_id(), self.team_type)
 
@@ -138,6 +143,9 @@ end
 function on_message(self, message_id, message, sender)
 	-- 1. Импульс от игрока или ИИ
 	if message_id == hash("apply_impulse") then
+		go.cancel_animations("#outline", "tint")
+		-- Уводим альфу в 0
+		go.set("#outline", "tint.w", 0)
 		self.stop_timer = 1
 		self.is_moving = true
 		self.damage_dealt = false
@@ -162,7 +170,7 @@ function on_message(self, message_id, message, sender)
 			local target_url = msg.url(nil, message.other_id, "unit")
 			local target_team = go.get(target_url, "team_type")
 
-			if target_team ~= self.team_type then
+			if target_team ~= self.team_type and state.current_team == self.team_type then
 				local final_damage = self.damage
 				-- УМЕНИЕ: Берсерк (Rage)
 				if self.ability_method == "rage_damage" and (self.current_hp / self.max_hp * 100) < self.ability_value then
@@ -220,5 +228,21 @@ function on_message(self, message_id, message, sender)
 		print("isfrozen")
 	elseif message_id == hash("heal") and state.current_team == self.team_type then
 		heal(self, message.amount)
+	
+elseif message_id == hash("heal_reaper") and state.current_team == self.team_type then
+	heal(self, self.ability_value)
+	-- В unit.script
+elseif message_id == hash("set_active") then
+	-- 1. Всегда отменяем старую анимацию, чтобы не плодить слои
+	go.cancel_animations("#outline", "tint")
+
+	if message.active then
+		-- ВКЛЮЧАЕМ МИГАНИЕ
+		go.set("#outline", "tint", vmath.vector4(0.84, 0.55, 0.75, 0.3))
+		go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.8, go.EASING_INOUTSINE, 1.0)
+	else
+		-- ВЫКЛЮЧАЕМ (прячем)
+		go.set("#outline", "tint.w", 0)
 	end
+end
 end

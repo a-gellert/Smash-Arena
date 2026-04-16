@@ -578,68 +578,6 @@ nodes {
   }
   color {
     x: 0.4
-    y: 0.5019608
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "tab_play"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -181.0
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_BOX
-  id: "btn_play"
-  parent: "tab_play"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Play"
-  font: "druid_text_bold"
-  id: "text"
-  parent: "btn_play"
-  inherit_alpha: true
-}
-nodes {
-  size {
-    x: 390.0
-    y: 640.0
-  }
-  color {
-    x: 0.7019608
-    y: 0.4
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "tab_settings"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 390.0
-    y: 640.0
-  }
-  color {
-    x: 0.4
     y: 0.6
     z: 0.4
   }
@@ -815,6 +753,37 @@ nodes {
   parent: "tab_inventory"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  id: "unit_card_icon"
+  parent: "unit_card_template"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -28.0
+    y: 28.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_TEXT
+  text: "11"
+  font: "druid_text_bold"
+  id: "unit_level"
+  parent: "unit_card_template"
+  inherit_alpha: true
 }
 nodes {
   position {
@@ -1101,6 +1070,68 @@ nodes {
   parent: "info_box"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 390.0
+    y: 640.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.4
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "tab_settings"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 390.0
+    y: 640.0
+  }
+  color {
+    x: 0.4
+    y: 0.5019608
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "tab_play"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -181.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_BOX
+  id: "btn_play"
+  parent: "tab_play"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Play"
+  font: "druid_text_bold"
+  id: "text"
+  parent: "btn_play"
+  inherit_alpha: true
 }
 nodes {
   position {

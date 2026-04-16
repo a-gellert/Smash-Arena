@@ -2,70 +2,128 @@
 local unit_manager = require "main.unit_manager"
 local state = require "main.state"
 
--- Приватная функция для ИИ внутри менеджера
-local function perform_ai_turn(self, ai_unit_id)
-	print("ИИ обдумывает ход для: " .. tostring(ai_unit_id))
+local function end_match(self, team_index)
+	state.has_unopened_chest = true
+	state.tutorial_step = 4 -- Переходим к этапу открытия сундука
+	msg.post("main:/loader", "show_screen", { screen = state.SCREEN_MENU })
+end
+local function open_chest(self)
+	if not state.has_unopened_chest then return end
 
+	-- Имитация "базы данных" наград
+	local rewards = {
+		{ type = "gold", amount = 100 },
+		{ type = "card", id = 4, amount = 5 } -- Даем карточки Жнеца
+	}
+
+	-- Поочередно показываем награды (можно через таймер или клик)
+	for i, reward in ipairs(rewards) do
+		timer.delay(i * 0.5, false, function()
+			show_reward_popup(reward) 
+			if reward.type == "gold" then state.gold = state.gold + reward.amount end
+			if reward.type == "card" then state.add_cards(reward.id, reward.amount) end
+		end)
+	end
+
+	state.has_unopened_chest = false
+	state.tutorial_step = 5 -- Теперь отправляем в инвентарь
+	state.save()
+end
+
+local function perform_ai_turn(self, ai_unit_id)
 	local player_units = unit_manager.teams[1]
 	if #player_units == 0 then return end
 
-	-- Выбираем цель и считаем вектор
-	local target_unit_id = player_units[math.random(1, #player_units)]
+	-- Очищаем все старые таймеры этого хода (если есть такая возможность)
+	-- Или просто гарантируем, что новая итерация не конфликтует
 
-	-- Проверка на существование объектов перед расчетом
+	local target_unit_id = player_units[math.random(1, #player_units)]
 	if not go.exists(ai_unit_id) or not go.exists(target_unit_id) then return end
 
 	local ai_pos = go.get_world_position(ai_unit_id)
 	local target_pos = go.get_world_position(target_unit_id)
-	local direction = target_pos - ai_pos
+	local final_dir = vmath.normalize(target_pos - ai_pos)
 
-	if vmath.length(direction) > 0 then
-		local impulse_vector = vmath.normalize(direction)
+	-- Эффект "сомнения" ИИ
+	local start_angle = math.atan2(final_dir.y, final_dir.x) + (math.random() - 0.5) * 2.0 
 
-		timer.delay(1.2, false, function()
-			print("ИИ стреляет!")
-			msg.post(ai_unit_id, "apply_impulse", { vector = impulse_vector })
+	local steps = 15 -- Фиксируем шаги для предсказуемости
+	for i = 1, steps do
+		timer.delay(i * 0.05, false, function()
+			if not go.exists(ai_unit_id) then return end
+			local ratio = i / steps
+			local current_angle = start_angle + (math.atan2(final_dir.y, final_dir.x) - start_angle) * ratio
+			local current_dir = vmath.vector3(math.cos(current_angle), math.sin(current_angle), 0)
+
+			msg.post("main:/input_manager", "draw_prediction", { 
+				from = go.get_world_position(ai_unit_id), 
+				dir = current_dir 
+			})
 		end)
 	end
-end
 
+	-- ЛОГИКА "ПЕРЕДУМЫВАНИЯ"
+	-- Вместо рекурсии, делаем отложенную проверку
+	local delay_before_shot = steps * 0.05 + 0.4
+
+	timer.delay(delay_before_shot, false, function()
+		if not go.exists(ai_unit_id) then return end
+
+		-- Шанс, что ИИ выберет другую цель, если у него остались попытки
+		if math.random(1, 10) < 4 and self.steps_to_next_enemy > 0 then
+			self.steps_to_next_enemy = self.steps_to_next_enemy - 1
+			print("ИИ передумал! Выбирает новую цель...")
+			perform_ai_turn(self, ai_unit_id) -- Вот теперь рекурсия безопасна, т.к. таймеры выше закончились
+		else
+			-- ВЫСТРЕЛ
+			print("ИИ стреляет!")
+			msg.post("main:/input_manager", "clear_prediction")
+			msg.post(ai_unit_id, "apply_impulse", { vector = final_dir })
+		end
+	end)
+end
 local function activate_next_unit(self)
 	local team_id = state.current_team
 	local team = unit_manager.teams[team_id]
 
-	-- Если в команде никого нет, пробуем сменить ход
 	if #team == 0 then
-		state.switch_turn()
-		-- Если и во второй команде никого, значит игра окончена
-		if #unit_manager.teams[state.current_team] == 0 then
-			print("ВСЕ ЮНИТЫ УНИЧТОЖЕНЫ")
-			return 
+		-- Команда полностью уничтожена
+		if team_id == 1 then
+			print("ПОРАЖЕНИЕ")
+			msg.post("/gui#game", "show_end_screen", { victory = false })
+		else
+			print("ПОБЕДА")
+			msg.post("/gui#game", "show_end_screen", { victory = true })
 		end
-		return activate_next_unit(self)
+		return
+	end
+
+	-- СБРОС: Выключаем подсветку у ВСЕЙ команды перед тем как выбрать нового
+	for _, unit_id in ipairs(team) do
+		msg.post(unit_id, "set_active", { active = false })
 	end
 
 	local idx = unit_manager.team_indices[team_id]
-	if idx > #team then idx = 1 end -- Защита от выхода за границы после смерти юнита
+	if idx > #team then idx = 1 end 
 
 	local next_unit = team[idx]
 
 	if next_unit then
-		print("--- ХОД КОМАНДЫ " .. team_id .. " (Юнит: " .. tostring(next_unit) .. ") ---")
-
 		if team_id == 1 then
-			-- Ход игрока
 			msg.post("main:/input_manager", "set_target", { id = next_unit })
+			-- ВКЛЮЧАЕМ подсветку конкретно этому юниту
+			msg.post(next_unit, "set_active", { active = true })
 		else
-			-- Ход ИИ
 			msg.post("main:/input_manager", "set_target", { id = nil })
+			self.steps_to_next_enemy = 3
 			perform_ai_turn(self, next_unit)
+			-- Для ИИ тоже можно включить, чтобы игрок видел, кто сейчас будет ходить
+			msg.post(next_unit, "set_active", { active = true })
 		end
 
-		-- Обновляем индекс для следующего раза
 		unit_manager.team_indices[team_id] = (idx % #team) + 1
 	end
 end
-
 function init(self)
 	math.randomseed(os.time())
 	self.screen_w = sys.get_config_int("display.width", 390)
@@ -77,6 +135,7 @@ local function check_and_switch(self)
 		state.switch_turn()
 		msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
 		activate_next_unit(self)
+		
 	else
 		-- Кто-то еще катится, проверяем снова через 0.2 сек
 		timer.delay(0.2, false, check_and_switch)
@@ -121,15 +180,12 @@ function on_message(self, message_id, message, sender)
 
 		-- 1. Проверяем, что убийца — это существующий юнит
 		-- Используем pcall, чтобы игра не вылетала, если killer_url не имеет скрипта "unit"
-		local ok, ability = pcall(go.get, killer_url, "ability_method")
-
-		if ok and ability == "life_steal_kill" then
-			-- 2. Если это Жнец, вытягиваем значение лечения
-			local heal_val = go.get(killer_url, "ability_value")
-
+		local ok, id = pcall(go.get, killer_url, "hero_id")
+		
+		if ok and id == 4 then
+			
 			-- 3. Отправляем сообщение о лечении
-			msg.post(killer_url, "heal", { amount = heal_val })
-			print("Жатва: Жнец вылечен на " .. heal_val)
+			msg.post(killer_url, "heal_reaper")
 		end
 
 		-- Стандартная очистка

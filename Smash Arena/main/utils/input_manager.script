@@ -153,4 +153,16 @@ function on_message(self, message_id, message, sender)
 		self.target_id = message.id
 		self.is_active = (self.target_id ~= nil)
 	end
+	if message_id == hash("draw_prediction") then
+		-- Бот просит отрисовать линию. 
+		-- message.from - откуда, message.dir - куда
+		update_prediction(self, message.from, message.dir)
+
+	elseif message_id == hash("clear_prediction") then
+		-- Бот закончил и просит убрать линии
+		msg.post(self.line_id, "disable")
+		msg.post(self.ghost_id, "disable")
+		msg.post(self.line_left_id, "disable")
+		msg.post(self.line_right_id, "disable")
+	end
 end

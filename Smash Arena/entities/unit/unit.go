@@ -65,6 +65,9 @@ embedded_components {
   "  texture: \"/druid/druid.atlas\"\n"
   "}\n"
   ""
+  position {
+    z: 0.1
+  }
   scale {
     x: 1.5
     y: 1.5
@@ -135,5 +138,20 @@ embedded_components {
   scale {
     x: 0.3
     y: 0.3
+  }
+}
+embedded_components {
+  id: "outline"
+  type: "sprite"
+  data: "default_animation: \"ui_circle_64\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/druid/druid.atlas\"\n"
+  "}\n"
+  ""
+  scale {
+    x: 0.9
+    y: 0.9
   }
 }

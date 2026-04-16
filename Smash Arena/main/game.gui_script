@@ -1,4 +1,5 @@
 -- game.gui_script
+local state = require "main.state"
 local data = require "main.heroes_data"
 -- Предполагаем, что здесь лежат данные игрока (инвентарь, уровни, текущая колода)
 -- Если модуля нет, создай его или используй глобальную таблицу для теста
@@ -16,6 +17,20 @@ local PADDING = 10
 --------------------------
 -- Утилитарные функции
 --------------------------
+local function run_tutorial_logic(self)
+	if state.tutorial_step == 1 then
+		-- Показываем стрелку на кнопку "В БОЙ"
+		gui.set_visible(self.tutorial_arrow, true)
+		gui.set_position(self.tutorial_arrow, gui.get_position(self.btn_start_battle))
+		gui.set_text(self.tutorial_label, "Это твоя команда. Пора в бой!")
+	elseif state.tutorial_step == 4 then
+		-- Подсказка на сундук в главном меню
+		gui.set_visible(self.tutorial_arrow, true)
+		gui.set_position(self.tutorial_arrow, gui.get_position(self.chest_node))
+		gui.set_text(self.tutorial_label, "Смотри, ты заработал трофей!")
+	end
+end
+
 
 local function show_screen(self, screen_name)
 	local screens = { "main_menu", "lobby_screen", "main_game", "endgame_screen" }
@@ -234,7 +249,7 @@ function on_input(self, action_id, action)
 		end
 
 		-- Г. ЭКРАН РЕЗУЛЬТАТОВ
-		if gui.is_enabled(gui.get_node("endgame_screen")) then
+		if gui.is_enabled(gui.get_node("show_end_screen")) then
 			if gui.pick_node(gui.get_node("back_to_menu_btn"), action.x, action.y) then
 				show_screen(self, "main_menu")
 				return true
