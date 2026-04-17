@@ -40,21 +40,32 @@ function M.remove_unit(id, team)
 				M.team_indices[team] = M.team_indices[team] - 1
 			end
 			break
-		end
+		end 
 	end
 	M.all_units[id] = nil
 	M.unit_data[id] = nil -- Чистим кэш при смерти
 end
-
+function M.get_id_by_index(index)
+	--return M.all_units[index]
+	if index <= 4 then
+		-- Ищем в команде игрока (индексы 1, 2, 3, 4)
+		return M.teams[1][index]
+	else
+		-- Ищем в команде врага (индексы 5, 6, 7, 8 -> превращаем в 1, 2, 3, 4)
+		return M.teams[2][index - 4]
+	end
+end
 function M.is_everyone_stopped()
 	for id, _ in pairs(M.all_units) do
 		local ok, vel = pcall(go.get, msg.url(nil, id, "collisionobject"), "linear_velocity")
 		if ok and vmath.length(vel) > 0.1 then 
 			M.all_stoped = false
-		end
+		
+		else
+			M.all_stoped = true
 	end
-	M.all_stoped = true
-	return M.all_stoped 
+end
+return M.all_stoped 
 end
 
 return M

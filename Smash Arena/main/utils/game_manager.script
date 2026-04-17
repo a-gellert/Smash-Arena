@@ -153,7 +153,7 @@ function on_message(self, message_id, message, sender)
 
 		for i = 1, 4 do
 			local p_id = factory.create("#unit_factory", vmath.vector3(padding_x * i - 128, player_y, 0), nil, { team_type = 1, hero_id = state.active_deck[i] })
-			-- Регистрация происходит автоматически в unit.script через unit_manager.register_unit
+			
 		end
 
 		for i = 1, 4 do

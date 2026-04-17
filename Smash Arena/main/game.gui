@@ -953,8 +953,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_1"
@@ -980,17 +981,26 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
   }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
   type: TYPE_TEXT
   text: "10/120"
   font: "druid_text_bold"
   id: "unit_icon_text_1"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_1"
   inherit_alpha: true
@@ -1004,8 +1014,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_2"
@@ -1031,18 +1042,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_2"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_2"
   inherit_alpha: true
@@ -1056,8 +1076,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_3"
@@ -1083,18 +1104,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_3"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_3"
   inherit_alpha: true
@@ -1108,8 +1138,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_4"
@@ -1135,18 +1166,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_4"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_4"
   inherit_alpha: true
@@ -1160,8 +1200,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_5"
@@ -1187,18 +1228,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_5"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_5"
   inherit_alpha: true
@@ -1212,8 +1262,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_6"
@@ -1239,18 +1290,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_6"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_6"
   inherit_alpha: true
@@ -1264,8 +1324,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_7"
@@ -1291,18 +1352,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_7"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_7"
   inherit_alpha: true
@@ -1316,8 +1386,9 @@ nodes {
     y: 64.0
   }
   color {
-    y: 0.8
-    z: 0.9019608
+    x: 0.2835163
+    y: 0.2743718
+    z: 0.5532787
   }
   type: TYPE_BOX
   id: "unit_icon_8"
@@ -1343,18 +1414,27 @@ nodes {
     y: -22.0
   }
   scale {
-    x: 0.2
-    y: 0.2
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
   ""
   font: "druid_text_bold"
   id: "unit_icon_text_8"
+  outline {
+    x: 0.2
+    y: 0.2
+    z: 0.2
+  }
   line_break: true
   parent: "unit_icon_8"
   inherit_alpha: true

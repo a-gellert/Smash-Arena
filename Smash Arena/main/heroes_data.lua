@@ -72,15 +72,30 @@ function M.get_stats(hero_id, level)
 		upgrade_cost = math.floor(prog.upgrade_cost_base * (prog.cost_multiplier ^ lvl_factor))
 	}
 end
+local function format_text(text, value)
+	if not text then return "" end
+	-- Заменяем слово ability_value на реальное число из характеристик героя
+	return string.gsub(text, "ability_value", tostring(value))
+end
+
 function M.get_description(hero_id, lang)
+	lang = lang or "ru"
 	local hero = M.heroes[hero_id]
-	return hero and M.strings[hero_id]["ru"] or "Описание отсутствует."
+
+	if hero and M.strings[hero.desc_key] then
+		local raw_text = M.strings[hero.desc_key][lang]
+		-- Подставляем числовое значение способности в текст
+		return format_text(raw_text, hero.ability_value)
+	end
+
+	return "Описание отсутствует."
 end
 -- Получение имени
 function M.get_name(hero_id, lang)
+	
 	lang = lang or "ru" -- По умолчанию русский, если не указан
 	local hero = M.heroes[hero_id]
-
+	print(hero.name_key)
 	if hero and hero.name_key then
 		local string_entry = M.strings[hero.name_key]
 		return string_entry and string_entry[lang] or "Unknown"
