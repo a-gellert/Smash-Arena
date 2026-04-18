@@ -43,7 +43,7 @@ function M.remove_unit(id, team)
 		end 
 	end
 	M.all_units[id] = nil
-	M.unit_data[id] = nil -- Чистим кэш при смерти
+	--M.unit_data[id] = nil -- Чистим кэш при смерти
 end
 function M.get_id_by_index(index)
 	--return M.all_units[index]
