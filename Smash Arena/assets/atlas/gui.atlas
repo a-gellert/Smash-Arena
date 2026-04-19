@@ -5,4 +5,8 @@ images {
   image: "/assets/sprites/pixel_copy.png"
   pivot_x: 0.0
 }
+images {
+  image: "/assets/sprites/hp_bar.png"
+  pivot_x: 0.0
+}
 extrude_borders: 2

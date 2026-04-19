@@ -22,7 +22,7 @@ embedded_instances {
   "    count: 3\\n"
   "  }\\n"
   "  data: 10.0\\n"
-  "  data: 256.0\\n"
+  "  data: 310.0\\n"
   "  data: 10.0\\n"
   "}\\n"
   "\"\n"
@@ -43,12 +43,12 @@ embedded_instances {
   "\"\n"
   "  scale {\n"
   "    x: 2.0\n"
-  "    y: 50.0\n"
+  "    y: 60.0\n"
   "  }\n"
   "}\n"
   ""
   position {
-    x: -128.0
+    x: -165.0
   }
 }
 embedded_instances {
@@ -73,7 +73,7 @@ embedded_instances {
   "    count: 3\\n"
   "  }\\n"
   "  data: 10.0\\n"
-  "  data: 256.0\\n"
+  "  data: 310.0\\n"
   "  data: 10.0\\n"
   "}\\n"
   "\"\n"
@@ -94,12 +94,12 @@ embedded_instances {
   "\"\n"
   "  scale {\n"
   "    x: 2.0\n"
-  "    y: 50.0\n"
+  "    y: 60.0\n"
   "  }\n"
   "}\n"
   ""
   position {
-    x: 128.0
+    x: 165.0
   }
 }
 embedded_instances {
@@ -146,7 +146,10 @@ embedded_instances {
   "}\n"
   ""
   position {
-    y: -256.0
+    y: -290.0
+  }
+  scale3 {
+    x: 1.5
   }
 }
 embedded_instances {
@@ -197,6 +200,9 @@ embedded_instances {
   "}\n"
   ""
   position {
-    y: 256.0
+    y: 290.0
+  }
+  scale3 {
+    x: 1.5
   }
 }

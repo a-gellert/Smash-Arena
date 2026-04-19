@@ -30,7 +30,7 @@ function init(self)
 	self.is_frozen = false
 
 	-- Визуал HP
-	go.set("#hp_fill", "tint", vmath.vector4(1, 0.15, 0.15, 1))
+--	go.set("#hp_fill", "tint", vmath.vector4(1, 0.15, 0.15, 1))
 	
 	go.cancel_animations("#outline", "tint")
 	-- Уводим альфу в 0
@@ -55,7 +55,7 @@ end
 
 local function update_hp_bar(self)
 	local quota = math.max(0, self.current_hp / self.max_hp)
-	go.set("#hp_fill", "scale.x", 31 * quota)
+	go.set("#hp_fill", "scale.x",  quota * 4)
 end
 
 local function show_damage_fx(self, amount, is_heal)

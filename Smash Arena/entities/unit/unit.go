@@ -41,12 +41,12 @@ embedded_components {
   ""
   position {
     x: -20.0
-    y: 32.0
+    y: 35.0
     z: 0.5
   }
   scale {
-    x: 40.0
-    y: 7.0
+    x: 38.0
+    y: 10.0
   }
 }
 embedded_components {
@@ -76,7 +76,7 @@ embedded_components {
 embedded_components {
   id: "hp_fill"
   type: "sprite"
-  data: "default_animation: \"pixel_copy\"\n"
+  data: "default_animation: \"hp_bar\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 4.0\n"
@@ -89,12 +89,11 @@ embedded_components {
   ""
   position {
     x: -19.0
-    y: 32.0
+    y: 35.0
     z: 0.6
   }
   scale {
-    x: 38.0
-    y: 5.0
+    x: 4.5
   }
 }
 embedded_components {

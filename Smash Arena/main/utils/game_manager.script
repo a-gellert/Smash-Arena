@@ -59,9 +59,18 @@ local function perform_ai_turn(self, ai_unit_id)
 	if not go.exists(ai_unit_id) or not go.exists(target_unit_id) then return end
 
 	local ai_pos = go.get_world_position(ai_unit_id)
-	local target_pos = go.get_world_position(target_unit_id)*math.random(-1.05, 1.05)
-	local final_dir = vmath.normalize(target_pos - ai_pos)
+	local target_pos = go.get_world_position(target_unit_id)
 
+	-- Добавляем разброс в пределах 40 пикселей в любую сторону
+	local error_margin = 10 
+	local offset = vmath.vector3(
+	math.random(-error_margin, error_margin), 
+	math.random(-error_margin, error_margin), 
+	0
+)
+
+local messy_target = target_pos + offset
+local final_dir = vmath.normalize(messy_target - ai_pos)
 	-- Эффект "сомнения" ИИ
 	local start_angle = math.atan2(final_dir.y, final_dir.x) + (math.random() - 0.5) * 2.0 
 
@@ -169,10 +178,10 @@ function on_message(self, message_id, message, sender)
 		local player_y = -150
 		local enemy_y = 150
 		local formation_offsets = {
-			[1] = { x = -80, y = 0 },   -- Левый задний (широко)
-			[2] = { x = -50,  y = 60 },  -- Левый передний (узко)
-			[3] = { x = 50,   y = 60 },  -- Правый передний (узко)
-			[4] = { x = 89,  y = 0 }    -- Правый задний (широко)
+			[1] = { x = math.random(-130, -25), y = math.random(-10, 30) },   -- Левый задний (широко)
+			[2] = { x = math.random(-60, -25),  y = math.random(50, 100) },  -- Левый передний (узко)
+			[3] = { x = math.random(25, 60),   y = math.random(50, 100) },  -- Правый передний (узко)
+			[4] = { x = math.random(25, 130),  y = math.random(-10, 30) }    -- Правый задний (широко)
 		}
 			for i = 1, 4 do
 				local offset = formation_offsets[i]

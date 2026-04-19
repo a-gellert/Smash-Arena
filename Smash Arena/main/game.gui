@@ -567,7 +567,7 @@ nodes {
 }
 nodes {
   position {
-    y: -181.0
+    y: -100.0
   }
   size {
     x: 200.0
@@ -594,6 +594,97 @@ nodes {
   id: "text"
   parent: "btn_play"
   inherit_alpha: true
+}
+nodes {
+  position {
+    y: -240.0
+  }
+  size {
+    x: 390.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "chest_container"
+  parent: "tab_play"
+  inherit_alpha: true
+  alpha: 0.42
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -140.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_1"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -47.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_2"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 47.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_3"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 140.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_4"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {

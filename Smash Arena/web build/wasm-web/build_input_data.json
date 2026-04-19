@@ -1,0 +1,21 @@
+{
+  "bob_arguments" : {
+    "sha1" : "0ad9c86fa0a9f7ac19bc468b1a67ee06bb2578b5",
+    "version" : "1.12.3",
+    "timestamp" : "2026-04-09 14:26:02"
+  },
+  "defold_sdk" : "0ad9c86fa0a9f7ac19bc468b1a67ee06bb2578b5",
+  "dependencies" : [ {
+    "link" : "https://github.com/Insality/defold-event/archive/refs/tags/14.zip",
+    "md5" : "B190CE34AA698356B1394D72D9C2389F"
+  }, {
+    "link" : "https://github.com/rgrams/rendercam/archive/1.0.3.zip",
+    "md5" : "B26EF84FD8F6E97C55E01D9FA0CA3F7E"
+  }, {
+    "link" : "https://github.com/Playgama/bridge-defold/archive/refs/tags/v1.29.0.zip",
+    "md5" : "CE24C9390372946992B14A42C65E64E8"
+  }, {
+    "link" : "https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip",
+    "md5" : "313180148EBBA14F66072972375D837C"
+  } ]
+}

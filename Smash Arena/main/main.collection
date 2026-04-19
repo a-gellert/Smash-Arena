@@ -1,15 +1,46 @@
 name: "main"
 instances {
-  id: "camera"
-  prototype: "/orthographic/camera.go"
-}
-instances {
   id: "prediction_ghost"
   prototype: "/entities/prediction/prediction.go"
+}
+instances {
+  id: "camera"
+  prototype: "/rendercam/camera.go"
+  component_properties {
+    id: "script"
+    properties {
+      id: "fixedAspectRatio"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+    properties {
+      id: "aspectRatio"
+      value: "1.0, 2.0, 0.0"
+      type: PROPERTY_TYPE_VECTOR3
+    }
+    properties {
+      id: "useViewArea"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+    properties {
+      id: "viewArea"
+      value: "390.0, 780.0, 0.0"
+      type: PROPERTY_TYPE_VECTOR3
+    }
+    properties {
+      id: "fixedHeight"
+      value: "false"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
 }
 collection_instances {
   id: "arena"
   collection: "/entities/arena/arena.collection"
+  position {
+    y: 10.0
+  }
   scale3 {
     x: 1.1
     y: 1.1

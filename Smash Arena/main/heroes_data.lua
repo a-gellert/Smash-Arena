@@ -36,10 +36,10 @@ M.strings = {
 -- Характеристики героев
 -- Масса и Скорость - это множители для физики Defold
 M.heroes = {
-	[1] = { id = 1, rarity = 1 , name_key = "paladin_name", desc_key = "paladin_desc", hp = 110, damage = 151, mass = 2.5, speed_mult = 1.1,ability_value = 5, ability_method  = "heal_on_stop" },
-	[2] = { id = 2, rarity = 1 , name_key = "berserker_name", desc_key = "berserker_desc", hp = 84, damage = 221, mass = 1.2, speed_mult = 1.3,ability_value = 25, ability_method  = "rage_damage" },
-	[3] = { id = 3, rarity = 1 , name_key = "tank_name", desc_key = "tank_desc", hp = 128, damage = 121, mass = 5.0, speed_mult = 1.0 ,ability_value = 10, ability_method  = "heavy_impact" },
-	[4] = { id = 4, rarity = 2 , name_key = "reaper_name", desc_key = "reaper_desc", hp = 60, damage = 191, mass = 0.8, speed_mult = 1.4,ability_value = 20, ability_method  = "life_steal_kill" },
+	[1] = { id = 1, rarity = 1 , name_key = "paladin_name", desc_key = "paladin_desc", hp = 110, damage = 15, mass = 2.5, speed_mult = 1.1,ability_value = 5, ability_method  = "heal_on_stop" },
+	[2] = { id = 2, rarity = 1 , name_key = "berserker_name", desc_key = "berserker_desc", hp = 84, damage = 22, mass = 1.2, speed_mult = 1.3,ability_value = 25, ability_method  = "rage_damage" },
+	[3] = { id = 3, rarity = 1 , name_key = "tank_name", desc_key = "tank_desc", hp = 128, damage = 12, mass = 5.0, speed_mult = 1.0 ,ability_value = 10, ability_method  = "heavy_impact" },
+	[4] = { id = 4, rarity = 2 , name_key = "reaper_name", desc_key = "reaper_desc", hp = 60, damage = 19, mass = 0.8, speed_mult = 1.4,ability_value = 20, ability_method  = "life_steal_kill" },
 	[5] = { id = 5, rarity = 2 , name_key = "ice_mage_name", desc_key = "ice_mage_desc", hp = 75, damage = 14, mass = 1.1, speed_mult = 1.0,ability_value = 30, ability_method  = "freeze_hit" },
 	[6] = { id = 6, rarity = 2 , name_key = "bomber_name", desc_key = "bomber_desc", hp = 74, damage = 22, mass = 1.0, speed_mult = 1.1,ability_value = 50, ability_method  = "death_explosion" },
 	[7] = { id = 7, rarity = 2 , name_key = "monk_name", desc_key = "monk_desc", hp = 94, damage = 17, mass = 1.5, speed_mult = 1.3,ability_value = 10, ability_method  = "touch_heal" },
