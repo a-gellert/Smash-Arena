@@ -56,6 +56,17 @@ M.progression_default = {
 	dmg_multiplier = 1.12
 }
 
+--heroes_data.lua
+function M.can_upgrade(hero_id, current_level, player_gold, player_cards)
+	local stats = M.get_stats(hero_id, current_level)
+	local cards_required = current_level * 5 -- Например, нужно 5, 10, 15... карточек
+
+	if player_gold >= stats.upgrade_cost and player_cards >= cards_required then
+		return true, stats.upgrade_cost, cards_required
+	else
+		return false, stats.upgrade_cost, cards_required
+	end
+end
 -- Получение данных с расчетом уровня
 function M.get_stats(hero_id, level)
 	local base = M.heroes[hero_id]

@@ -28,913 +28,6 @@ nodes {
     y: 780.0
   }
   type: TYPE_BOX
-  id: "main_menu"
-  adjust_mode: ADJUST_MODE_STRETCH
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 390.0
-    y: 640.0
-  }
-  color {
-    x: 0.4
-    y: 0.6
-    z: 0.4
-  }
-  type: TYPE_BOX
-  id: "tab_inventory"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 208.0
-  }
-  size {
-    x: 360.0
-    y: 90.0
-  }
-  type: TYPE_BOX
-  id: "active_cards"
-  parent: "tab_inventory"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -128.0
-  }
-  size {
-    x: 32.0
-    y: 32.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "active_slot_1"
-  parent: "active_cards"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -32.0
-  }
-  size {
-    x: 32.0
-    y: 32.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "active_slot_2"
-  parent: "active_cards"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 70.0
-  }
-  size {
-    x: 32.0
-    y: 32.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "active_slot_3"
-  parent: "active_cards"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 128.0
-  }
-  size {
-    x: 32.0
-    y: 32.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "active_slot_4"
-  parent: "active_cards"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 278.0
-  }
-  scale {
-    x: 0.8
-    y: 0.8
-  }
-  size {
-    x: 200.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "My Deck"
-  font: "druid_text_bold"
-  id: "my_deck_txt"
-  parent: "tab_inventory"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    y: -120.0
-  }
-  size {
-    x: 360.0
-    y: 360.0
-  }
-  type: TYPE_BOX
-  id: "all_cards"
-  parent: "tab_inventory"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 85.0
-  }
-  scale {
-    x: 0.8
-    y: 0.8
-  }
-  size {
-    x: 200.0
-    y: 64.0
-  }
-  color {
-    y: 0.8
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "All Cards"
-  font: "druid_text_bold"
-  id: "all_cards_txt"
-  parent: "tab_inventory"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: -2000.0
-  }
-  size {
-    x: 80.0
-    y: 80.0
-  }
-  color {
-    z: 0.8
-  }
-  type: TYPE_BOX
-  id: "unit_card_template"
-  parent: "tab_inventory"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 64.0
-    y: 64.0
-  }
-  type: TYPE_BOX
-  id: "unit_card_icon"
-  parent: "unit_card_template"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -28.0
-    y: 28.0
-  }
-  scale {
-    x: 0.5
-    y: 0.5
-  }
-  size {
-    x: 50.0
-    y: 50.0
-  }
-  type: TYPE_TEXT
-  text: "11"
-  font: "druid_text_bold"
-  id: "unit_level"
-  parent: "unit_card_template"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    y: 180.0
-  }
-  size {
-    x: 300.0
-    y: 200.0
-  }
-  color {
-    x: 0.4
-    y: 0.4
-    z: 0.4
-  }
-  type: TYPE_BOX
-  id: "info_box"
-  parent: "tab_inventory"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -101.0
-    y: 46.0
-  }
-  size {
-    x: 80.0
-    y: 80.0
-  }
-  type: TYPE_BOX
-  id: "unit_icon"
-  parent: "info_box"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -54.0
-    y: 68.0
-  }
-  scale {
-    x: 0.7
-    y: 0.7
-  }
-  size {
-    x: 200.0
-    y: 50.0
-  }
-  color {
-    z: 0.7019608
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_name"
-  pivot: PIVOT_W
-  parent: "info_box"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: -54.0
-    y: 47.0
-  }
-  scale {
-    x: 0.3
-    y: 0.3
-  }
-  size {
-    x: 600.0
-    y: 50.0
-  }
-  color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_TEXT
-  text: "Wall: Heals ability_value HP after stopping.Wall: Heals ability_value HP after stopping."
-  font: "druid_text_bold"
-  id: "unit_description"
-  pivot: PIVOT_NW
-  outline {
-    x: 0.101960786
-    y: 0.3019608
-    z: 0.3019608
-  }
-  line_break: true
-  parent: "info_box"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    x: 29.0
-    y: -20.0
-  }
-  size {
-    x: 160.0
-    y: 20.0
-  }
-  type: TYPE_BOX
-  id: "back_exp_fill"
-  parent: "info_box"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -78.0
-  }
-  size {
-    x: 156.0
-    y: 18.0
-  }
-  color {
-    x: 0.5019608
-    y: 0.7019608
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "fore_exp_fill"
-  pivot: PIVOT_W
-  parent: "back_exp_fill"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -101.0
-    y: -26.0
-  }
-  size {
-    x: 80.0
-    y: 50.0
-  }
-  type: TYPE_BOX
-  id: "box"
-  parent: "info_box"
-  inherit_alpha: true
-  alpha: 0.35
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -35.0
-    y: 22.0
-  }
-  scale {
-    x: 0.3
-    y: 0.3
-  }
-  size {
-    x: 100.0
-    y: 50.0
-  }
-  color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_TEXT
-  text: "100\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_hp_txt"
-  pivot: PIVOT_NW
-  outline {
-    x: 0.101960786
-    y: 0.3019608
-    z: 0.3019608
-  }
-  parent: "box"
-}
-nodes {
-  position {
-    x: -35.0
-    y: 7.0
-  }
-  scale {
-    x: 0.3
-    y: 0.3
-  }
-  size {
-    x: 100.0
-    y: 50.0
-  }
-  color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_TEXT
-  text: "20"
-  font: "druid_text_bold"
-  id: "unit_damage_txt"
-  pivot: PIVOT_NW
-  outline {
-    x: 0.101960786
-    y: 0.3019608
-    z: 0.3019608
-  }
-  parent: "box"
-}
-nodes {
-  position {
-    x: -35.0
-    y: -8.0
-  }
-  scale {
-    x: 0.3
-    y: 0.3
-  }
-  size {
-    x: 100.0
-    y: 50.0
-  }
-  color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_TEXT
-  text: "10"
-  font: "druid_text_bold"
-  id: "unit_speed_txt"
-  pivot: PIVOT_NW
-  outline {
-    x: 0.101960786
-    y: 0.3019608
-    z: 0.3019608
-  }
-  parent: "box"
-}
-nodes {
-  position {
-    x: -60.0
-    y: -77.0
-  }
-  size {
-    x: 100.0
-    y: 28.0
-  }
-  color {
-    y: 0.9019608
-    z: 0.4
-  }
-  type: TYPE_BOX
-  id: "improve_btn"
-  parent: "info_box"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 60.0
-    y: -77.0
-  }
-  size {
-    x: 100.0
-    y: 28.0
-  }
-  color {
-    y: 0.9019608
-    z: 0.4
-  }
-  type: TYPE_BOX
-  id: "use_btn"
-  parent: "info_box"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 128.0
-    y: 78.0
-  }
-  size {
-    x: 32.0
-    y: 32.0
-  }
-  type: TYPE_BOX
-  id: "close_info_box_btn"
-  parent: "info_box"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 390.0
-    y: 640.0
-  }
-  color {
-    x: 0.7019608
-    y: 0.4
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "tab_settings"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 390.0
-    y: 640.0
-  }
-  color {
-    x: 0.4
-    y: 0.5019608
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "tab_play"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -100.0
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_BOX
-  id: "btn_play"
-  parent: "tab_play"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Play"
-  font: "druid_text_bold"
-  id: "text"
-  parent: "btn_play"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    y: -240.0
-  }
-  size {
-    x: 390.0
-    y: 100.0
-  }
-  type: TYPE_BOX
-  id: "chest_container"
-  parent: "tab_play"
-  inherit_alpha: true
-  alpha: 0.42
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -140.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_1"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -47.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_2"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 47.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_3"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 140.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_4"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -350.0
-  }
-  size {
-    x: 390.0
-    y: 80.0
-  }
-  type: TYPE_BOX
-  id: "navigation"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 126.0
-    y: 72.0
-  }
-  color {
-    x: 0.6
-    y: 0.8
-    z: 0.8
-  }
-  type: TYPE_BOX
-  id: "tab_btn_1"
-  parent: "navigation"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -128.0
-  }
-  size {
-    x: 126.0
-    y: 72.0
-  }
-  color {
-    x: 0.6
-    y: 0.8
-    z: 0.8
-  }
-  type: TYPE_BOX
-  id: "tab_btn_2"
-  parent: "navigation"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 128.0
-  }
-  size {
-    x: 126.0
-    y: 72.0
-  }
-  color {
-    x: 0.6
-    y: 0.8
-    z: 0.8
-  }
-  type: TYPE_BOX
-  id: "tab_btn_3"
-  parent: "navigation"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 355.0
-  }
-  size {
-    x: 390.0
-    y: 70.0
-  }
-  color {
-    x: 0.5019608
-    y: 0.6
-  }
-  type: TYPE_BOX
-  id: "main_menu_header"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -135.0
-  }
-  size {
-    x: 120.0
-    y: 70.0
-  }
-  type: TYPE_BOX
-  id: "prestige_block"
-  parent: "main_menu_header"
-  inherit_alpha: true
-  alpha: 0.5
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -26.0
-  }
-  size {
-    x: 50.0
-    y: 50.0
-  }
-  type: TYPE_BOX
-  id: "prestige_icon"
-  parent: "prestige_block"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 27.0
-  }
-  scale {
-    x: 0.5
-    y: 0.5
-  }
-  size {
-    x: 128.0
-    y: 128.0
-  }
-  color {
-    x: 0.9019608
-    y: 0.7019608
-    z: 0.3019608
-  }
-  type: TYPE_TEXT
-  text: "1950\n"
-  ""
-  font: "druid_text_bold"
-  id: "prestige_txt"
-  parent: "prestige_block"
-}
-nodes {
-  size {
-    x: 120.0
-    y: 70.0
-  }
-  type: TYPE_BOX
-  id: "gold_block"
-  parent: "main_menu_header"
-  inherit_alpha: true
-  alpha: 0.5
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -26.0
-  }
-  size {
-    x: 50.0
-    y: 50.0
-  }
-  type: TYPE_BOX
-  id: "prestige_icon1"
-  parent: "gold_block"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 27.0
-  }
-  scale {
-    x: 0.5
-    y: 0.5
-  }
-  size {
-    x: 128.0
-    y: 128.0
-  }
-  color {
-    x: 0.9019608
-    y: 0.7019608
-    z: 0.3019608
-  }
-  type: TYPE_TEXT
-  text: "1950\n"
-  ""
-  font: "druid_text_bold"
-  id: "prestige_txt1"
-  parent: "gold_block"
-}
-nodes {
-  position {
-    x: 135.0
-  }
-  size {
-    x: 120.0
-    y: 70.0
-  }
-  type: TYPE_BOX
-  id: "almaz_block"
-  parent: "main_menu_header"
-  inherit_alpha: true
-  alpha: 0.5
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -26.0
-  }
-  size {
-    x: 50.0
-    y: 50.0
-  }
-  type: TYPE_BOX
-  id: "prestige_icon2"
-  parent: "almaz_block"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 27.0
-  }
-  scale {
-    x: 0.5
-    y: 0.5
-  }
-  size {
-    x: 128.0
-    y: 128.0
-  }
-  color {
-    x: 0.9019608
-    y: 0.7019608
-    z: 0.3019608
-  }
-  type: TYPE_TEXT
-  text: "1950\n"
-  ""
-  font: "druid_text_bold"
-  id: "prestige_txt2"
-  parent: "almaz_block"
-}
-nodes {
-  position {
-    x: 195.0
-    y: 390.0
-  }
-  size {
-    x: 390.0
-    y: 780.0
-  }
-  type: TYPE_BOX
   id: "main_game"
   adjust_mode: ADJUST_MODE_STRETCH
   inherit_alpha: true
@@ -1939,6 +1032,1074 @@ nodes {
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
   visible: false
+}
+nodes {
+  position {
+    x: 195.0
+    y: 390.0
+  }
+  size {
+    x: 390.0
+    y: 780.0
+  }
+  type: TYPE_BOX
+  id: "main_menu"
+  adjust_mode: ADJUST_MODE_STRETCH
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 390.0
+    y: 640.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.4
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "tab_settings"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 390.0
+    y: 640.0
+  }
+  color {
+    x: 0.4
+    y: 0.5019608
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "tab_play"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -100.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_BOX
+  id: "btn_play"
+  parent: "tab_play"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Play"
+  font: "druid_text_bold"
+  id: "text"
+  parent: "btn_play"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -240.0
+  }
+  size {
+    x: 390.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "chest_container"
+  parent: "tab_play"
+  inherit_alpha: true
+  alpha: 0.42
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -140.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_1"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -47.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_2"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 47.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_3"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 140.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_4"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 390.0
+    y: 640.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "tab_inventory"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 208.0
+  }
+  size {
+    x: 360.0
+    y: 90.0
+  }
+  type: TYPE_BOX
+  id: "active_cards"
+  parent: "tab_inventory"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -128.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "active_slot_1"
+  parent: "active_cards"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  id: "active_icon_1"
+  parent: "active_slot_1"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -25.0
+    y: 22.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "1"
+  font: "druid_text_bold"
+  id: "active_level_txt_1"
+  parent: "active_slot_1"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -32.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "active_slot_2"
+  parent: "active_cards"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  id: "active_icon_2"
+  parent: "active_slot_2"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -25.0
+    y: 22.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "1"
+  font: "druid_text_bold"
+  id: "active_level_txt_2"
+  parent: "active_slot_2"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 70.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "active_slot_3"
+  parent: "active_cards"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  id: "active_icon_3"
+  parent: "active_slot_3"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -25.0
+    y: 22.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "1"
+  font: "druid_text_bold"
+  id: "active_level_txt_3"
+  parent: "active_slot_3"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 128.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "active_slot_4"
+  parent: "active_cards"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  id: "active_icon_4"
+  parent: "active_slot_4"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -25.0
+    y: 22.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "1"
+  font: "druid_text_bold"
+  id: "active_level_txt_4"
+  parent: "active_slot_4"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 278.0
+  }
+  scale {
+    x: 0.8
+    y: 0.8
+  }
+  size {
+    x: 200.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.8
+  }
+  type: TYPE_TEXT
+  text: "My Deck"
+  font: "druid_text_bold"
+  id: "my_deck_txt"
+  parent: "tab_inventory"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -120.0
+  }
+  size {
+    x: 360.0
+    y: 360.0
+  }
+  type: TYPE_BOX
+  id: "all_cards"
+  parent: "tab_inventory"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 85.0
+  }
+  scale {
+    x: 0.8
+    y: 0.8
+  }
+  size {
+    x: 200.0
+    y: 64.0
+  }
+  color {
+    y: 0.8
+    z: 0.8
+  }
+  type: TYPE_TEXT
+  text: "All Cards"
+  font: "druid_text_bold"
+  id: "all_cards_txt"
+  parent: "tab_inventory"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -2000.0
+  }
+  size {
+    x: 80.0
+    y: 80.0
+  }
+  color {
+    z: 0.8
+  }
+  type: TYPE_BOX
+  id: "unit_card_template"
+  parent: "tab_inventory"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  id: "unit_card_icon"
+  parent: "unit_card_template"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -28.0
+    y: 28.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_TEXT
+  text: "11"
+  font: "druid_text_bold"
+  id: "unit_level"
+  parent: "unit_card_template"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 180.0
+  }
+  size {
+    x: 300.0
+    y: 200.0
+  }
+  color {
+    x: 0.4
+    y: 0.4
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "info_box"
+  parent: "tab_inventory"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+}
+nodes {
+  position {
+    x: -101.0
+    y: 46.0
+  }
+  size {
+    x: 80.0
+    y: 80.0
+  }
+  type: TYPE_BOX
+  id: "unit_icon"
+  parent: "info_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -54.0
+    y: 68.0
+  }
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 200.0
+    y: 50.0
+  }
+  color {
+    z: 0.7019608
+  }
+  type: TYPE_TEXT
+  text: "Paladin\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_name"
+  pivot: PIVOT_W
+  parent: "info_box"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -54.0
+    y: 47.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 600.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "Wall: Heals ability_value HP after stopping.Wall: Heals ability_value HP after stopping."
+  font: "druid_text_bold"
+  id: "unit_description"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  line_break: true
+  parent: "info_box"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 29.0
+    y: -20.0
+  }
+  size {
+    x: 160.0
+    y: 20.0
+  }
+  type: TYPE_BOX
+  id: "back_exp_fill"
+  parent: "info_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -78.0
+  }
+  size {
+    x: 156.0
+    y: 18.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.7019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "fore_exp_fill"
+  pivot: PIVOT_W
+  parent: "back_exp_fill"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -101.0
+    y: -26.0
+  }
+  size {
+    x: 80.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "box"
+  parent: "info_box"
+  inherit_alpha: true
+  alpha: 0.35
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -35.0
+    y: 22.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "100\n"
+  ""
+  font: "druid_text_bold"
+  id: "unit_hp_txt"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  parent: "box"
+}
+nodes {
+  position {
+    x: -35.0
+    y: 7.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "20"
+  font: "druid_text_bold"
+  id: "unit_damage_txt"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  parent: "box"
+}
+nodes {
+  position {
+    x: -35.0
+    y: -8.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.4
+    y: 0.6
+    z: 0.6
+  }
+  type: TYPE_TEXT
+  text: "10"
+  font: "druid_text_bold"
+  id: "unit_speed_txt"
+  pivot: PIVOT_NW
+  outline {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  parent: "box"
+}
+nodes {
+  position {
+    x: -60.0
+    y: -77.0
+  }
+  size {
+    x: 100.0
+    y: 28.0
+  }
+  color {
+    y: 0.9019608
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "upgrade_btn"
+  parent: "info_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "druid_text_bold"
+  id: "upgrade_price_label"
+  parent: "upgrade_btn"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 60.0
+    y: -77.0
+  }
+  size {
+    x: 100.0
+    y: 28.0
+  }
+  color {
+    y: 0.9019608
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "use_btn"
+  parent: "info_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 128.0
+    y: 78.0
+  }
+  size {
+    x: 32.0
+    y: 32.0
+  }
+  type: TYPE_BOX
+  id: "close_info_box_btn"
+  parent: "info_box"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 29.0
+    y: -18.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "druid_text_bold"
+  id: "upgrade_cards_label"
+  parent: "info_box"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 355.0
+  }
+  size {
+    x: 390.0
+    y: 70.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.6
+  }
+  type: TYPE_BOX
+  id: "main_menu_header"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -135.0
+  }
+  size {
+    x: 120.0
+    y: 70.0
+  }
+  type: TYPE_BOX
+  id: "prestige_block"
+  parent: "main_menu_header"
+  inherit_alpha: true
+  alpha: 0.5
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -26.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "prestige_icon"
+  parent: "prestige_block"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 27.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 128.0
+    y: 128.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.7019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "1950\n"
+  ""
+  font: "druid_text_bold"
+  id: "prestige_txt"
+  parent: "prestige_block"
+}
+nodes {
+  size {
+    x: 120.0
+    y: 70.0
+  }
+  type: TYPE_BOX
+  id: "gold_block"
+  parent: "main_menu_header"
+  inherit_alpha: true
+  alpha: 0.5
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -26.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "prestige_icon1"
+  parent: "gold_block"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 27.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 128.0
+    y: 128.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.7019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "1950\n"
+  ""
+  font: "druid_text_bold"
+  id: "prestige_txt1"
+  parent: "gold_block"
+}
+nodes {
+  position {
+    x: 135.0
+  }
+  size {
+    x: 120.0
+    y: 70.0
+  }
+  type: TYPE_BOX
+  id: "almaz_block"
+  parent: "main_menu_header"
+  inherit_alpha: true
+  alpha: 0.5
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -26.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  id: "prestige_icon2"
+  parent: "almaz_block"
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 27.0
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 128.0
+    y: 128.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.7019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "1950\n"
+  ""
+  font: "druid_text_bold"
+  id: "prestige_txt2"
+  parent: "almaz_block"
+}
+nodes {
+  position {
+    y: -350.0
+  }
+  size {
+    x: 390.0
+    y: 80.0
+  }
+  type: TYPE_BOX
+  id: "navigation"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 126.0
+    y: 72.0
+  }
+  color {
+    x: 0.6
+    y: 0.8
+    z: 0.8
+  }
+  type: TYPE_BOX
+  id: "tab_btn_1"
+  parent: "navigation"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -128.0
+  }
+  size {
+    x: 126.0
+    y: 72.0
+  }
+  color {
+    x: 0.6
+    y: 0.8
+    z: 0.8
+  }
+  type: TYPE_BOX
+  id: "tab_btn_2"
+  parent: "navigation"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 128.0
+  }
+  size {
+    x: 126.0
+    y: 72.0
+  }
+  color {
+    x: 0.6
+    y: 0.8
+    z: 0.8
+  }
+  type: TYPE_BOX
+  id: "tab_btn_3"
+  parent: "navigation"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {

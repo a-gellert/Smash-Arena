@@ -29,6 +29,7 @@ M.prestige = 0
 M.available_heroes = {1, 2, 3, 4, 5}
 -- Формат: [ID] = количество_карт (так удобнее искать, чем вложенными таблицами)
 M.hero_cards = { [1] = 10, [2] = 7, [3] = 15, [4] = 3, [5] = 1 }
+M.hero_levels = { [1] = 1, [2] = 1, [3] = 1, [4] = 1, [5] = 1 }
 
 -----------------------------------------
 -- СОСТОЯНИЕ СЕССИИ (Не сохраняется)
@@ -48,7 +49,8 @@ function M.save()
 		almaz = M.almaz,
 		prestige = M.prestige,
 		available_heroes = M.available_heroes,
-		hero_cards = M.hero_cards
+		hero_levels = M.hero_levels,
+		hero_cards = M.hero_cards		
 	}
 	local success = sys.save(SAVE_PATH, data_to_save)
 	if success then

@@ -9,7 +9,80 @@ local player = {
 	inventory = {}, -- Тут можно хранить кол-во карточек
 	levels = {}     -- Тут уровни
 }
+local function refresh_active_deck_ui(self)
+	for i = 1, 4 do
+		local hero_id = state.active_deck[i]
+		-- Ищем ноды по имени (убедись, что в GUI они называются именно так)
+		local level_label = gui.get_node("active_level_txt_" .. i)
+		local icon_node = gui.get_node("active_icon_" .. i)
 
+		if hero_id then
+			local level = state.hero_levels[hero_id] or 1
+			-- Ставим текст уровня
+			gui.set_text(level_label, level)
+
+			-- Меняем иконку (если есть атлас)
+			-- gui.play_flipbook(icon_node, "hero_" .. hero_id)
+
+			-- Визуально выделяем, что слот занят
+			gui.set_alpha(icon_node, 1.0)
+		else
+			-- Если вдруг слот пустой
+			gui.set_text(level_label, "")
+			gui.set_alpha(icon_node, 0.2)
+		end
+	end
+end
+local function refresh_inventory_grid(self)
+	for _, item in ipairs(self.all_cards_nodes) do
+		local hero_id = item.hero_id
+
+		-- Данные из state
+		local current_level = state.hero_levels[hero_id] or 1
+		local player_cards = state.hero_cards[hero_id] or 0
+		local cards_req = current_level * 5
+
+		-- Прямое обновление через сохраненные ссылки
+		if item.level_node then
+			gui.set_text(item.level_node, "Ур. " .. current_level)
+		end
+
+		if item.count_node then
+			gui.set_text(item.count_node, player_cards .. "/" .. cards_req)
+
+			-- Подсветка готовности к апгрейду
+			if player_cards >= cards_req then
+				gui.set_color(item.count_node, vmath.vector4(0, 1, 0, 1))
+			else
+				gui.set_color(item.count_node, vmath.vector4(1, 1, 1, 1))
+			end
+		end
+	end
+end
+local function update_info_panel(self, hero_id)
+	self.selected_hero_id = hero_id
+	local current_level = state.hero_levels[hero_id] or 1
+	local player_cards = state.hero_cards[hero_id] or 0
+
+	-- Получаем статы из heroes_data
+	local stats = data.get_stats(hero_id, current_level)
+
+	-- Проверка возможности апгрейда
+	local can_up, gold_cost, cards_req = data.can_upgrade(hero_id, current_level, state.gold, player_cards)
+
+	-- Отрисовка
+	gui.set_text(gui.get_node("unit_level"),  current_level)
+	gui.set_text(gui.get_node("upgrade_price_label"), gold_cost .. " золота")
+	gui.set_text(gui.get_node("upgrade_cards_label"), player_cards .. " / " .. cards_req)
+
+	-- Визуальный фидбек кнопки (смена цвета если не хватает денег/карт)
+	local upgrade_btn = gui.get_node("upgrade_btn")
+	if can_up then
+		gui.set_color(upgrade_btn, vmath.vector4(1, 1, 1, 1)) -- Активна
+	else
+		gui.set_color(upgrade_btn, vmath.vector4(0.5, 0.5, 0.5, 1)) -- Заблокирована
+	end
+end
 -- Константы разметки инвентаря
 local ITEM_SIZE = 80
 local GRID_COLS = 4
@@ -89,7 +162,7 @@ end
 -- Обновление информации о герое в Info Box
 local function update_info_box(self, hero_id)
 	local hero = data.heroes[hero_id]
-	local level = player.levels[hero_id] or 1
+	local level = state.hero_levels[hero_id] or 1
 	local stats = data.get_stats(hero_id, level)
 
 	gui.set_text(gui.get_node("unit_name"), data.strings[hero.name_key].ru)
@@ -155,37 +228,34 @@ function init(self)
 	local parent = gui.get_node("all_cards")
 	for i = 1, #data.heroes do
 		local hero = data.heroes[i]
-
-		-- Получаем шаблон
 		local template_node = gui.get_node("unit_card_template")
 		local nodes = gui.clone_tree(template_node)
 
-		-- Ищем корневую ноду клона. 
-		-- Если unit_card_template — это и есть корневой бокс, берем его:
-		local root = nodes[hash("unit_card_template")] 
-
-		-- Если не нашло, попробуем альтернативный вариант (если внутри есть дочерняя нода root)
-		if not root then
-			root = nodes[hash("unit_card_template")]
-		end
+		-- В Defold клонированные ноды в таблице 'nodes' сохраняют свои исходные ID из редактора
+		local root = nodes[hash("unit_card_template")]
+		local level_txt = nodes[hash("unit_card_level_template")] -- замени на свои ID из GUI
+		local count_txt = nodes[hash("unit_card_count_template")] -- замени на свои ID из GUI
 
 		if root then
 			gui.set_parent(root, parent)
 			gui.set_enabled(root, true)
 
-			-- Сетка 4x4
+			-- Позиционирование
 			local row = math.floor((i - 1) / GRID_COLS)
 			local col = (i - 1) % GRID_COLS
-			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING) -135, -row * (ITEM_SIZE + PADDING) + 135, 0)
+			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING) - 135, -row * (ITEM_SIZE + PADDING) + 135, 0)
 			gui.set_position(root, pos)
 
-			table.insert(self.all_cards_nodes, { node = root, hero_id = hero.id })
-		else
-			-- Если всё равно nil, выводим ошибку в консоль для дебага
-			print("ОШИБКА: Не удалось найти корневую ноду в клоне для героя ID: " .. hero.id)
+			-- СОХРАНЯЕМ ПРЯМЫЕ ССЫЛКИ
+			table.insert(self.all_cards_nodes, { 
+				hero_id = hero.id, 
+				root = root,
+				level_node = level_txt,
+				count_node = count_txt
+			})
 		end
 	end
-
+	refresh_active_deck_ui(self)
 	-- 3. Рисуем начальную колоду
 	refresh_active_deck(self)
 end
@@ -204,9 +274,9 @@ function on_message(self, message_id, message, sender)
 			local icon_node = gui.get_node("ico_" .. i)
 			if not message.queue[i] then
 				gui.set_color(icon_node, vmath.vector4(0.7, 0.5, 0.6, 1))
-		
-			--	gui.set_enabled(icon_node, false)
-		end
+			else
+				gui.set_color(icon_node, vmath.vector4(1, 1, 1, 1)) -- сбрасываем в белый
+			end
 			
 		end
 		refresh_queue_panel(self)
@@ -220,7 +290,53 @@ function on_input(self, action_id, action)
 	if action_id ~= hash("touch") or not action.pressed then
 		return false
 	end
+	if self.is_waiting_for_swap then
+		for i = 1, 4 do
+			-- ВАЖНО: имя должно строго совпадать с тем, что в редакторе GUI
+			local slot_node = gui.get_node("active_slot_" .. i) 
 
+			if slot_node and gui.pick_node(slot_node, action.x, action.y) then
+				state.active_deck[i] = self.selected_hero_id
+				state.save()
+
+				self.is_waiting_for_swap = false
+
+				-- Обновляем текст статуса, если такая нода есть
+				--local status_label = gui.get_node("status_label")
+			--	if status_label then
+			--		gui.set_text(status_label, "Герой заменен!")
+			--	end
+
+				refresh_active_deck_ui(self) 
+				return true 
+			end
+		end
+	end
+	if gui.pick_node(gui.get_node("upgrade_btn"), action.x, action.y) then
+		local h_id = self.selected_hero_id
+		local current_level = state.hero_levels[h_id] or 1
+		local player_cards = state.hero_cards[h_id] or 0
+
+		local can_up, gold_cost, cards_req = data.can_upgrade(h_id, current_level, state.gold, player_cards)
+
+		if can_up then
+			-- Списание (UPDATE)
+			state.gold = state.gold - gold_cost
+			state.hero_cards[h_id] = state.hero_cards[h_id] - cards_req
+			state.hero_levels[h_id] = current_level + 1
+
+			-- Фиксация (COMMIT)
+			state.save()
+
+			-- Визуальное обновление
+			update_info_panel(self, h_id)
+			refresh_inventory_grid(self) -- Функция, которая перерисовывает все карточки
+			print("Успешный апгрейд до уровня " .. state.hero_levels[h_id])
+		else
+			print("Недостаточно ресурсов для транзакции")
+		end
+		return true
+	end
 	-- 1. Сначала проверяем закрытие окна (если оно открыто)
 	if gui.is_enabled(gui.get_node("info_unit")) then
 		local info_bg = gui.get_node("info_bg")
@@ -273,18 +389,30 @@ function on_input(self, action_id, action)
 
 	-- 4. ЛОГИКА ИНВЕНТАРЯ
 	if gui.is_enabled(gui.get_node("tab_inventory")) then
-		-- Выбор карточки
 		for _, item in ipairs(self.all_cards_nodes) do
-			if gui.pick_node(item.node, action.x, action.y) then
-				self.selected_hero_id = item.hero_id
-				self.is_waiting_for_swap = false
-				update_info_box(self, item.hero_id)
-				return true
+			-- Проверяем, что нода существует И она видна (enabled)
+			if item.root and gui.is_enabled(item.root) then
+				if gui.pick_node(item.root, action.x, action.y) then
+					self.selected_hero_id = item.hero_id
+					self.is_waiting_for_swap = false
+
+					-- Обновляем данные в окне инфо
+					update_info_box(self, item.hero_id) -- Общее инфо
+					update_info_panel(self, item.hero_id) -- Кнопка апгрейда
+
+					return true
+				end
 			end
 		end
+	
 
 		-- Кнопка USE
 		if gui.pick_node(gui.get_node("use_btn"), action.x, action.y) and self.selected_hero_id then
+			self.is_waiting_for_swap = true
+			gui.set_enabled(gui.get_node("info_box"), false)
+			return true
+		end-- Кнопка USE
+		if gui.pick_node(gui.get_node("close_info_box_btn"), action.x, action.y) and self.selected_hero_id then
 			self.is_waiting_for_swap = true
 			gui.set_enabled(gui.get_node("info_box"), false)
 			return true
