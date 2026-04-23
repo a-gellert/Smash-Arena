@@ -33,6 +33,15 @@ local function refresh_active_deck_ui(self)
 		end
 	end
 end
+local function refresh_text(self)
+	local prestige_node = gui.get_node("prestige_txt")
+	local gold_node     = gui.get_node("gold_txt")
+	local almaz_node    = gui.get_node("almaz_txt")
+
+	gui.set_text(prestige_node, tostring(state.prestige))
+	gui.set_text(gold_node,     tostring(state.gold))
+	gui.set_text(almaz_node,    tostring(state.almaz))
+end
 local function refresh_inventory_grid(self)
 	for _, item in ipairs(self.all_cards_nodes) do
 		local hero_id = item.hero_id
@@ -258,6 +267,8 @@ function init(self)
 	refresh_active_deck_ui(self)
 	-- 3. Рисуем начальную колоду
 	refresh_active_deck(self)
+
+	refresh_text(self)
 end
 
 function on_message(self, message_id, message, sender)
@@ -319,21 +330,20 @@ function on_input(self, action_id, action)
 
 		local can_up, gold_cost, cards_req = data.can_upgrade(h_id, current_level, state.gold, player_cards)
 
-		if can_up then
-			-- Списание (UPDATE)
-			state.gold = state.gold - gold_cost
+		-- Используем нашу новую функцию
+		if can_up and state.take(0, gold_cost, 0) then
+			-- Списываем карточки (они обычно вне общей функции take)
 			state.hero_cards[h_id] = state.hero_cards[h_id] - cards_req
 			state.hero_levels[h_id] = current_level + 1
 
-			-- Фиксация (COMMIT)
 			state.save()
 
-			-- Визуальное обновление
-			update_info_panel(self, h_id)
-			refresh_inventory_grid(self) -- Функция, которая перерисовывает все карточки
-			print("Успешный апгрейд до уровня " .. state.hero_levels[h_id])
+			-- Обновляем всё визуально
+			refresh_text(self)        -- Обновит золото в шапке
+			update_info_panel(self, h_id) 
+			refresh_inventory_grid(self)
 		else
-			print("Недостаточно ресурсов для транзакции")
+			print("Транзакция отклонена: не хватает золота или карт")
 		end
 		return true
 	end

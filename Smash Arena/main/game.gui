@@ -1969,7 +1969,7 @@ nodes {
     y: 32.0
   }
   type: TYPE_BOX
-  id: "prestige_icon1"
+  id: "gold_icon"
   parent: "gold_block"
   size_mode: SIZE_MODE_AUTO
 }
@@ -1991,10 +1991,9 @@ nodes {
     z: 0.3019608
   }
   type: TYPE_TEXT
-  text: "1950\n"
-  ""
+  text: "195K"
   font: "druid_text_bold"
-  id: "prestige_txt1"
+  id: "gold_txt"
   parent: "gold_block"
 }
 nodes {
@@ -2025,7 +2024,7 @@ nodes {
     y: 32.0
   }
   type: TYPE_BOX
-  id: "prestige_icon2"
+  id: "almaz_icon"
   parent: "almaz_block"
   size_mode: SIZE_MODE_AUTO
 }
@@ -2050,7 +2049,7 @@ nodes {
   text: "1950\n"
   ""
   font: "druid_text_bold"
-  id: "prestige_txt2"
+  id: "almaz_txt"
   parent: "almaz_block"
 }
 nodes {

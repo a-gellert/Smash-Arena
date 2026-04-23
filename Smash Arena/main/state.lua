@@ -40,7 +40,37 @@ M.is_simulation = false
 -----------------------------------------
 -- МЕТОДЫ РАБОТЫ С ДАННЫМИ (Transactions)
 -----------------------------------------
+function M.add(prestige, gold, almaz)
+	if prestige < 0 or gold < 0 or almaz < 0 then 
+		print("Проверь данные")
+		return
+	end
+	M.prestige = M.prestige + prestige
+	M.gold = M.gold + gold
+	M.almaz = M.almaz + almaz
+	M.save()
+end
+function M.take(prestige, gold, almaz)
+	-- 1. Нормализация входных данных (защита от nil)
+	prestige = prestige or 0
+	gold = gold or 0
+	almaz = almaz or 0
 
+	-- 2. Проверка: хватает ли ресурсов для совершения операции?
+	if M.prestige >= prestige and M.gold >= gold and M.almaz >= almaz then
+		-- 3. Выполняем списание
+		M.prestige = M.prestige - prestige
+		M.gold = M.gold - gold
+		M.almaz = M.almaz - almaz
+		M.save()
+		-- Возвращаем true, чтобы вызывающий код знал: покупка прошла успешно
+		return true
+	else
+		-- Ресурсов недостаточно
+		print("Ошибка: недостаточно ресурсов для списания")
+		return false
+	end
+end
 -- Сохранение данных на диск (COMMIT)
 function M.save()
 	local data_to_save = {
