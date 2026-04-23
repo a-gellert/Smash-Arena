@@ -22,7 +22,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 25.0\n"
+  "  data: 30.0\n"
   "}\n"
   "linear_damping: 0.7\n"
   "angular_damping: 1.0\n"
@@ -32,7 +32,7 @@ embedded_components {
 embedded_components {
   id: "hp_back"
   type: "sprite"
-  data: "default_animation: \"pixel_copy\"\n"
+  data: "default_animation: \"hp_bar_back\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -40,13 +40,13 @@ embedded_components {
   "}\n"
   ""
   position {
-    x: -20.0
-    y: 35.0
+    x: -21.0
+    y: 40.0
     z: 0.5
   }
   scale {
-    x: 38.0
-    y: 10.0
+    x: 0.75
+    y: 0.5
   }
 }
 embedded_components {
@@ -58,19 +58,19 @@ embedded_components {
 embedded_components {
   id: "platform"
   type: "sprite"
-  data: "default_animation: \"ui_circle_32\"\n"
+  data: "default_animation: \"blue_platform\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/druid/druid.atlas\"\n"
+  "  texture: \"/assets/atlas/gui.atlas\"\n"
   "}\n"
   ""
   position {
     z: 0.1
   }
   scale {
-    x: 1.5
-    y: 1.5
+    x: 0.5
+    y: 0.5
   }
 }
 embedded_components {
@@ -88,18 +88,19 @@ embedded_components {
   "}\n"
   ""
   position {
-    x: -19.0
-    y: 35.0
+    x: -22.0
+    y: 40.0
     z: 0.6
   }
   scale {
-    x: 4.5
+    x: 5.7
+    y: 1.05
   }
 }
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"ui_circle_32\"\n"
+  data: "default_animation: \"ui_circle_64\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -107,7 +108,11 @@ embedded_components {
   "}\n"
   ""
   position {
-    z: 0.2
+    z: 0.5
+  }
+  scale {
+    x: 0.8
+    y: 0.8
   }
 }
 embedded_components {
@@ -150,7 +155,7 @@ embedded_components {
   "}\n"
   ""
   scale {
-    x: 0.9
-    y: 0.9
+    x: 1.2
+    y: 1.2
   }
 }

@@ -9,4 +9,20 @@ images {
   image: "/assets/sprites/hp_bar.png"
   pivot_x: 0.0
 }
+images {
+  image: "/assets/sprites/hp_bar_back.png"
+  pivot_x: 0.05
+}
+images {
+  image: "/assets/sprites/blue_platform.png"
+}
+images {
+  image: "/assets/sprites/red_platform.png"
+}
+images {
+  image: "/assets/sprites/btn_blue.png"
+}
+images {
+  image: "/assets/sprites/holder.png"
+}
 extrude_borders: 2

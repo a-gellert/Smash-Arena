@@ -3,6 +3,10 @@ fonts {
   name: "druid_text_bold"
   font: "/druid/fonts/druid_text_bold.font"
 }
+textures {
+  name: "gui"
+  texture: "/assets/atlas/gui.atlas"
+}
 nodes {
   position {
     x: 195.0
@@ -1071,143 +1075,6 @@ nodes {
   }
   color {
     x: 0.4
-    y: 0.5019608
-    z: 0.9019608
-  }
-  type: TYPE_BOX
-  id: "tab_play"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: -100.0
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_BOX
-  id: "btn_play"
-  parent: "tab_play"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "Play"
-  font: "druid_text_bold"
-  id: "text"
-  parent: "btn_play"
-  inherit_alpha: true
-}
-nodes {
-  position {
-    y: -240.0
-  }
-  size {
-    x: 390.0
-    y: 100.0
-  }
-  type: TYPE_BOX
-  id: "chest_container"
-  parent: "tab_play"
-  inherit_alpha: true
-  alpha: 0.42
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -140.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_1"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -47.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_2"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 47.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_3"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: 140.0
-  }
-  size {
-    x: 90.0
-    y: 90.0
-  }
-  color {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "ch_4"
-  parent: "chest_container"
-  alpha: 0.25
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 390.0
-    y: 640.0
-  }
-  color {
-    x: 0.4
     y: 0.6
     z: 0.4
   }
@@ -1863,6 +1730,145 @@ nodes {
   inherit_alpha: true
 }
 nodes {
+  size {
+    x: 390.0
+    y: 640.0
+  }
+  color {
+    x: 0.4
+    y: 0.5019608
+    z: 0.9019608
+  }
+  type: TYPE_BOX
+  id: "tab_play"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -100.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_blue"
+  id: "btn_play"
+  parent: "tab_play"
+  inherit_alpha: true
+  slice9 {
+    x: 20.0
+    y: 20.0
+    z: 20.0
+    w: 20.0
+  }
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "Play"
+  font: "druid_text_bold"
+  id: "text"
+  parent: "btn_play"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -240.0
+  }
+  size {
+    x: 390.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "chest_container"
+  parent: "tab_play"
+  inherit_alpha: true
+  alpha: 0.42
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -140.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_1"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: -47.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_2"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 47.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_3"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 140.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "ch_4"
+  parent: "chest_container"
+  alpha: 0.25
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
   position {
     y: 355.0
   }
@@ -1871,37 +1877,43 @@ nodes {
     y: 70.0
   }
   color {
-    x: 0.5019608
-    y: 0.6
+    x: 0.3019608
+    y: 0.4
+    z: 0.8
   }
   type: TYPE_BOX
   id: "main_menu_header"
   parent: "main_menu"
   inherit_alpha: true
+  alpha: 0.18
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
-    x: -135.0
+    x: -128.0
   }
   size {
     x: 120.0
-    y: 70.0
+    y: 52.0
   }
   type: TYPE_BOX
+  texture: "gui/holder"
   id: "prestige_block"
   parent: "main_menu_header"
-  inherit_alpha: true
-  alpha: 0.5
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 10.0
+    y: 10.0
+    z: 10.0
+    w: 10.0
+  }
 }
 nodes {
   position {
     x: -26.0
   }
   size {
-    x: 50.0
-    y: 50.0
+    x: 32.0
+    y: 32.0
   }
   type: TYPE_BOX
   id: "prestige_icon"
@@ -1935,22 +1947,26 @@ nodes {
 nodes {
   size {
     x: 120.0
-    y: 70.0
+    y: 52.0
   }
   type: TYPE_BOX
+  texture: "gui/holder"
   id: "gold_block"
   parent: "main_menu_header"
-  inherit_alpha: true
-  alpha: 0.5
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 10.0
+    y: 10.0
+    z: 10.0
+    w: 10.0
+  }
 }
 nodes {
   position {
     x: -26.0
   }
   size {
-    x: 50.0
-    y: 50.0
+    x: 32.0
+    y: 32.0
   }
   type: TYPE_BOX
   id: "prestige_icon1"
@@ -1983,26 +1999,30 @@ nodes {
 }
 nodes {
   position {
-    x: 135.0
+    x: 128.0
   }
   size {
     x: 120.0
-    y: 70.0
+    y: 52.0
   }
   type: TYPE_BOX
+  texture: "gui/holder"
   id: "almaz_block"
   parent: "main_menu_header"
-  inherit_alpha: true
-  alpha: 0.5
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 10.0
+    y: 10.0
+    z: 10.0
+    w: 10.0
+  }
 }
 nodes {
   position {
     x: -26.0
   }
   size {
-    x: 50.0
-    y: 50.0
+    x: 32.0
+    y: 32.0
   }
   type: TYPE_BOX
   id: "prestige_icon2"
