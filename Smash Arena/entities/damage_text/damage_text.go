@@ -23,6 +23,9 @@ embedded_components {
   "font: \"/druid/fonts/druid_text_bold.font\"\n"
   "material: \"/builtins/fonts/label-df.material\"\n"
   ""
+  position {
+    z: 0.6
+  }
   scale {
     x: 0.6
     y: 0.6

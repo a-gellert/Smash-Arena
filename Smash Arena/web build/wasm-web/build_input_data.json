@@ -15,6 +15,12 @@
     "link" : "https://github.com/Playgama/bridge-defold/archive/refs/tags/v1.29.0.zip",
     "md5" : "CE24C9390372946992B14A42C65E64E8"
   }, {
+    "link" : "https://github.com/defold/extension-poki-sdk/archive/refs/tags/3.6.0.zip",
+    "md5" : "D4BB2338AC64A8ADF1C7422CDEEF2A64"
+  }, {
+    "link" : "https://github.com/britzl/defold-richtext/archive/master.zip",
+    "md5" : "ED1A21793A230988E416DF88FD72C0B2"
+  }, {
     "link" : "https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip",
     "md5" : "313180148EBBA14F66072972375D837C"
   } ]

@@ -27,4 +27,6 @@ dependencies#0 = https://github.com/Insality/defold-event/archive/refs/tags/14.z
 dependencies#1 = https://github.com/rgrams/rendercam/archive/1.0.3.zip
 dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip
 dependencies#3 = https://github.com/Playgama/bridge-defold/archive/refs/tags/v1.29.0.zip
+dependencies#4 = https://github.com/britzl/defold-richtext/archive/master.zip
+dependencies#5 = https://github.com/defold/extension-poki-sdk/archive/refs/tags/3.6.0.zip
 

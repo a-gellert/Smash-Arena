@@ -25,4 +25,31 @@ images {
 images {
   image: "/assets/sprites/holder.png"
 }
+images {
+  image: "/assets/sprites/bar_back.png"
+}
+images {
+  image: "/assets/sprites/bottom_btn.png"
+}
+images {
+  image: "/assets/sprites/btn_orange.png"
+}
+images {
+  image: "/assets/sprites/btn_purple.png"
+}
+images {
+  image: "/assets/sprites/btn_red.png"
+}
+images {
+  image: "/assets/sprites/cancel.png"
+}
+images {
+  image: "/assets/sprites/panel.png"
+}
+images {
+  image: "/assets/sprites/background.png"
+}
+images {
+  image: "/assets/sprites/arena_1.png"
+}
 extrude_borders: 2

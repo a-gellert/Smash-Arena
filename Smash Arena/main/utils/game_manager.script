@@ -178,10 +178,10 @@ function on_message(self, message_id, message, sender)
 		local player_y = -150
 		local enemy_y = 150
 		local formation_offsets = {
-			[1] = { x = math.random(-130, -25), y = math.random(-30, 30) },   -- Левый задний (широко)
+			[1] = { x = math.random(-130, -25), y = math.random(30, 70) },   -- Левый задний (широко)
 			[2] = { x = math.random(-60, -25),  y = math.random(50, 120) },  -- Левый передний (узко)
 			[3] = { x = math.random(25, 60),   y = math.random(50, 120) },  -- Правый передний (узко)
-			[4] = { x = math.random(25, 130),  y = math.random(-30, 30) }    -- Правый задний (широко)
+			[4] = { x = math.random(25, 130),  y = math.random(30, 70) }    -- Правый задний (широко)
 		}
 			for i = 1, 4 do
 				local offset = formation_offsets[i]

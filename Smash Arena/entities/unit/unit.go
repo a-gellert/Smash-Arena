@@ -22,7 +22,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 30.0\n"
+  "  data: 27.5\n"
   "}\n"
   "linear_damping: 0.7\n"
   "angular_damping: 1.0\n"
@@ -66,11 +66,11 @@ embedded_components {
   "}\n"
   ""
   position {
-    z: 0.1
+    z: 0.35
   }
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.44
+    y: 0.44
   }
 }
 embedded_components {
@@ -100,48 +100,19 @@ embedded_components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"ui_circle_64\"\n"
+  data: "default_animation: \"monk\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/druid/druid.atlas\"\n"
+  "  texture: \"/assets/atlas/units.atlas\"\n"
   "}\n"
   ""
   position {
-    z: 0.5
+    z: 0.3
   }
   scale {
-    x: 0.8
-    y: 0.8
-  }
-}
-embedded_components {
-  id: "name"
-  type: "label"
-  data: "size {\n"
-  "  x: 128.0\n"
-  "  y: 32.0\n"
-  "}\n"
-  "color {\n"
-  "  x: 0.0\n"
-  "  y: 0.0\n"
-  "  z: 0.0\n"
-  "}\n"
-  "outline {\n"
-  "  x: 0.5019608\n"
-  "  y: 0.5019608\n"
-  "  z: 0.5019608\n"
-  "}\n"
-  "text: \"Label\"\n"
-  "font: \"/druid/fonts/druid_text_bold.font\"\n"
-  "material: \"/builtins/fonts/label-df.material\"\n"
-  ""
-  position {
-    z: 0.7
-  }
-  scale {
-    x: 0.3
-    y: 0.3
+    x: 0.165
+    y: 0.165
   }
 }
 embedded_components {
@@ -155,7 +126,7 @@ embedded_components {
   "}\n"
   ""
   scale {
-    x: 1.2
-    y: 1.2
+    x: 1.1
+    y: 1.1
   }
 }

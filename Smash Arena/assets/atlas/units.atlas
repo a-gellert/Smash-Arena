@@ -1,0 +1,31 @@
+images {
+  image: "/assets/sprites/units/berserker.png"
+}
+images {
+  image: "/assets/sprites/units/bomber.png"
+}
+images {
+  image: "/assets/sprites/units/golem.png"
+}
+images {
+  image: "/assets/sprites/units/ice_mage.png"
+}
+images {
+  image: "/assets/sprites/units/monk.png"
+}
+images {
+  image: "/assets/sprites/units/paladin.png"
+}
+images {
+  image: "/assets/sprites/units/reaper.png"
+}
+images {
+  image: "/assets/sprites/units/tank.png"
+}
+images {
+  image: "/assets/sprites/units/vampire.png"
+}
+images {
+  image: "/assets/sprites/units/wraith.png"
+}
+extrude_borders: 2
