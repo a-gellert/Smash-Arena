@@ -756,6 +756,10 @@ nodes {
     x: 200.0
     y: 100.0
   }
+  color {
+    y: 0.95686275
+    z: 0.8
+  }
   type: TYPE_TEXT
   text: "<text>"
   font: "druid_text_bold"
@@ -811,6 +815,10 @@ nodes {
   size {
     x: 200.0
     y: 100.0
+  }
+  color {
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "<text>"
@@ -888,13 +896,13 @@ nodes {
     x: -26.0
   }
   size {
-    x: 32.0
+    x: 40.0
     y: 32.0
   }
   type: TYPE_BOX
+  texture: "gui/prestige"
   id: "prestige_icon"
   parent: "prestige_block"
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -941,13 +949,13 @@ nodes {
     x: -26.0
   }
   size {
-    x: 32.0
+    x: 40.0
     y: 32.0
   }
   type: TYPE_BOX
+  texture: "gui/coin"
   id: "gold_icon"
   parent: "gold_block"
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -996,13 +1004,13 @@ nodes {
     x: -26.0
   }
   size {
-    x: 32.0
+    x: 40.0
     y: 32.0
   }
   type: TYPE_BOX
+  texture: "gui/almaz"
   id: "almaz_icon"
   parent: "almaz_block"
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -1041,60 +1049,108 @@ nodes {
   parent: "main_menu"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
+  visible: false
 }
 nodes {
-  size {
-    x: 126.0
-    y: 72.0
+  position {
+    y: -36.0
   }
-  color {
-    x: 0.6
-    y: 0.8
-    z: 0.8
+  size {
+    x: 128.0
+    y: 80.0
   }
   type: TYPE_BOX
+  texture: "gui/bottom_btn"
   id: "tab_btn_1"
+  pivot: PIVOT_S
   parent: "navigation"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    z: 16.0
+  }
+}
+nodes {
+  position {
+    y: 34.0
+  }
+  size {
+    x: 64.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "gui/battle"
+  id: "box7"
+  parent: "tab_btn_1"
+  inherit_alpha: true
 }
 nodes {
   position {
     x: -128.0
+    y: -36.0
   }
   size {
-    x: 126.0
+    x: 128.0
     y: 72.0
   }
-  color {
-    x: 0.6
-    y: 0.8
-    z: 0.8
-  }
   type: TYPE_BOX
+  texture: "gui/bottom_btn"
   id: "tab_btn_2"
+  pivot: PIVOT_S
   parent: "navigation"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    z: 16.0
+  }
+}
+nodes {
+  position {
+    y: 34.0
+  }
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "gui/store"
+  id: "box8"
+  parent: "tab_btn_2"
+  inherit_alpha: true
 }
 nodes {
   position {
     x: 128.0
+    y: -36.0
   }
   size {
-    x: 126.0
+    x: 128.0
     y: 72.0
   }
-  color {
-    x: 0.6
-    y: 0.8
-    z: 0.8
-  }
   type: TYPE_BOX
+  texture: "gui/bottom_btn"
   id: "tab_btn_3"
+  pivot: PIVOT_S
   parent: "navigation"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    z: 16.0
+  }
+}
+nodes {
+  position {
+    y: 34.0
+  }
+  size {
+    x: 62.0
+    y: 62.0
+  }
+  type: TYPE_BOX
+  texture: "gui/settings"
+  id: "box9"
+  parent: "tab_btn_3"
+  inherit_alpha: true
 }
 nodes {
   position {
@@ -1227,13 +1283,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_1"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1248,7 +1305,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_1"
   parent: "unit_icon_1"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1263,8 +1319,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "10/120"
@@ -1277,7 +1333,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_1"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1288,13 +1343,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_2"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1309,7 +1365,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_2"
   parent: "unit_icon_2"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1324,8 +1379,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1339,7 +1394,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_2"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1350,13 +1404,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_3"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1371,7 +1426,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_3"
   parent: "unit_icon_3"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1386,8 +1440,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1401,7 +1455,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_3"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1412,13 +1465,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_4"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1433,7 +1487,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_4"
   parent: "unit_icon_4"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1448,8 +1501,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1463,7 +1516,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_4"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1474,13 +1526,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_5"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1495,7 +1548,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_5"
   parent: "unit_icon_5"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1510,8 +1562,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1525,7 +1577,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_5"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1536,13 +1587,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_6"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1557,7 +1609,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_6"
   parent: "unit_icon_6"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1572,8 +1623,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1587,7 +1638,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_6"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1598,13 +1648,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_7"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1619,7 +1670,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_7"
   parent: "unit_icon_7"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1634,8 +1684,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1649,7 +1699,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_7"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1660,13 +1709,14 @@ nodes {
     y: 64.0
   }
   color {
-    x: 0.2835163
-    y: 0.2743718
-    z: 0.5532787
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
   }
   type: TYPE_BOX
   id: "unit_icon_8"
   parent: "queue_panel"
+  alpha: 0.76
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1681,7 +1731,6 @@ nodes {
   texture: "units/berserker"
   id: "ico_8"
   parent: "unit_icon_8"
-  inherit_alpha: true
 }
 nodes {
   position {
@@ -1696,8 +1745,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.7019608
-    y: 0.8
+    y: 0.95686275
+    z: 0.8
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1711,7 +1760,6 @@ nodes {
   }
   line_break: true
   parent: "unit_icon_8"
-  inherit_alpha: true
 }
 nodes {
   size {
@@ -1727,27 +1775,33 @@ nodes {
 }
 nodes {
   size {
-    x: 390.0
-    y: 780.0
+    x: 320.0
+    y: 119.0
   }
   type: TYPE_BOX
+  texture: "gui/panel"
   id: "end_screen_panel"
   parent: "main_game"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
   enabled: false
   visible: false
 }
 nodes {
   size {
-    x: 390.0
+    x: 360.0
     y: 512.0
   }
   type: TYPE_BOX
+  texture: "gui/panel"
   id: "end_screen"
   parent: "end_screen_panel"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
 }
 nodes {
   position {
@@ -1758,9 +1812,8 @@ nodes {
     y: 100.0
   }
   color {
-    x: 0.5019608
-    y: 0.4
-    z: 0.8
+    x: 0.003921569
+    y: 0.6901961
   }
   type: TYPE_TEXT
   text: "Victory"
@@ -1768,9 +1821,9 @@ nodes {
   id: "end_screen_title"
   pivot: PIVOT_N
   outline {
-    x: 0.8
-    y: 0.8
-    z: 0.8
+    x: 0.2
+    y: 0.2
+    z: 0.2
   }
   parent: "end_screen"
   inherit_alpha: true
@@ -1779,16 +1832,8 @@ nodes {
   position {
     y: -50.0
   }
-  size {
-    x: 200.0
-    y: 200.0
-  }
-  color {
-    x: 0.7019608
-    y: 0.3019608
-    z: 0.101960786
-  }
   type: TYPE_BOX
+  texture: "gui/chest"
   id: "chest_icon"
   parent: "end_screen"
   inherit_alpha: true
@@ -1800,18 +1845,18 @@ nodes {
     y: 112.0
   }
   size {
-    x: 50.0
-    y: 50.0
+    x: 40.0
+    y: 40.0
   }
   color {
     y: 0.9019608
     z: 0.5019608
   }
   type: TYPE_BOX
+  texture: "gui/coin"
   id: "gold_award"
   parent: "end_screen"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -1825,10 +1870,19 @@ nodes {
     x: 200.0
     y: 100.0
   }
+  color {
+    y: 0.9573771
+    z: 0.8
+  }
   type: TYPE_TEXT
   text: "50"
   font: "druid_text_bold"
   id: "gold_award_txt"
+  outline {
+    x: 0.3019608
+    y: 0.3019608
+    z: 0.3019608
+  }
   parent: "gold_award"
   inherit_alpha: true
 }
@@ -1838,18 +1892,14 @@ nodes {
     y: 112.0
   }
   size {
-    x: 50.0
-    y: 50.0
-  }
-  color {
-    y: 0.6
-    z: 0.5019608
+    x: 40.0
+    y: 32.0
   }
   type: TYPE_BOX
+  texture: "gui/prestige"
   id: "exp_award"
   parent: "end_screen"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -1863,10 +1913,19 @@ nodes {
     x: 200.0
     y: 100.0
   }
+  color {
+    y: 0.9573771
+    z: 0.8
+  }
   type: TYPE_TEXT
   text: "50"
   font: "druid_text_bold"
   id: "exp_award_txt"
+  outline {
+    x: 0.3019608
+    y: 0.3019608
+    z: 0.3019608
+  }
   parent: "exp_award"
   inherit_alpha: true
 }
@@ -1875,34 +1934,51 @@ nodes {
     y: -200.0
   }
   size {
-    x: 128.0
-    y: 64.0
-  }
-  color {
-    x: 0.6
-    y: 0.7019608
+    x: 160.0
+    y: 70.0
   }
   type: TYPE_BOX
+  texture: "gui/btn_orange"
   id: "end_match_btn"
   parent: "end_screen"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
 }
 nodes {
   size {
-    x: 300.0
-    y: 200.0
+    x: 200.0
+    y: 100.0
   }
-  color {
-    x: 0.4
-    y: 0.4
-    z: 0.4
+  type: TYPE_TEXT
+  text: "OK"
+  font: "druid_text_bold"
+  id: "text1"
+  parent: "end_match_btn"
+  inherit_alpha: true
+  alpha: 0.84
+  outline_alpha: 0.1
+}
+nodes {
+  size {
+    x: 320.0
+    y: 216.0
   }
   type: TYPE_BOX
+  texture: "gui/panel"
   id: "info_unit"
   parent: "main_game"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
   enabled: false
 }
 nodes {
@@ -1934,7 +2010,8 @@ nodes {
     y: 50.0
   }
   color {
-    z: 0.7019608
+    x: 0.003921569
+    y: 0.6901961
   }
   type: TYPE_TEXT
   text: "Paladin\n"
@@ -1959,9 +2036,9 @@ nodes {
     y: 50.0
   }
   color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
+    x: 0.5137255
+    y: 0.7882353
+    z: 0.99607843
   }
   type: TYPE_TEXT
   text: "Wall: Heals ability_value HP after stopping.Wall: Heals ability_value HP after stopping."
@@ -1990,7 +2067,7 @@ nodes {
   id: "box3"
   parent: "info_unit"
   inherit_alpha: true
-  alpha: 0.35
+  alpha: 0.1
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -2007,9 +2084,9 @@ nodes {
     y: 50.0
   }
   color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
+    x: 0.5137255
+    y: 0.7882353
+    z: 0.99607843
   }
   type: TYPE_TEXT
   text: "100\n"
@@ -2038,9 +2115,9 @@ nodes {
     y: 50.0
   }
   color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
+    x: 0.5137255
+    y: 0.7882353
+    z: 0.99607843
   }
   type: TYPE_TEXT
   text: "20"
@@ -2068,9 +2145,9 @@ nodes {
     y: 50.0
   }
   color {
-    x: 0.4
-    y: 0.6
-    z: 0.6
+    x: 0.5137255
+    y: 0.7882353
+    z: 0.99607843
   }
   type: TYPE_TEXT
   text: "10"
@@ -2106,10 +2183,21 @@ nodes {
     y: 32.0
   }
   type: TYPE_BOX
+  texture: "gui/btn_red"
   id: "close_info_unit_box_btn"
   parent: "info_unit"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 28.0
+    y: 28.0
+  }
+  type: TYPE_BOX
+  texture: "gui/cancel"
+  id: "box5"
+  parent: "close_info_unit_box_btn"
+  inherit_alpha: true
 }
 nodes {
   size {
@@ -2125,67 +2213,18 @@ nodes {
 }
 nodes {
   position {
-    x: 195.0
-    y: 390.0
+    x: 39.0
+    y: 23.0
   }
   size {
-    x: 390.0
-    y: 780.0
+    x: 189.0
+    y: 53.0
   }
   type: TYPE_BOX
-  id: "endgame_screen"
-  adjust_mode: ADJUST_MODE_STRETCH
+  id: "box6"
+  parent: "info_unit"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-  enabled: false
-}
-nodes {
-  position {
-    y: -175.0
-  }
-  size {
-    x: 390.0
-    y: 80.0
-  }
-  color {
-    y: 0.0
-    z: 0.0
-  }
-  type: TYPE_BOX
-  id: "queue_panel1"
-  yanchor: YANCHOR_TOP
-  adjust_mode: ADJUST_MODE_STRETCH
-  parent: "endgame_screen"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  type: TYPE_TEXT
-  text: "<text>"
-  font: "druid_text_bold"
-  id: "turn_text1"
-  parent: "endgame_screen"
-  inherit_alpha: true
-  alpha: 0.0
-}
-nodes {
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    x: 0.6
-    y: 0.3019608
-    z: 0.4
-  }
-  type: TYPE_BOX
-  id: "end_game_btn"
-  parent: "endgame_screen"
-  inherit_alpha: true
+  alpha: 0.1
   size_mode: SIZE_MODE_AUTO
 }
 material: "/builtins/materials/gui.material"

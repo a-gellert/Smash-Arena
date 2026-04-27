@@ -1,11 +1,13 @@
 -- damage_text.script
+local rendercam = require "rendercam.rendercam"
 function init(self)
 	-- Анимируем "всплытие" вверх
 	local pos = go.get_position()
 	go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, pos.y + 50, go.EASING_OUTQUAD, 0.5)
-
+	rendercam.shake(10, 0.2)
 	-- Анимируем исчезновение (прозрачность)
 	go.animate("#label", "color.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INQUAD, 0.75, 0, function()
 		go.delete() -- Удаляем объект, когда анимация кончилась
 	end)
+	
 end

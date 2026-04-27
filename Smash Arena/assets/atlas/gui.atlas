@@ -52,4 +52,25 @@ images {
 images {
   image: "/assets/sprites/arena_1.png"
 }
+images {
+  image: "/assets/sprites/almaz.png"
+}
+images {
+  image: "/assets/sprites/battle.png"
+}
+images {
+  image: "/assets/sprites/chest.png"
+}
+images {
+  image: "/assets/sprites/coin.png"
+}
+images {
+  image: "/assets/sprites/prestige.png"
+}
+images {
+  image: "/assets/sprites/settings.png"
+}
+images {
+  image: "/assets/sprites/store.png"
+}
 extrude_borders: 2

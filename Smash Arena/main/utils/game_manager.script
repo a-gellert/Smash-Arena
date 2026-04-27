@@ -74,9 +74,9 @@ local final_dir = vmath.normalize(messy_target - ai_pos)
 	-- Эффект "сомнения" ИИ
 	local start_angle = math.atan2(final_dir.y, final_dir.x) + (math.random() - 0.5) * 2.0 
 
-	local steps = 15 -- Фиксируем шаги для предсказуемости
+	local steps = 20 -- Фиксируем шаги для предсказуемости
 	for i = 1, steps do
-		timer.delay(i * 0.05, false, function()
+		timer.delay(i * 0.06, false, function()
 			if not go.exists(ai_unit_id) then return end
 			local ratio = i / steps
 			local current_angle = start_angle + (math.atan2(final_dir.y, final_dir.x) - start_angle) * ratio
