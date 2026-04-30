@@ -194,7 +194,7 @@ function on_message(self, message_id, message, sender)
 				elseif self.ability_method == "freeze_hit" then
 					msg.post(message.other_id, "apply_freeze", { slow_factor = self.ability_value / 100 })
 				end
-			else
+			elseif target_team == self.team_type and state.current_team == self.team_type then
 				-- УМЕНИЕ: Монах (Prayer - хил союзника при контакте)
 				if self.ability_method == "touch_heal" then
 					print("touch_heal" .. self.ability_value)

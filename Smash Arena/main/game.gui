@@ -28,8 +28,12 @@ nodes {
 }
 nodes {
   position {
-    x: 195.0
-    y: 390.0
+    x: 390.0
+    y: 780.0
+  }
+  scale {
+    x: 2.0
+    y: 2.0
   }
   size {
     x: 390.0
@@ -195,13 +199,19 @@ nodes {
   }
   size {
     x: 360.0
-    y: 90.0
+    y: 100.0
   }
   type: TYPE_BOX
+  texture: "gui/panel"
   id: "active_cards"
   parent: "tab_inventory"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
 }
 nodes {
   position {
@@ -228,10 +238,10 @@ nodes {
     y: 64.0
   }
   type: TYPE_BOX
+  texture: "units/paladin"
   id: "active_icon_1"
   parent: "active_slot_1"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -255,7 +265,7 @@ nodes {
 }
 nodes {
   position {
-    x: -32.0
+    x: -42.0
   }
   size {
     x: 32.0
@@ -278,10 +288,10 @@ nodes {
     y: 64.0
   }
   type: TYPE_BOX
+  texture: "units/paladin"
   id: "active_icon_2"
   parent: "active_slot_2"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -305,7 +315,7 @@ nodes {
 }
 nodes {
   position {
-    x: 70.0
+    x: 42.0
   }
   size {
     x: 32.0
@@ -328,10 +338,10 @@ nodes {
     y: 64.0
   }
   type: TYPE_BOX
+  texture: "units/paladin"
   id: "active_icon_3"
   parent: "active_slot_3"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -378,10 +388,10 @@ nodes {
     y: 64.0
   }
   type: TYPE_BOX
+  texture: "units/paladin"
   id: "active_icon_4"
   parent: "active_slot_4"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -433,6 +443,11 @@ nodes {
   size {
     x: 360.0
     y: 360.0
+  }
+  color {
+    x: 0.8666667
+    y: 0.84705883
+    z: 0.7882353
   }
   type: TYPE_BOX
   texture: "gui/panel"
@@ -511,7 +526,8 @@ nodes {
     y: 50.0
   }
   type: TYPE_TEXT
-  text: "11"
+  text: "1\n"
+  ""
   font: "druid_text_bold"
   id: "unit_level"
   parent: "unit_card_template"
@@ -519,11 +535,16 @@ nodes {
 }
 nodes {
   position {
-    y: 180.0
+    y: 160.5
   }
   size {
     x: 320.0
-    y: 220.0
+    y: 240.0
+  }
+  color {
+    x: 0.8647541
+    y: 0.8456439
+    z: 0.78678447
   }
   type: TYPE_BOX
   texture: "gui/panel"
@@ -536,11 +557,12 @@ nodes {
     z: 16.0
     w: 16.0
   }
+  enabled: false
 }
 nodes {
   position {
     x: -101.0
-    y: 46.0
+    y: 59.5
   }
   size {
     x: 90.0
@@ -555,20 +577,20 @@ nodes {
 nodes {
   position {
     x: -54.0
-    y: 47.0
+    y: 60.5
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.4
+    y: 0.4
   }
   size {
-    x: 600.0
+    x: 500.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "Wall: Heals ability_value HP after stopping.Wall: Heals ability_value HP after stopping."
@@ -583,11 +605,12 @@ nodes {
   line_break: true
   parent: "info_box"
   inherit_alpha: true
+  outline_alpha: 0.0
 }
 nodes {
   position {
     x: 29.0
-    y: -20.0
+    y: -45.5
   }
   size {
     x: 160.0
@@ -622,11 +645,11 @@ nodes {
 nodes {
   position {
     x: -101.0
-    y: -26.0
+    y: -19.5
   }
   size {
     x: 80.0
-    y: 50.0
+    y: 72.0
   }
   type: TYPE_BOX
   id: "box"
@@ -637,99 +660,179 @@ nodes {
 }
 nodes {
   position {
-    x: -35.0
-    y: 22.0
+    x: 38.5
+    y: 20.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "100\n"
   ""
   font: "druid_text_bold"
   id: "unit_hp_txt"
-  pivot: PIVOT_NW
+  pivot: PIVOT_E
   outline {
     x: 0.101960786
     y: 0.3019608
     z: 0.3019608
   }
   parent: "box"
+  outline_alpha: 0.0
 }
 nodes {
   position {
-    x: -35.0
-    y: 7.0
+    x: 38.5
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "20"
   font: "druid_text_bold"
   id: "unit_damage_txt"
-  pivot: PIVOT_NW
+  pivot: PIVOT_E
   outline {
     x: 0.101960786
     y: 0.3019608
     z: 0.3019608
   }
   parent: "box"
+  outline_alpha: 0.0
 }
 nodes {
   position {
-    x: -35.0
-    y: -8.0
+    x: 38.5
+    y: -20.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "10"
   font: "druid_text_bold"
   id: "unit_speed_txt"
-  pivot: PIVOT_NW
+  pivot: PIVOT_E
   outline {
     x: 0.101960786
     y: 0.3019608
     z: 0.3019608
   }
   parent: "box"
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    x: -40.0
+    y: 30.0
+  }
+  scale {
+    x: 0.4
+    y: 0.4
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "HP"
+  font: "druid_text_bold"
+  id: "info_unit_hp_txt2"
+  pivot: PIVOT_NW
+  parent: "box"
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    x: -40.0
+    y: 10.0
+  }
+  scale {
+    x: 0.4
+    y: 0.4
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "DMG"
+  font: "druid_text_bold"
+  id: "info_unit_damage_txt2"
+  pivot: PIVOT_NW
+  parent: "box"
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    x: -40.0
+    y: -10.0
+  }
+  scale {
+    x: 0.4
+    y: 0.4
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "SPD"
+  font: "druid_text_bold"
+  id: "info_unit_speed_txt2"
+  pivot: PIVOT_NW
+  parent: "box"
+  outline_alpha: 0.0
 }
 nodes {
   position {
     x: -60.0
-    y: -77.0
+    y: -91.5
   }
   size {
     x: 100.0
@@ -766,11 +869,12 @@ nodes {
   id: "upgrade_price_label"
   parent: "upgrade_btn"
   inherit_alpha: true
+  outline_alpha: 0.0
 }
 nodes {
   position {
     x: 60.0
-    y: -77.0
+    y: -91.5
   }
   size {
     x: 100.0
@@ -789,24 +893,56 @@ nodes {
   }
 }
 nodes {
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    y: 0.95686275
+    z: 0.8
+  }
+  type: TYPE_TEXT
+  text: "USE"
+  font: "druid_text_bold"
+  id: "text4"
+  parent: "use_btn"
+  inherit_alpha: true
+  outline_alpha: 0.0
+}
+nodes {
   position {
     x: 128.0
-    y: 78.0
+    y: 88.0
   }
+  size {
+    x: 40.0
+    y: 40.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_red"
+  id: "close_info_box_btn"
+  parent: "info_box"
+  inherit_alpha: true
+}
+nodes {
   size {
     x: 32.0
     y: 32.0
   }
   type: TYPE_BOX
-  id: "close_info_box_btn"
-  parent: "info_box"
+  texture: "gui/cancel"
+  id: "box10"
+  parent: "close_info_box_btn"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
     x: 29.0
-    y: -18.0
+    y: -43.5
   }
   scale {
     x: 0.5
@@ -830,7 +966,7 @@ nodes {
 nodes {
   position {
     x: -54.0
-    y: 72.0
+    y: 85.5
   }
   scale {
     x: 0.7
@@ -851,6 +987,31 @@ nodes {
   pivot: PIVOT_W
   parent: "info_box"
   inherit_alpha: true
+}
+nodes {
+  position {
+    y: 146.0
+  }
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 200.0
+    y: 64.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.6
+  }
+  type: TYPE_TEXT
+  text: "Choose Place"
+  font: "druid_text_bold"
+  id: "choose_txt"
+  parent: "tab_inventory"
+  inherit_alpha: true
+  outline_alpha: 0.0
+  enabled: false
 }
 nodes {
   position {
@@ -1154,8 +1315,12 @@ nodes {
 }
 nodes {
   position {
-    x: 195.0
-    y: 390.0
+    x: 390.0
+    y: 780.0
+  }
+  scale {
+    x: 2.0
+    y: 2.0
   }
   size {
     x: 390.0
@@ -1170,15 +1335,16 @@ nodes {
 }
 nodes {
   position {
-    y: 363.0
+    y: 350.0
   }
   size {
     x: 390.0
-    y: 55.0
+    y: 80.0
   }
   color {
-    x: 0.6
-    y: 0.7019608
+    x: 0.2
+    y: 0.2
+    z: 0.2
   }
   type: TYPE_BOX
   id: "header"
@@ -1186,7 +1352,7 @@ nodes {
   adjust_mode: ADJUST_MODE_STRETCH
   parent: "main_game"
   inherit_alpha: true
-  alpha: 0.4
+  alpha: 0.7
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
@@ -1201,12 +1367,6 @@ nodes {
   texture: "gui/btn_red"
   id: "quit_btn"
   parent: "header"
-  slice9 {
-    x: 16.0
-    y: 16.0
-    z: 16.0
-    w: 16.0
-  }
 }
 nodes {
   size {
@@ -1218,6 +1378,147 @@ nodes {
   id: "box4"
   parent: "quit_btn"
   inherit_alpha: true
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  size {
+    x: 60.0
+    y: 60.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_5"
+  parent: "header"
+  alpha: 0.76
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 55.0
+    y: 55.0
+  }
+  type: TYPE_BOX
+  texture: "units/berserker"
+  id: "ico_5"
+  parent: "unit_icon_5"
+}
+nodes {
+  position {
+    x: -35.0
+  }
+  size {
+    x: 60.0
+    y: 60.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_6"
+  parent: "header"
+  alpha: 0.76
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 55.0
+    y: 55.0
+  }
+  type: TYPE_BOX
+  texture: "units/berserker"
+  id: "ico_6"
+  parent: "unit_icon_6"
+}
+nodes {
+  position {
+    x: 30.0
+  }
+  size {
+    x: 60.0
+    y: 60.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_7"
+  parent: "header"
+  alpha: 0.76
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 55.0
+    y: 55.0
+  }
+  type: TYPE_BOX
+  texture: "units/berserker"
+  id: "ico_7"
+  parent: "unit_icon_7"
+}
+nodes {
+  position {
+    x: 95.0
+  }
+  size {
+    x: 60.0
+    y: 60.0
+  }
+  color {
+    x: 0.5019608
+    y: 0.5019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  id: "unit_icon_8"
+  parent: "header"
+  alpha: 0.76
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 55.0
+    y: 55.0
+  }
+  type: TYPE_BOX
+  texture: "units/berserker"
+  id: "ico_8"
+  parent: "unit_icon_8"
+}
+nodes {
+  position {
+    x: -163.0
+    y: 15.0
+  }
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    y: 0.5019608
+    z: 0.5019608
+  }
+  type: TYPE_TEXT
+  text: "The Enemy\n"
+  "Team"
+  font: "druid_text_bold"
+  id: "text2"
+  parent: "header"
+  outline_alpha: 0.0
 }
 nodes {
   position {
@@ -1241,46 +1542,28 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
-  position {
-    x: 97.5
-  }
   size {
-    x: 195.0
+    x: 390.0
     y: 80.0
   }
   color {
-    y: 0.6
-    z: 0.6
-  }
-  type: TYPE_BOX
-  id: "box1"
-  parent: "queue_panel"
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    x: -97.5
-  }
-  size {
-    x: 195.0
-    y: 80.0
-  }
-  color {
-    x: 0.6
-    y: 0.7019608
+    x: 0.2
+    y: 0.2
+    z: 0.2
   }
   type: TYPE_BOX
   id: "box2"
   parent: "queue_panel"
+  alpha: 0.7
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
-    x: -170.0
+    x: -100.0
   }
   size {
-    x: 44.0
-    y: 64.0
+    x: 60.0
+    y: 60.0
   }
   color {
     x: 0.5019608
@@ -1294,12 +1577,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
-  position {
-    y: 10.0
-  }
   size {
-    x: 44.0
-    y: 44.0
+    x: 55.0
+    y: 55.0
   }
   type: TYPE_BOX
   texture: "units/berserker"
@@ -1308,39 +1588,11 @@ nodes {
 }
 nodes {
   position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
+    x: -35.0
   }
   size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "10/120"
-  font: "druid_text_bold"
-  id: "unit_icon_text_1"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_1"
-}
-nodes {
-  position {
-    x: -122.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
+    x: 60.0
+    y: 60.0
   }
   color {
     x: 0.5019608
@@ -1354,12 +1606,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
-  position {
-    y: 10.0
-  }
   size {
-    x: 44.0
-    y: 44.0
+    x: 55.0
+    y: 55.0
   }
   type: TYPE_BOX
   texture: "units/berserker"
@@ -1368,40 +1617,11 @@ nodes {
 }
 nodes {
   position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
+    x: 30.0
   }
   size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_2"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_2"
-}
-nodes {
-  position {
-    x: -74.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
+    x: 60.0
+    y: 60.0
   }
   color {
     x: 0.5019608
@@ -1415,12 +1635,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
-  position {
-    y: 10.0
-  }
   size {
-    x: 44.0
-    y: 44.0
+    x: 55.0
+    y: 55.0
   }
   type: TYPE_BOX
   texture: "units/berserker"
@@ -1429,40 +1646,11 @@ nodes {
 }
 nodes {
   position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
+    x: 95.0
   }
   size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_3"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_3"
-}
-nodes {
-  position {
-    x: -26.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
+    x: 60.0
+    y: 60.0
   }
   color {
     x: 0.5019608
@@ -1476,12 +1664,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
-  position {
-    y: 10.0
-  }
   size {
-    x: 44.0
-    y: 44.0
+    x: 55.0
+    y: 55.0
   }
   type: TYPE_BOX
   texture: "units/berserker"
@@ -1490,276 +1675,28 @@ nodes {
 }
 nodes {
   position {
-    y: -22.0
+    x: -163.0
+    y: 12.0
   }
   scale {
-    x: 0.25
-    y: 0.25
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 200.0
     y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_4"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_4"
-}
-nodes {
-  position {
-    x: 26.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
   }
   color {
     x: 0.5019608
-    y: 0.5019608
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_5"
-  parent: "queue_panel"
-  alpha: 0.76
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 44.0
-    y: 44.0
-  }
-  type: TYPE_BOX
-  texture: "units/berserker"
-  id: "ico_5"
-  parent: "unit_icon_5"
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
+    y: 0.6
   }
   type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
+  text: "Your\n"
+  "Team"
   font: "druid_text_bold"
-  id: "unit_icon_text_5"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_5"
-}
-nodes {
-  position {
-    x: 74.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    x: 0.5019608
-    y: 0.5019608
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_6"
+  id: "text3"
   parent: "queue_panel"
-  alpha: 0.76
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 44.0
-    y: 44.0
-  }
-  type: TYPE_BOX
-  texture: "units/berserker"
-  id: "ico_6"
-  parent: "unit_icon_6"
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_6"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_6"
-}
-nodes {
-  position {
-    x: 122.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    x: 0.5019608
-    y: 0.5019608
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_7"
-  parent: "queue_panel"
-  alpha: 0.76
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 44.0
-    y: 44.0
-  }
-  type: TYPE_BOX
-  texture: "units/berserker"
-  id: "ico_7"
-  parent: "unit_icon_7"
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_7"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_7"
-}
-nodes {
-  position {
-    x: 170.0
-  }
-  size {
-    x: 44.0
-    y: 64.0
-  }
-  color {
-    x: 0.5019608
-    y: 0.5019608
-    z: 0.5019608
-  }
-  type: TYPE_BOX
-  id: "unit_icon_8"
-  parent: "queue_panel"
-  alpha: 0.76
-  size_mode: SIZE_MODE_AUTO
-}
-nodes {
-  position {
-    y: 10.0
-  }
-  size {
-    x: 44.0
-    y: 44.0
-  }
-  type: TYPE_BOX
-  texture: "units/berserker"
-  id: "ico_8"
-  parent: "unit_icon_8"
-}
-nodes {
-  position {
-    y: -22.0
-  }
-  scale {
-    x: 0.25
-    y: 0.25
-  }
-  size {
-    x: 200.0
-    y: 100.0
-  }
-  color {
-    y: 0.95686275
-    z: 0.8
-  }
-  type: TYPE_TEXT
-  text: "Paladin\n"
-  ""
-  font: "druid_text_bold"
-  id: "unit_icon_text_8"
-  outline {
-    x: 0.2
-    y: 0.2
-    z: 0.2
-  }
-  line_break: true
-  parent: "unit_icon_8"
+  outline_alpha: 0.0
 }
 nodes {
   size {
@@ -1968,6 +1905,11 @@ nodes {
     x: 320.0
     y: 216.0
   }
+  color {
+    x: 0.8666667
+    y: 0.84705883
+    z: 0.7882353
+  }
   type: TYPE_BOX
   texture: "gui/panel"
   id: "info_unit"
@@ -2028,17 +1970,17 @@ nodes {
     y: 47.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.4
+    y: 0.4
   }
   size {
-    x: 600.0
+    x: 500.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.2
+    y: 0.3019608
+    z: 0.7019608
   }
   type: TYPE_TEXT
   text: "Wall: Heals ability_value HP after stopping.Wall: Heals ability_value HP after stopping."
@@ -2047,21 +1989,22 @@ nodes {
   pivot: PIVOT_NW
   outline {
     x: 0.101960786
-    y: 0.3019608
-    z: 0.3019608
+    y: 0.2
+    z: 0.6
   }
   line_break: true
   parent: "info_unit"
   inherit_alpha: true
+  outline_alpha: 0.0
 }
 nodes {
   position {
     x: -101.0
-    y: -26.0
+    y: -35.0
   }
   size {
     x: 80.0
-    y: 50.0
+    y: 80.0
   }
   type: TYPE_BOX
   id: "box3"
@@ -2072,21 +2015,21 @@ nodes {
 }
 nodes {
   position {
-    x: -35.0
-    y: 22.0
+    x: -3.0
+    y: 36.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.5
+    y: 0.5
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "100\n"
@@ -2100,24 +2043,25 @@ nodes {
     z: 0.3019608
   }
   parent: "box3"
+  outline_alpha: 0.0
 }
 nodes {
   position {
-    x: -35.0
-    y: 7.0
+    x: -3.0
+    y: 10.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.5
+    y: 0.5
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "20"
@@ -2130,24 +2074,25 @@ nodes {
     z: 0.3019608
   }
   parent: "box3"
+  outline_alpha: 0.0
 }
 nodes {
   position {
-    x: -35.0
-    y: -8.0
+    x: -3.0
+    y: -16.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.5
+    y: 0.5
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.5137255
-    y: 0.7882353
-    z: 0.99607843
+    x: 0.101960786
+    y: 0.2
+    z: 0.6
   }
   type: TYPE_TEXT
   text: "10"
@@ -2160,6 +2105,85 @@ nodes {
     z: 0.3019608
   }
   parent: "box3"
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    x: -40.0
+    y: 33.5
+  }
+  scale {
+    x: 0.4
+    y: 0.4
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.8
+    y: 0.2
+    z: 0.2
+  }
+  type: TYPE_TEXT
+  text: "HP"
+  font: "druid_text_bold"
+  id: "info_unit_hp_txt1"
+  pivot: PIVOT_NW
+  parent: "box3"
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    x: -40.0
+    y: 7.0
+  }
+  scale {
+    x: 0.4
+    y: 0.4
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.8
+    y: 0.2
+    z: 0.2
+  }
+  type: TYPE_TEXT
+  text: "DMG"
+  font: "druid_text_bold"
+  id: "info_unit_damage_txt1"
+  pivot: PIVOT_NW
+  parent: "box3"
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    x: -40.0
+    y: -18.5
+  }
+  scale {
+    x: 0.4
+    y: 0.4
+  }
+  size {
+    x: 100.0
+    y: 50.0
+  }
+  color {
+    x: 0.8
+    y: 0.2
+    z: 0.2
+  }
+  type: TYPE_TEXT
+  text: "SPD"
+  font: "druid_text_bold"
+  id: "info_unit_speed_txt1"
+  pivot: PIVOT_NW
+  parent: "box3"
+  outline_alpha: 0.0
 }
 nodes {
   size {
@@ -2214,11 +2238,11 @@ nodes {
 nodes {
   position {
     x: 39.0
-    y: 23.0
+    y: -1.0
   }
   size {
     x: 189.0
-    y: 53.0
+    y: 100.0
   }
   type: TYPE_BOX
   id: "box6"

@@ -71,10 +71,6 @@ var CUSTOM_PARAMETERS = {
         var is_iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         var buttonHeight = 0;
         
-        buttonHeight = 42;
-        
-        
-        buttonHeight = 42;
         
         // Hack for iOS when exit from Fullscreen mode
         if (is_iOS) {
@@ -92,8 +88,8 @@ var CUSTOM_PARAMETERS = {
         }
         CUSTOM_PARAMETERS.resize_window_prev_inner_width = innerWidth;
         CUSTOM_PARAMETERS.resize_window_prev_inner_height = innerHeight;
-        var width = 390;
-        var height = 780;
+        var width = 780;
+        var height = 1560;
         var targetRatio = width / height;
         var actualRatio = innerWidth / innerHeight;
     

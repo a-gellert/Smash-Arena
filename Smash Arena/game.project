@@ -6,8 +6,8 @@ render = /rendercam/rendercam.renderc
 shared_state = 1
 
 [display]
-width = 390
-height = 780
+width = 780
+height = 1560
 high_dpi = 1
 
 [android]
@@ -20,6 +20,9 @@ debug = 0
 
 [html5]
 scale_mode = stretch
+show_made_with_defold = 0
+show_console_banner = 0
+show_fullscreen_button = 0
 
 [project]
 title = Smash Arena

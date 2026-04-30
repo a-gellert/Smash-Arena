@@ -10,8 +10,8 @@ compress_archive = 1
 title_as_file_name = SmashArena
 
 [display]
-width = 390
-height = 780
+width = 780
+height = 1560
 high_dpi = 1
 samples = 0
 fullscreen = 0
@@ -185,9 +185,9 @@ archive_location_prefix = archive
 archive_location_suffix = 
 engine_arguments = --verify-graphics-calls=false
 wasm_streaming = 0
-show_fullscreen_button = 1
-show_made_with_defold = 1
-show_console_banner = 1
+show_fullscreen_button = 0
+show_made_with_defold = 0
+show_console_banner = 0
 scale_mode = stretch
 transparent_graphics_context = 0
 

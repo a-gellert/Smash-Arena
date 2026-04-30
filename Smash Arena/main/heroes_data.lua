@@ -91,7 +91,7 @@ local function format_text(text, value)
 end
 
 function M.get_description(hero_id, lang)
-	lang = lang or "ru"
+	lang = lang or "en"
 	local hero = M.heroes[hero_id]
 
 	if hero and M.strings[hero.desc_key] then
@@ -105,7 +105,7 @@ end
 -- Получение имени
 function M.get_name(hero_id, lang)
 
-	lang = lang or "ru" -- По умолчанию русский, если не указан
+	lang = lang or "en" -- По умолчанию русский, если не указан
 	local hero = M.heroes[hero_id]
 	print(hero.name_key)
 	if hero and hero.name_key then

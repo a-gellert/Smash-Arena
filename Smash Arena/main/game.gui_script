@@ -14,24 +14,32 @@ local player = {
 local function refresh_active_deck_ui(self)
 	for i = 1, 4 do
 		local hero_id = state.active_deck[i]
-		-- Ищем ноды по имени (убедись, что в GUI они называются именно так)
 		local level_label = gui.get_node("active_level_txt_" .. i)
 		local icon_node = gui.get_node("active_icon_" .. i)
 
 		if hero_id then
+			-- Достаем статические данные героя (имя, иконку и т.д.)
+			local hero_static = data.heroes[hero_id]
 			local level = state.hero_levels[hero_id] or 1
-			-- Ставим текст уровня
-			gui.set_text(level_label, level)
 
-			-- Меняем иконку (если есть атлас)
-			-- gui.play_flipbook(icon_node, "hero_" .. hero_id)
+			if hero_static then
+				-- Уровень
+				gui.set_text(level_label, "Lvl " .. level)
 
-			-- Визуально выделяем, что слот занят
-			gui.set_alpha(icon_node, 1.0)
+				-- Иконка: используем name_key из твоей таблицы M.heroes
+				-- Обязательно оборачиваем в hash()
+				local anim_id = hash(hero_static.name_key)
+				gui.play_flipbook(icon_node, anim_id)
+
+				gui.set_enabled(icon_node, true)
+				gui.set_alpha(icon_node, 1.0)
+			end
 		else
-			-- Если вдруг слот пустой
+			-- Если слот пустой (например, в начале игры)
 			gui.set_text(level_label, "")
 			gui.set_alpha(icon_node, 0.2)
+			-- Можно либо выключить ноду, либо оставить полупрозрачной
+			-- gui.set_enabled(icon_node, false)
 		end
 	end
 end
@@ -83,7 +91,7 @@ local function update_info_panel(self, hero_id)
 
 	-- Отрисовка
 	gui.set_text(gui.get_node("unit_level"),  current_level)
-	gui.set_text(gui.get_node("upgrade_price_label"), gold_cost .. " золота")
+	gui.set_text(gui.get_node("upgrade_price_label"), gold_cost .. " coins")
 	gui.set_text(gui.get_node("upgrade_cards_label"), player_cards .. " / " .. cards_req)
 
 	-- Визуальный фидбек кнопки (смена цвета если не хватает денег/карт)
@@ -108,18 +116,26 @@ local function hide_info_box(self)
 end
 -- Функция заполнения окна данными (наш "Report Builder")
 local function show_info_box(self, hero_id, current_hp, max_hp, level)
+	local window_w, window_h = window.get_size()
+	local scale_val = 1 -- По умолчанию портрет
+
+	if window_w > window_h then
+		scale_val = 2 -- Ландшафт
+	end
+
+	gui.set_scale(gui.get_node("info_unit"), vmath.vector3(scale_val, scale_val, 1))
+	
 	local hero_base = data.heroes[hero_id]
 	local stats = data.get_stats(hero_id, level)
-
-	gui.set_enabled(gui.get_node("info_unit"), true)
 
 	-- Заполняем текстовые поля
 	gui.set_text(gui.get_node("info_unit_name"), data.get_name(hero_id, "en"))
 	gui.set_text(gui.get_node("info_unit_description"), data.get_description(hero_id, "en"))
-	gui.set_text(gui.get_node("info_unit_hp_txt"), "HP: " .. current_hp .. "/" .. max_hp)
-	gui.set_text(gui.get_node("info_unit_damage_txt"), "Урон: " .. stats.damage)
-	gui.set_text(gui.get_node("info_unit_speed_txt"), "Скорость: " .. (stats.speed or "Норм"))
+	gui.set_text(gui.get_node("info_unit_hp_txt"), current_hp .. "/" .. max_hp)
+	gui.set_text(gui.get_node("info_unit_damage_txt"),  stats.damage)
+	gui.set_text(gui.get_node("info_unit_speed_txt"), (stats.speed or "Норм"))
 
+	gui.set_enabled(gui.get_node("info_unit"), true)
 	local icon_path = hero_base.name_key 
 	gui.play_flipbook(gui.get_node("info_unit_icon"), hash(icon_path))
 	-- Меняем иконку (предполагаем, что имя кадра в атласе совпадает с hero_id или прописано в data)
@@ -140,7 +156,7 @@ local function refresh_queue_panel(self)
 				-- 2. Берем name_key именно этого героя
 				if hero_static_data then
 					local name = data.get_name(hero_id, "en")
-					gui.set_text(gui.get_node("unit_icon_text_" .. i), name)
+--					gui.set_text(gui.get_node("unit_icon_text_" .. i), name)
 
 					-- 3. Достаем ключ анимации (например, "paladin_name")
 					local anim_id = hash(hero_static_data.name_key)
@@ -171,7 +187,7 @@ end
 
 
 local function show_screen(self, screen_name)
-	local screens = { "main_menu", "lobby_screen", "main_game", "endgame_screen" }
+	local screens = { "main_menu", "lobby_screen", "main_game" }
 	for _, name in ipairs(screens) do
 		gui.set_enabled(gui.get_node(name), name == screen_name)
 	end
@@ -189,16 +205,26 @@ local function update_info_box(self, hero_id)
 	local hero = data.heroes[hero_id]
 	local level = state.hero_levels[hero_id] or 1
 	local stats = data.get_stats(hero_id, level)
+	local window_w, window_h = window.get_size()
+	local scale_val = 1 -- По умолчанию портрет
+	local y =180
 
-	gui.set_text(gui.get_node("unit_name"), data.strings[hero.name_key].ru)
+	if window_w > window_h then
+		scale_val = 1.5 -- Ландшафт
+		y= 100
+	end
+
+	gui.set_scale(gui.get_node("info_box"), vmath.vector3(scale_val, scale_val, 1))
+	gui.set_position(gui.get_node("info_box"), vmath.vector3(0, y, 1))
+	gui.set_text(gui.get_node("unit_name"), data.strings[hero.name_key].en)
 
 	-- Заменяем плейсхолдер ability_value на реальное число
-	local desc = data.strings[hero.desc_key].ru:gsub("ability_value", tostring(hero.ability_value))
+	local desc = data.strings[hero.desc_key].en:gsub("ability_value", tostring(hero.ability_value))
 	gui.set_text(gui.get_node("unit_description"), desc)
 
-	gui.set_text(gui.get_node("unit_hp_txt"), "HP: " .. stats.hp)
-	gui.set_text(gui.get_node("unit_damage_txt"), "DMG: " .. stats.damage)
-	gui.set_text(gui.get_node("unit_speed_txt"), "SPD: " .. string.format("%.1f", stats.speed))
+	gui.set_text(gui.get_node("unit_hp_txt"),  stats.hp)
+	gui.set_text(gui.get_node("unit_damage_txt"),  stats.damage)
+	gui.set_text(gui.get_node("unit_speed_txt"),  string.format("%.1f", stats.speed))
 	
 	local hero_data = data.heroes[hero_id]
 	-- Собираем путь к кадру. ВАЖНО: hash() применяется ко ВСЕЙ строке пути, а не к её части.
@@ -239,7 +265,66 @@ end
 --------------------------
 -- Жизненный цикл
 --------------------------
+local function init_inventory(self)
+	local parent = gui.get_node("all_cards")
+	local template_node = gui.get_node("unit_card_template")
+	gui.set_enabled(template_node, false)
 
+	self.all_cards_nodes = {}
+
+	for i = 1, #data.heroes do
+		local hero = data.heroes[i]
+		local nodes = gui.clone_tree(template_node)
+
+		-- ВНИМАНИЕ: Проверь эти ID в окне Outline в Defold!
+		-- Если нода называется "level", то пиши hash("level")
+		local root = nodes[hash("unit_card_template")]
+		local icon = nodes[hash("unit_card_icon")]
+		local level_txt = nodes[hash("unit_card_level_template")]
+		local count_txt = nodes[hash("unit_card_count_template")]
+
+		-- Отладка: если падает, раскомментируй строку ниже и посмотри в консоль
+		-- pprint(nodes) 
+
+		if root then
+			gui.set_parent(root, parent)
+			gui.set_enabled(root, true)
+
+			-- Безопасная установка иконки
+			if icon then
+				local icon_path = hero.name_key 
+				gui.play_flipbook(icon, hash(icon_path))
+			else
+				print("ОШИБКА: Нода иконки не найдена! Проверь ID.")
+			end
+
+			-- Безопасная установка уровня
+			if level_txt then
+				local level = state.hero_levels[hero.id] or 1
+				gui.set_text(level_txt, "Lvl " .. level)
+			else
+				-- Если ты здесь, значит в хеше ошибка
+				print("ОШИБКА: Нода уровня не найдена. Ищу: unit_card_level_template")
+			end
+
+			-- Позиционирование
+			local row = math.floor((i - 1) / GRID_COLS)
+
+			local col = (i - 1) % GRID_COLS
+
+			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING) - 135, -row * (ITEM_SIZE + PADDING) + 135, 0)
+
+			gui.set_position(root, pos)
+			table.insert(self.all_cards_nodes, { 
+				hero_id = hero.id, 
+				root = root,
+				level_node = level_txt,
+				count_node = count_txt,
+				icon_node = icon
+			})
+		end
+	end
+end
 function init(self)
 	msg.post(".", "acquire_input_focus")
 
@@ -255,41 +340,7 @@ function init(self)
 	self.active_hero_for_info = nil -- Храним, кого сейчас "инспектируем"
 	-- 2. Заполняем all_cards карточками из heroes_data
 	-- Внутри функции init(self)
-	local parent = gui.get_node("all_cards")
-	for i = 1, #data.heroes do
-		local hero = data.heroes[i]
-		local template_node = gui.get_node("unit_card_template")
-		local nodes = gui.clone_tree(template_node)
-		
-		local icon_path = hero.name_key 
-		gui.play_flipbook(gui.get_node("unit_card_icon"), hash(icon_path))
-		
-		-- В Defold клонированные ноды в таблице 'nodes' сохраняют свои исходные ID из редактора
-		local root = nodes[hash("unit_card_template")]
-		local level_txt = nodes[hash("unit_card_level_template")] -- замени на свои ID из GUI
-		local count_txt = nodes[hash("unit_card_count_template")] -- замени на свои ID из GUI
-		--local hero_data = data.heroes[hero_id]
-		-- Собираем путь к кадру. ВАЖНО: hash() применяется ко ВСЕЙ строке пути, а не к её части.
-	
-		if root then
-			gui.set_parent(root, parent)
-			gui.set_enabled(root, true)
-
-			-- Позиционирование
-			local row = math.floor((i - 1) / GRID_COLS)
-			local col = (i - 1) % GRID_COLS
-			local pos = vmath.vector3(col * (ITEM_SIZE + PADDING) - 135, -row * (ITEM_SIZE + PADDING) + 135, 0)
-			gui.set_position(root, pos)
-
-			-- СОХРАНЯЕМ ПРЯМЫЕ ССЫЛКИ
-			table.insert(self.all_cards_nodes, { 
-				hero_id = hero.id, 
-				root = root,
-				level_node = level_txt,
-				count_node = count_txt
-			})
-		end
-	end
+	init_inventory(self)
 	refresh_active_deck_ui(self)
 	-- 3. Рисуем начальную колоду
 	refresh_active_deck(self)
@@ -487,6 +538,21 @@ function on_input(self, action_id, action)
 		if gui.pick_node(gui.get_node("use_btn"), action.x, action.y) and self.selected_hero_id then
 			self.is_waiting_for_swap = true
 			gui.set_enabled(gui.get_node("info_box"), false)
+			local node = gui.get_node("choose_txt")
+
+			-- 1. Сразу делаем текст видимым и непрозрачным
+			gui.set_enabled(node, true)
+			gui.set_color(node, vmath.vector4(1, 1, 1, 1)) -- Альфа = 1
+
+			-- 2. Запускаем анимацию исчезновения:
+			-- "color.w" — это прозрачность (alpha)
+			-- 0 — конечное значение (невидимый)
+			-- 0.5 — длительность самого исчезновения (полсекунды)
+			-- 2.0 — ЗАДЕРЖКА перед началом (то самое время, когда текст висит)
+			gui.animate(node, "color.w", 0, gui.EASING_INQUAD, 0.5, 2.0, function()
+				-- Когда анимация закончится, полностью выключаем ноду
+				gui.set_enabled(node, false)
+			end)
 			return true
 		end-- Кнопка USE
 		if gui.pick_node(gui.get_node("close_info_box_btn"), action.x, action.y) and self.selected_hero_id then
@@ -499,9 +565,11 @@ function on_input(self, action_id, action)
 		if self.is_waiting_for_swap then
 			for i = 1, 4 do
 				if gui.pick_node(gui.get_node("active_slot_" .. i), action.x, action.y) then
+					gui.set_enabled(gui.get_node("choose_txt"), false)
 					player.active_squad[i] = self.selected_hero_id
 					self.is_waiting_for_swap = false
 					refresh_active_deck(self)
+
 					return true
 				end
 			end

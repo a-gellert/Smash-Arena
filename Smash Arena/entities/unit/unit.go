@@ -22,7 +22,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 27.5\n"
+  "  data: 32.0\n"
   "}\n"
   "linear_damping: 0.7\n"
   "angular_damping: 1.0\n"
@@ -34,18 +34,28 @@ embedded_components {
   type: "sprite"
   data: "default_animation: \"hp_bar_back\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
+  "slice9 {\n"
+  "  x: 8.0\n"
+  "  y: 8.0\n"
+  "  z: 8.0\n"
+  "  w: 8.0\n"
+  "}\n"
+  "size {\n"
+  "  x: 64.0\n"
+  "  y: 21.0\n"
+  "}\n"
+  "size_mode: SIZE_MODE_MANUAL\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
   "  texture: \"/assets/atlas/gui.atlas\"\n"
   "}\n"
   ""
   position {
-    x: -21.0
-    y: 40.0
+    x: -29.0
+    y: 44.0
     z: 0.5
   }
   scale {
-    x: 0.75
     y: 0.5
   }
 }
@@ -69,8 +79,8 @@ embedded_components {
     z: 0.35
   }
   scale {
-    x: 0.44
-    y: 0.44
+    x: 0.5
+    y: 0.5
   }
 }
 embedded_components {
@@ -88,12 +98,12 @@ embedded_components {
   "}\n"
   ""
   position {
-    x: -22.0
-    y: 40.0
+    x: -30.0
+    y: 44.0
     z: 0.6
   }
   scale {
-    x: 5.7
+    x: 7.5
     y: 1.05
   }
 }
@@ -111,8 +121,8 @@ embedded_components {
     z: 0.3
   }
   scale {
-    x: 0.165
-    y: 0.165
+    x: 0.2
+    y: 0.2
   }
 }
 embedded_components {
@@ -126,7 +136,7 @@ embedded_components {
   "}\n"
   ""
   scale {
-    x: 1.1
-    y: 1.1
+    x: 1.25
+    y: 1.25
   }
 }
