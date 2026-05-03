@@ -76,7 +76,7 @@ embedded_components {
   "}\n"
   ""
   position {
-    z: 0.35
+    z: 0.3
   }
   scale {
     x: 0.5
@@ -118,7 +118,7 @@ embedded_components {
   "}\n"
   ""
   position {
-    z: 0.3
+    z: 0.25
   }
   scale {
     x: 0.2
@@ -128,6 +128,24 @@ embedded_components {
 embedded_components {
   id: "outline"
   type: "sprite"
+  data: "default_animation: \"path59\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/assets/atlas/gui.atlas\"\n"
+  "}\n"
+  ""
+  position {
+    z: 0.18
+  }
+  scale {
+    x: 0.6
+    y: 0.6
+  }
+}
+embedded_components {
+  id: "effect"
+  type: "sprite"
   data: "default_animation: \"ui_circle_64\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
@@ -135,8 +153,16 @@ embedded_components {
   "  texture: \"/druid/druid.atlas\"\n"
   "}\n"
   ""
-  scale {
-    x: 1.25
-    y: 1.25
-  }
+}
+embedded_components {
+  id: "effect_one_shot_factory"
+  type: "factory"
+  data: "prototype: \"/entities/particle/one_shot.go\"\n"
+  ""
+}
+embedded_components {
+  id: "effect_constant_factory"
+  type: "factory"
+  data: "prototype: \"/entities/particle/constant.go\"\n"
+  ""
 }

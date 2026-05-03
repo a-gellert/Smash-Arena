@@ -236,7 +236,8 @@ function on_message(self, message_id, message, sender)
 	end
 	if message_id == hash("trigger_wave") then
 		local wave_pos = message.pos
-		local radius = 150 -- Радиус поражения волны
+		local radius = message.radius -- Радиус поражения волны
+		print("rad".. radius)
 		local force_mult = message.force -- Базовая сила из абилки (ability_value)
 		local owner_id = message.owner_id
 

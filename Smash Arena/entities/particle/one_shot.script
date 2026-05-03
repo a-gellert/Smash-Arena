@@ -1,0 +1,17 @@
+-- one_shot.script
+go.property("name", hash("none")) -- Сюда прилетит значение из фабрики
+
+function init(self)
+	if self.name ~= hash("none") then
+		-- Запускаем нужные частицы
+		-- Превращаем хеш обратно в строку для имени компонента или используем условия
+		local particle_id = "#" .. (self.name == hash("heal") and "heal" or "damage")
+
+		particlefx.play(particle_id)
+
+		-- Автоудаление объекта, когда частицы отыграют (например, через 1 сек)
+		timer.delay(1.5, false, function()
+			go.delete()
+		end)
+	end
+end

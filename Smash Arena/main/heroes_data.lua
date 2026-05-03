@@ -37,8 +37,8 @@ M.strings = {
 -- Масса и Скорость - это множители для физики Defold
 M.heroes = {
 	[1] = { id = 1, rarity = 1, name_key = "paladin", desc_key = "paladin_desc", hp = 88, damage = 15, mass = 2.5, speed_mult = 1.1, ability_value = 5, ability_method = "heal_on_stop" },
-	[2] = { id = 2, rarity = 1, name_key = "berserker", desc_key = "berserker_desc", hp = 67, damage = 22, mass = 1.2, speed_mult = 1.3, ability_value = 25, ability_method = "rage_damage" },
-	[3] = { id = 3, rarity = 1, name_key = "tank", desc_key = "tank_desc", hp = 102, damage = 12, mass = 5.0, speed_mult = 1.0, ability_value = 10, ability_method = "heavy_impact" },
+	[2] = { id = 2, rarity = 1, name_key = "berserker", desc_key = "berserker_desc", hp = 67, damage = 22, mass = 1.2, speed_mult = 1.3, ability_value = 75, ability_method = "rage_damage" },
+	[3] = { id = 3, rarity = 1, name_key = "tank", desc_key = "tank_desc", hp = 102, damage = 12, mass = 5.0, speed_mult = 1.5, ability_value = 10, ability_method = "heavy_impact" },
 	[4] = { id = 4, rarity = 2, name_key = "reaper", desc_key = "reaper_desc", hp = 48, damage = 19, mass = 0.8, speed_mult = 1.4, ability_value = 20, ability_method = "life_steal_kill" },
 	[5] = { id = 5, rarity = 2, name_key = "ice_mage", desc_key = "ice_mage_desc", hp = 60, damage = 14, mass = 1.1, speed_mult = 1.0, ability_value = 30, ability_method = "freeze_hit" },
 	[6] = { id = 6, rarity = 2, name_key = "bomber", desc_key = "bomber_desc", hp = 59, damage = 22, mass = 1.0, speed_mult = 1.1, ability_value = 50, ability_method = "death_explosion" },

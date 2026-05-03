@@ -73,4 +73,10 @@ images {
 images {
   image: "/assets/sprites/store.png"
 }
+images {
+  image: "/assets/sprites/finger.png"
+}
+images {
+  image: "/assets/sprites/path59.png"
+}
 extrude_borders: 2

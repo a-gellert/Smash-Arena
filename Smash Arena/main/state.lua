@@ -1,9 +1,27 @@
 local M = {}
 
 M.tutorial_step = 0 
--- 0: Не начат, 1: Показ колод, 2: Бой начат, 3: Бой окончен, 4: Меню (сундук), 5: Инвентарь
-M.has_unopened_chest = false
+-- 0: Не начат, 1: Показ колод, 2: Бой начат, 3: Бой окончен, 4: Меню (сундук), 5: Инвентарь, 10: не показываем
 
+M.has_unopened_chest = false
+M.STRINGS = {
+	step_1 = {
+		en = "Pull and shoot at the enemies!",
+		ru = "Натяни и пуляй во врагов!"
+	},
+	step_2 = {
+		en = "Each hero has a unique ability!",
+		ru = "У каждого героя есть своя способность!"
+	},
+	step_3 = {
+		en = "The Tank deals damage to nearby enemies after its turn.",
+		ru = "Танк наносит урон ближайшим врагам после окончания хода."
+	},
+	step_4 = {
+		en = "Players take turns sequentially. Good luck!",
+		ru = "Игроки ходят по очереди. Удачи!"
+	}
+}
 -- Константы экранов
 M.SCREEN_MENU = hash("main_menu")
 M.SCREEN_LOBBY = hash("lobby_screen")
@@ -22,7 +40,7 @@ M.TEAM_ENEMY = 2
 -----------------------------------------
 -- ПЕРСИСТЕНТНЫЕ ДАННЫЕ (Сохраняемые)
 -----------------------------------------
-M.active_deck = { 8, 2, 3, 4 } 
+M.active_deck = { 3, 4, 2, 8 } 
 M.enemy_deck = {1, 5, 7, 10}
 M.gold = 100
 M.almaz = 10
@@ -41,7 +59,7 @@ M.award={
 -----------------------------------------
 -- СОСТОЯНИЕ СЕССИИ (Не сохраняется)
 -----------------------------------------
-M.current_team = M.TEAM_ENEMY
+M.current_team = M.TEAM_PLAYER
 M.is_simulation = false
 
 -----------------------------------------

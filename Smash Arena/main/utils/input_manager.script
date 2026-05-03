@@ -19,7 +19,7 @@ function init(self)
 	self.LINE_SPRITE_W  = 1
 	self.LINE_SPRITE_H  = 1
 	self.LINE_THICKNESS = 4
-	self.BALL_RADIUS    = 25
+	self.BALL_RADIUS    = 32
 	
 
 	self.target_id   = nil
@@ -128,6 +128,8 @@ function on_input(self, action_id, action)
 				msg.post(self.target_id, "apply_impulse", {
 					vector = vmath.normalize(drag)
 				})
+				
+				msg.post("/gui#game", "unit_launched")
 				self.is_active = false
 			end
 

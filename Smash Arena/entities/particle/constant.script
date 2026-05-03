@@ -1,0 +1,13 @@
+-- constant.script
+go.property("name", hash("none")) -- Сюда прилетит значение из фабрики
+
+function init(self)
+	if self.name ~= hash("none") then
+		-- Запускаем нужные частицы
+		-- Превращаем хеш обратно в строку для имени компонента или используем условия
+		local particle_id = "#" .. (self.name == hash("rage") and "rage" or "freeze")
+
+		particlefx.play(particle_id)
+
+	end
+end

@@ -13,8 +13,12 @@ textures {
 }
 nodes {
   position {
-    x: 195.0
-    y: 390.0
+    x: 390.0
+    y: 780.0
+  }
+  scale {
+    x: 2.0
+    y: 2.0
   }
   size {
     x: 390.0
@@ -23,6 +27,7 @@ nodes {
   type: TYPE_BOX
   id: "lobby_screen"
   inherit_alpha: true
+  alpha: 0.11
   size_mode: SIZE_MODE_AUTO
   enabled: false
 }
@@ -2250,6 +2255,46 @@ nodes {
   inherit_alpha: true
   alpha: 0.1
   size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  scale {
+    x: 0.3
+    y: 0.3
+  }
+  type: TYPE_BOX
+  texture: "gui/finger"
+  id: "finger"
+  parent: "main_game"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: -251.0
+  }
+  scale {
+    x: 0.65
+    y: 0.7
+  }
+  size {
+    x: 390.0
+    y: 100.0
+  }
+  color {
+    x: 0.8
+  }
+  type: TYPE_TEXT
+  text: "The Tank deals damage to nearby enemies after its turn.\n"
+  ""
+  font: "druid_text_bold"
+  id: "help_text"
+  outline {
+    y: 0.2
+    z: 0.2
+  }
+  line_break: true
+  parent: "main_game"
+  inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"
 adjust_reference: ADJUST_REFERENCE_PARENT
