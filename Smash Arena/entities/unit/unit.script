@@ -129,7 +129,6 @@ local function heal(self, amount)
 	update_hp_bar(self)
 	show_damage_fx(self, actual_heal, true)
 
-	print("Healed for: " .. actual_heal .. " | Current: " .. self.current_hp .. "/" .. self.max_hp)
 end
 function update(self, dt)
 	if not self.is_moving then return end
@@ -150,8 +149,6 @@ function update(self, dt)
 		-- УМЕНИЕ: Паладин (Heal on stop)
 		if self.ability_method == "heal_on_stop" then
 			heal(self, self.ability_value)
-			print("heal")
-
 			timer.delay(1, false, function()
 				msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
 			end)
@@ -299,7 +296,8 @@ function on_message(self, message_id, message, sender)
 			-- Сбрасываем состояние
 			go.set("#effect", "scale", vmath.vector3(0, 0, 1))
 			go.set("#effect", "tint", vmath.vector4(.9, .3, .21, 1))
-			go.animate("#sprite", "tint", go.PLAYBACK_LOOP_PINGPONG, vmath.vector4(2, 2, 2, 1), go.EASING_INOUTSINE, 0.2)
+			go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+			go.animate("#sprite", "tint", go.PLAYBACK_ONCE_PINGPONG, vmath.vector4(3, 3, 3, 1), go.EASING_INOUTSINE, 0.2)
 			-- Анимация расширения и затухания
 			go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
 			go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
