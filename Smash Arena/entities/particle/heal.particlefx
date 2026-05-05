@@ -6,41 +6,41 @@ emitters {
   animation: "pixel"
   material: "/builtins/materials/particlefx.material"
   max_particle_count: 64
-  type: EMITTER_TYPE_2DCONE
+  type: EMITTER_TYPE_CIRCLE
   properties {
     key: EMITTER_KEY_SPAWN_RATE
     points {
-      y: 34.0
+      y: 50.0
     }
   }
   properties {
     key: EMITTER_KEY_SIZE_X
     points {
-      y: 53.0
+      y: 50.0
     }
   }
   properties {
     key: EMITTER_KEY_SIZE_Y
     points {
-      y: 24.0
+      y: 50.0
     }
   }
   properties {
     key: EMITTER_KEY_PARTICLE_LIFE_TIME
     points {
-      y: 1.0
+      y: 0.5
     }
   }
   properties {
     key: EMITTER_KEY_PARTICLE_SPEED
     points {
-      y: 52.0
+      y: 80.0
     }
   }
   properties {
     key: EMITTER_KEY_PARTICLE_SIZE
     points {
-      y: 10.0
+      y: 5.0
     }
   }
   properties {

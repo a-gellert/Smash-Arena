@@ -473,21 +473,20 @@ function on_input(self, action_id, action)
 	end
 	if self.is_waiting_for_swap then
 		for i = 1, 4 do
-			-- ВАЖНО: имя должно строго совпадать с тем, что в редакторе GUI
 			local slot_node = gui.get_node("active_slot_" .. i) 
 
 			if slot_node and gui.pick_node(slot_node, action.x, action.y) then
+				-- Обновляем данные в таблице из модуля state
 				state.active_deck[i] = self.selected_hero_id
 				state.save()
 
+				-- Выключаем режим ожидания клика
 				self.is_waiting_for_swap = false
 
-				-- Обновляем текст статуса, если такая нода есть
-				--local status_label = gui.get_node("status_label")
-			--	if status_label then
-			--		gui.set_text(status_label, "Герой заменен!")
-			--	end
+				-- Скрываем подсказку "Выберите слот"
+				gui.set_enabled(gui.get_node("choose_txt"), false)
 
+				-- ВАЖНО: Обновляем визуал колоды
 				refresh_active_deck_ui(self) 
 				return true 
 			end

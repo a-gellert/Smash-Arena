@@ -113,6 +113,18 @@ local function heal(self, amount)
 	-- 4. Применяем лечение
 	self.current_hp = self.current_hp + actual_heal
 
+	local radius = 70 -- Используем значение способности как радиус
+	local target_scale = radius / 32   -- Т.к. спрайт 64x64, его радиус 32
+
+	-- 2. Визуальный эффект (спрайт #effect)
+	-- Сбрасываем состояние
+	go.set("#effect", "scale", vmath.vector3(0, 0, 1))
+	go.set("#effect", "tint", vmath.vector4(.2, .9, .21, 1))
+
+	-- Анимация расширения и затухания
+	go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
+	go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
+	
 	-- 5. Визуал: передаем именно actual_heal, чтобы не вводить игрока в заблуждение
 	update_hp_bar(self)
 	show_damage_fx(self, actual_heal, true)
@@ -279,6 +291,20 @@ function on_message(self, message_id, message, sender)
 			
 			self.current_hp = self.current_hp - message.amount
 			unit_manager.update_hp(go.get_id(), self.current_hp)
+
+			local radius = 70 -- Используем значение способности как радиус
+			local target_scale = radius / 32   -- Т.к. спрайт 64x64, его радиус 32
+
+			-- 2. Визуальный эффект (спрайт #effect)
+			-- Сбрасываем состояние
+			go.set("#effect", "scale", vmath.vector3(0, 0, 1))
+			go.set("#effect", "tint", vmath.vector4(.9, .3, .21, 1))
+			go.animate("#sprite", "tint", go.PLAYBACK_LOOP_PINGPONG, vmath.vector4(2, 2, 2, 1), go.EASING_INOUTSINE, 0.2)
+			-- Анимация расширения и затухания
+			go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
+			go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
+
+			
 			update_hp_bar(self)
 			show_damage_fx(self, message.amount, false)
 
@@ -316,7 +342,22 @@ function on_message(self, message_id, message, sender)
 			self.constant_effect_id = factory.create("#effect_constant_factory", pos, nil, props, 1.0)
 			msg.post(self.constant_effect_id, "set_parent", { parent_id = go.get_id() }, true, nil, true) -- ОШИБКА ЗДЕСЬ
 		end
-			self.is_frozen = true
+		self.is_frozen = true
+
+
+		local radius = 70 -- Используем значение способности как радиус
+		local target_scale = radius / 32   -- Т.к. спрайт 64x64, его радиус 32
+
+		-- 2. Визуальный эффект (спрайт #effect)
+		-- Сбрасываем состояние
+		go.set("#effect", "scale", vmath.vector3(0, 0, 1))
+		go.set("#effect", "tint", vmath.vector4(.2, .24, .91, 1))
+
+		-- Анимация расширения и затухания
+		go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
+
+		go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
+		
 		print("isfrozen")
 	elseif message_id == hash("heal") and state.current_team == self.team_type then
 		heal(self, message.amount)
