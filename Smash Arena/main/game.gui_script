@@ -168,6 +168,7 @@ local function show_info_box(self, hero_id, current_hp, max_hp, level)
 	
 end
 local function refresh_queue_panel(self)
+	print("wwwwwwwwwwwwwwwww")
 	for i = 1, 8 do
 		local unit_id = unit_manager.get_id_by_index(i)
 		local icon_node = gui.get_node("unit_icon_" .. i)
@@ -186,7 +187,7 @@ local function refresh_queue_panel(self)
 
 					-- 3. Достаем ключ анимации (например, "paladin_name")
 					local anim_id = hash(hero_static_data.name_key)
-
+					print(anim_id)
 					-- 4. Запускаем (убедись, что нода "ico_1" и т.д. существует)
 					gui.play_flipbook(gui.get_node("ico_" .. i), anim_id)
 				end
@@ -276,18 +277,106 @@ local function refresh_active_deck(self)
 	end
 end
 
-local function start_lobby_search(self)
-	show_screen(self, "lobby_screen")
-	local search_time =  0.1--1.5 + math.random() * 1.5
+-- Вспомогательная функция для заполнения слота в лобби
+local function fill_lobby_slot(self, index, hero_id, level, animate)
+	local icon_node = gui.get_node("lobby_unit_" .. index)
+	local level_node = gui.get_node("lobby_level_" .. index)
 
+	if hero_id then
+		local hero_static = data.heroes[hero_id]
+
+		-- Устанавливаем иконку и уровень
+		gui.play_flipbook(icon_node, hash(hero_static.name_key))
+		gui.set_text(level_node, level)
+
+		gui.set_enabled(icon_node, true)
+		gui.set_enabled(level_node, true)
+
+		if animate then
+			-- Начальное состояние для анимации (невидим и мал)
+			gui.set_scale(icon_node, vmath.vector3(0.5, 0.5, 1))
+			gui.set_alpha(icon_node, 0)
+			gui.set_alpha(level_node, 0)
+
+			-- Анимация появления (эффект "pop-in")
+			gui.animate(icon_node, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4)
+			gui.animate(icon_node, "color.w", 1, gui.EASING_INQUAD, 0.3)
+			gui.animate(level_node, "color.w", 1, gui.EASING_INQUAD, 0.3)
+		else
+			-- Для игрока просто показываем сразу
+			gui.set_scale(icon_node, vmath.vector3(1, 1, 1))
+			gui.set_alpha(icon_node, 1)
+			gui.set_alpha(level_node, 1)
+		end
+	else
+		gui.set_enabled(icon_node, false)
+		gui.set_enabled(level_node, false)
+	end
+end
+
+local function start_lobby_search(self)
+	-- 1. ГЕНЕРАЦИЯ ВРАГА (делаем это сразу при нажатии "В Бой")
+	state.enemy_deck = {}
+	state.enemy_levels = {}
+
+	-- Создаем список всех доступных ID героев из heroes_data
+	local pool = {}
+	for i = 1, #data.heroes do table.insert(pool, i) end
+
+	for i = 1, 4 do
+		-- Выбираем случайного уникального героя из пула
+		local rand_idx = math.random(1, #pool)
+		local enemy_hero_id = table.remove(pool, rand_idx)
+
+		state.enemy_deck[i] = enemy_hero_id
+
+		-- Логика "Чуть слабее": 
+		-- Берем уровень игрока в этом же слоте i
+		local player_hero_id = state.active_deck[i]
+		local player_lvl = state.hero_levels[player_hero_id] or 1
+
+		-- Вычитаем 0 или 1 (шанс 50/50 что будет слабее)
+		local enemy_lvl = math.max(1, player_lvl - math.random(0, 1))
+		state.enemy_levels[enemy_hero_id] = enemy_lvl
+	end
+
+	-- 2. ПОДГОТОВКА ЭКРАНА ЛОББИ
+	show_screen(self, "lobby_screen")
+
+	-- Заполняем бойцов игрока (слоты 1-4)
+	for i = 1, 4 do
+		local h_id = state.active_deck[i]
+		local h_lvl = state.hero_levels[h_id] or 1
+		fill_lobby_slot(self, i, h_id, h_lvl, false)
+	end
+
+	-- Прячем вражеские слоты (5-8)
+	for i = 5, 8 do
+		gui.set_enabled(gui.get_node("lobby_unit_" .. i), false)
+		gui.set_enabled(gui.get_node("lobby_level_" .. i), false)
+	end
+
+	-- 3. ТАЙМЕРЫ ПОИСКА
+	local search_time = 2.5 + math.random() * 1.5
+
+	-- Показываем врага через половину времени
+	timer.delay(search_time / 3, false, function()
+		for i = 1, 4 do
+			local e_id = state.enemy_deck[i]
+			local e_lvl = state.enemy_levels[e_id]
+			fill_lobby_slot(self, i + 4, e_id, e_lvl, true)
+		end
+		-- Можно добавить эффект тряски экрана при нахождении
+	end)
+
+	-- Переход в игру
 	timer.delay(search_time, false, function()
-		print("Противник найден!")
 		show_screen(self, "main_game")
 		msg.post("main:/game_manager", "init_battle")
 	end)
+
 	timer.delay(0.3, false, function() refresh_queue_panel(self) end)
 end
-
 --------------------------
 -- Жизненный цикл
 --------------------------

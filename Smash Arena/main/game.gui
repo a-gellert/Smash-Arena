@@ -29,26 +29,6 @@ nodes {
     y: 780.0
   }
   type: TYPE_BOX
-  id: "lobby_screen"
-  inherit_alpha: true
-  alpha: 0.11
-  size_mode: SIZE_MODE_AUTO
-  enabled: false
-}
-nodes {
-  position {
-    x: 390.0
-    y: 780.0
-  }
-  scale {
-    x: 2.0
-    y: 2.0
-  }
-  size {
-    x: 390.0
-    y: 780.0
-  }
-  type: TYPE_BOX
   id: "main_menu"
   adjust_mode: ADJUST_MODE_STRETCH
   inherit_alpha: true
@@ -2320,6 +2300,437 @@ nodes {
   }
   line_break: true
   parent: "main_game"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 390.0
+    y: 780.0
+  }
+  scale {
+    x: 2.0
+    y: 2.0
+  }
+  size {
+    x: 1474.0
+    y: 1067.0
+  }
+  type: TYPE_BOX
+  texture: "gui/background"
+  id: "lobby_screen"
+  inherit_alpha: true
+  enabled: false
+}
+nodes {
+  size {
+    x: 320.0
+    y: 512.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel"
+  id: "box11"
+  parent: "lobby_screen"
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    y: 170.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.28235295
+    y: 0.27450982
+    z: 0.5529412
+  }
+  type: TYPE_TEXT
+  text: "Your Gang\n"
+  ""
+  font: "druid_text_bold"
+  id: "text5"
+  parent: "box11"
+  inherit_alpha: true
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    y: 87.5
+  }
+  size {
+    x: 256.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel2"
+  id: "box12"
+  parent: "box11"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    x: -96.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_1"
+  parent: "box12"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_1"
+  parent: "lobby_unit_1"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -32.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_2"
+  parent: "box12"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_2"
+  parent: "lobby_unit_2"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 32.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_3"
+  parent: "box12"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_3"
+  parent: "lobby_unit_3"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 96.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_4"
+  parent: "box12"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_4"
+  parent: "lobby_unit_4"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -37.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.101960786
+    z: 0.101960786
+  }
+  type: TYPE_TEXT
+  text: "Enemy\n"
+  ""
+  font: "druid_text_bold"
+  id: "text6"
+  parent: "box11"
+  inherit_alpha: true
+  outline_alpha: 0.0
+}
+nodes {
+  position {
+    y: -119.5
+  }
+  size {
+    x: 256.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel2"
+  id: "box13"
+  parent: "box11"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    x: -96.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_5"
+  parent: "box13"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_5"
+  parent: "lobby_unit_5"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -32.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_6"
+  parent: "box13"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_6"
+  parent: "lobby_unit_6"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 32.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_7"
+  parent: "box13"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_7"
+  parent: "lobby_unit_7"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 96.0
+  }
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "units/paladin"
+  id: "lobby_unit_8"
+  parent: "box13"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -25.0
+    y: 17.5
+  }
+  scale {
+    x: 0.5
+    y: 0.5
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.7019608
+    y: 0.8
+  }
+  type: TYPE_TEXT
+  text: "1\n"
+  ""
+  font: "druid_text_bold"
+  id: "lobby_level_8"
+  parent: "lobby_unit_8"
   inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"
