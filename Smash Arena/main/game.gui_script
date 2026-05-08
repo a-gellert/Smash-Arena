@@ -89,7 +89,7 @@ local function refresh_inventory_grid(self)
 
 		-- Прямое обновление через сохраненные ссылки
 		if item.level_node then
-			gui.set_text(item.level_node, "Ур. " .. current_level)
+			gui.set_text(item.level_node, current_level)
 		end
 
 		if item.count_node then
@@ -306,7 +306,7 @@ local function init_inventory(self)
 		-- Если нода называется "level", то пиши hash("level")
 		local root = nodes[hash("unit_card_template")]
 		local icon = nodes[hash("unit_card_icon")]
-		local level_txt = nodes[hash("unit_card_level_template")]
+		local level_txt = nodes[hash("unit_level")]
 		local count_txt = nodes[hash("unit_card_count_template")]
 
 		-- Отладка: если падает, раскомментируй строку ниже и посмотри в консоль
@@ -327,7 +327,7 @@ local function init_inventory(self)
 			-- Безопасная установка уровня
 			if level_txt then
 				local level = state.hero_levels[hero.id] or 1
-				gui.set_text(level_txt, "Lvl " .. level)
+				gui.set_text(level_txt, level)
 			else
 				-- Если ты здесь, значит в хеше ошибка
 				print("ОШИБКА: Нода уровня не найдена. Ищу: unit_card_level_template")
@@ -436,6 +436,8 @@ function on_message(self, message_id, message, sender)
 		refresh_queue_panel(self)
 	elseif message_id == hash("game_over") then
 		gui.set_text(gui.get_node("end_screen_title"), message.victory and "VICTORY" or "DEFEAT")
+		gui.set_text(gui.get_node("gold_award_txt"), message.coins)
+		gui.set_text(gui.get_node("exp_award_txt"), message.prestige)
 		gui.set_enabled(gui.get_node("end_screen_panel"), true)
 	end
 	if message_id == hash("unit_launched") then
@@ -507,10 +509,14 @@ function on_input(self, action_id, action)
 
 			state.save()
 
-			-- Обновляем всё визуально
+
+			update_info_box(self, h_id) -- Общее инфо
+		
 			refresh_text(self)        -- Обновит золото в шапке
 			update_info_panel(self, h_id) 
 			refresh_inventory_grid(self)
+			refresh_active_deck(self)
+			refresh_active_deck_ui(self) 
 		else
 			print("Транзакция отклонена: не хватает золота или карт")
 		end
@@ -660,6 +666,7 @@ function on_input(self, action_id, action)
 	if  gui.is_enabled(gui.get_node("end_screen_panel"))  then
 	
 		if gui.pick_node(gui.get_node("end_match_btn"), action.x, action.y)  then
+			refresh_text(self)  
 			msg.post("main:/game_manager", "cleanup_battle")
 			refresh_queue_panel(self)
 			state.tutorial_step = 3

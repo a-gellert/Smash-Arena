@@ -79,4 +79,7 @@ images {
 images {
   image: "/assets/sprites/path59.png"
 }
+images {
+  image: "/assets/sprites/panel2.png"
+}
 extrude_borders: 2

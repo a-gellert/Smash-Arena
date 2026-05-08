@@ -120,12 +120,16 @@ local function activate_next_unit(self)
 			msg.post("/gui#game", "game_over", { victory = false })
 		else
 			print("ПОБЕДА")
-			msg.post("/gui#game", "game_over", { victory = true })
+			local prestige = math.random(28,35) 
+			local coins = math.random(33,60) 
+			state.add(prestige, coins, 0)
+			msg.post("/gui#game", "game_over", { victory = true, coins = coins, prestige = prestige})
 		end
 		return
 	end
 
 	-- СБРОС: Выключаем подсветку у ВСЕЙ команды перед тем как выбрать нового
+	
 	for _, unit_id in ipairs(team) do
 		msg.post(unit_id, "set_active", { active = false })
 	end
@@ -152,6 +156,7 @@ local function activate_next_unit(self)
 	end
 end
 function init(self)
+	state.load()
 	math.randomseed(os.time())
 	self.screen_w = sys.get_config_int("display.width", 390)
 	self.screen_h = sys.get_config_int("display.height", 780)
@@ -174,33 +179,49 @@ function on_message(self, message_id, message, sender)
 		unit_manager.reset()
 
 		local padding_x = self.screen_w / 6
-		-- Позиции относительно центра, если коллекция центрирована, или абсолютные
 		local player_y = -100
 		local enemy_y = 100
+
 		local formation_offsets = {
-			[1] = { x = math.random(-130, -25), y = math.random(30, 70) },   -- Левый задний (широко)
-			[2] = { x = math.random(-60, -25),  y = math.random(70, 170) },  -- Левый передний (узко)
-			[3] = { x = math.random(25, 60),   y = math.random(70, 170) },  -- Правый передний (узко)
-			[4] = { x = math.random(25, 130),  y = math.random(30, 70) }    -- Правый задний (широко)
+			[1] = { x = math.random(-130, -25), y = math.random(30, 70) },
+			[2] = { x = math.random(-60, -25),  y = math.random(70, 170) },
+			[3] = { x = math.random(25, 60),   y = math.random(70, 170) },
+			[4] = { x = math.random(25, 130),  y = math.random(30, 70) }
 		}
-			for i = 1, 4 do
-				local offset = formation_offsets[i]
-				local spawn_pos = vmath.vector3(0 + offset.x, player_y - offset.y, 0)
 
-				local p_id = factory.create("#unit_factory", spawn_pos, nil, { 
-					team_type = 1, 
-					hero_id = state.active_deck[i] 
-				})
-			end
-				for i = 1, 4 do
-					local offset = formation_offsets[i]
-					local spawn_pos = vmath.vector3(0 + offset.x, enemy_y + offset.y, 0)
+		-- Спавн команды ИГРОКА
+		for i = 1, 4 do
+			local offset = formation_offsets[i]
+			local spawn_pos = vmath.vector3(0 + offset.x, player_y - offset.y, 0)
 
-					local p_id = factory.create("#unit_factory", spawn_pos, nil, { 
-						team_type = 2, 
-						hero_id = state.enemy_deck[i] 
-					})
-				end
+			local h_id = state.active_deck[i]
+			-- Достаем уровень из state. Если уровня нет, ставим 1
+			local h_level = state.hero_levels[h_id] or 1 
+
+			factory.create("#unit_factory", spawn_pos, nil, { 
+				team_type = 1, 
+				hero_id = h_id,
+				level = h_level -- ПЕРЕДАЕМ УРОВЕНЬ
+			})
+		end
+
+		-- Спавн команды ВРАГА
+		for i = 1, 4 do
+			local offset = formation_offsets[i]
+			local spawn_pos = vmath.vector3(0 + offset.x, enemy_y + offset.y, 0)
+
+			local h_id = state.enemy_deck[i]
+			-- Для врага уровень можно брать либо из state.enemy_levels, 
+			-- либо подтягивать под уровень игрока для баланса
+			local h_level = (state.enemy_levels and state.enemy_levels[h_id]) or 1
+
+			factory.create("#unit_factory", spawn_pos, nil, { 
+				team_type = 2, 
+				hero_id = h_id,
+				level = h_level -- ПЕРЕДАЕМ УРОВЕНЬ
+			})
+		end
+
 		timer.delay(0.25, false, function()
 			print("Старт игры! Начинает команда: " .. state.current_team)
 			msg.post("/gui#game", "show_turn_msg", { team = state.current_team })

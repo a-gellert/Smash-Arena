@@ -11,6 +11,10 @@ textures {
   name: "units"
   texture: "/assets/atlas/units.atlas"
 }
+textures {
+  name: "druid"
+  texture: "/druid/druid.atlas"
+}
 nodes {
   position {
     x: 390.0
@@ -494,17 +498,20 @@ nodes {
     x: -2000.0
   }
   size {
-    x: 80.0
-    y: 80.0
-  }
-  color {
-    z: 0.8
+    x: 78.0
+    y: 78.0
   }
   type: TYPE_BOX
+  texture: "gui/panel2"
   id: "unit_card_template"
   parent: "tab_inventory"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
+  slice9 {
+    x: 12.0
+    y: 12.0
+    z: 12.0
+    w: 12.0
+  }
 }
 nodes {
   size {
@@ -519,8 +526,27 @@ nodes {
 }
 nodes {
   position {
-    x: -28.0
-    y: 28.0
+    x: -32.0
+    y: 31.0
+  }
+  size {
+    x: 24.0
+    y: 24.0
+  }
+  color {
+    y: 0.7019608
+    z: 0.5019608
+  }
+  type: TYPE_BOX
+  texture: "druid/ui_circle_32"
+  id: "box1"
+  parent: "unit_card_template"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -32.0
+    y: 31.0
   }
   scale {
     x: 0.5

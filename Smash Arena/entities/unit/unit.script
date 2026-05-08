@@ -14,6 +14,7 @@ local GAME_MANAGER = "main:/game_manager"
 
 function init(self)
 	local base_data = data.heroes[self.hero_id]
+	
 	local stats = data.get_stats(self.hero_id, self.level)
 	self.name = base_data.name_key
 	self.max_hp = stats.hp
@@ -23,7 +24,7 @@ function init(self)
 	self.ability_method = base_data.ability_method
 	self.speed_multiplier = stats.speed
 	self.is_dead = false
-
+	print(self.name .. self.level)
 	self.is_moving = false
 	self.damage_dealt = false
 	self.stop_timer = 0
@@ -201,7 +202,12 @@ function on_message(self, message_id, message, sender)
 			base_move_speed = base_move_speed * 0.5
 			self.is_frozen = false -- Эффект на один ход
 			if self.constant_effect_id then
-				go.delete(self.constant_effect_id)
+				-- Проверяем, существует ли еще объект (pcall — это страховка)
+				local ok, err = pcall(go.delete, self.constant_effect_id)
+				if not ok then
+					print("Эффект уже был удален или недоступен: " .. tostring(err))
+				end
+				self.constant_effect_id = nil -- ОБЯЗАТЕЛЬНО зануляем
 			end
 			print("frozen" .. base_move_speed)
 		end
@@ -313,7 +319,12 @@ function on_message(self, message_id, message, sender)
 				end
 				go.delete(self.effect_id)
 				if self.constant_effect_id then
-					go.delete(self.constant_effect_id)
+					-- Проверяем, существует ли еще объект (pcall — это страховка)
+					local ok, err = pcall(go.delete, self.constant_effect_id)
+					if not ok then
+						print("Эффект уже был удален или недоступен: " .. tostring(err))
+					end
+					self.constant_effect_id = nil -- ОБЯЗАТЕЛЬНО зануляем
 				end
 				-- Сообщаем менеджеру о смерти, чтобы он удалил нас из очереди
 				msg.post(GAME_MANAGER, "unit_died", { id = go.get_id(), killer_id = sender, team = self.team_type })
