@@ -13,7 +13,31 @@ local player = {
 	inventory = {}, -- Тут можно хранить кол-во карточек
 	levels = {}     -- Тут уровни
 }
+local function format_time(seconds)
+	local h = math.floor(seconds / 3600)
+	local m = math.floor((seconds % 3600) / 60)
+	local s = math.floor(seconds % 60)
+	return string.format("%02d:%02d:%02d", h, m, s)
+end
 
+local function refresh_chests_ui(self)
+	for i = 1, 4 do
+		local chest_slot = state.chests[i]
+		local slot_node = gui.get_node("ch_" .. i)
+
+		-- Если в слоте нет сундука, скрываем шаблон внутри
+		if not chest_slot.id then
+			-- Можно либо выключить ноду, либо написать "Empty"
+			gui.set_enabled(gui.get_node("ch_template_" .. i), false)
+		else
+			gui.set_enabled(gui.get_node("ch_template_" .. i), true)
+			local config = data.chest_config[chest_slot.id]
+
+			-- Красим рамку/фон по редкости
+			gui.set_color(gui.get_node("ch_template_" .. i), config.color)
+		end
+	end
+end
 local function set_tutorial_text(self, text_key)
 	local label = gui.get_node("help_text")
 	gui.set_text(label, state.STRINGS[text_key][LANG])
@@ -168,7 +192,6 @@ local function show_info_box(self, hero_id, current_hp, max_hp, level)
 	
 end
 local function refresh_queue_panel(self)
-	print("wwwwwwwwwwwwwwwww")
 	for i = 1, 8 do
 		local unit_id = unit_manager.get_id_by_index(i)
 		local icon_node = gui.get_node("unit_icon_" .. i)
@@ -187,7 +210,6 @@ local function refresh_queue_panel(self)
 
 					-- 3. Достаем ключ анимации (например, "paladin_name")
 					local anim_id = hash(hero_static_data.name_key)
-					print(anim_id)
 					-- 4. Запускаем (убедись, что нода "ico_1" и т.д. существует)
 					gui.play_flipbook(gui.get_node("ico_" .. i), anim_id)
 				end
@@ -313,7 +335,42 @@ local function fill_lobby_slot(self, index, hero_id, level, animate)
 		gui.set_enabled(level_node, false)
 	end
 end
+local function animate_money(self, node, start_value, end_value, duration)
+	-- 1. Фаза начисления (бегущие цифры)
+	local data = { val = start_value }
 
+	-- Анимируем виртуальное свойство в таблице
+	gui.animate(data, "val", end_value, gui.EASING_LINEAR, duration, 0, function()
+		-- 2. Фаза прыжка (когда цифры добежали)
+		gui.set_scale(node, vmath.vector3(1, 1, 1)) -- Сброс на всякий случай
+
+		-- Сначала увеличиваем (подпрыгивает)
+		gui.animate(node, gui.PROP_SCALE, vmath.vector3(1.2, 1.2, 1), gui.EASING_OUTBACK, 0.2, 0, function()
+			-- Потом возвращаем в норму
+			gui.animate(node, gui.PROP_SCALE, vmath.vector3(1, 1, 1), gui.EASING_OUTSINE, 0.1)
+		end)
+	end)
+
+	-- Чтобы текст обновлялся, пока идет анимация 'data.val'
+	-- Мы используем таймер или update, но проще всего запустить отдельный цикл обновления
+	local current_step = 0
+	local steps = duration / 0.02 -- Примерное кол-во кадров
+
+	local function update_text()
+		if data.val then
+			-- Форматируем число (делаем целым)
+			gui.set_text(node, string.format("%d", math.floor(data.val)))
+
+			if data.val < end_value then
+				timer.delay(0.02, false, update_text)
+			else
+				gui.set_text(node, tostring(end_value)) -- Финальное точное значение
+			end
+		end
+	end
+
+	update_text()
+end
 local function start_lobby_search(self)
 	-- 1. ГЕНЕРАЦИЯ ВРАГА (делаем это сразу при нажатии "В Бой")
 	state.enemy_deck = {}
@@ -375,7 +432,7 @@ local function start_lobby_search(self)
 		msg.post("main:/game_manager", "init_battle")
 	end)
 
-	timer.delay(0.3, false, function() refresh_queue_panel(self) end)
+	timer.delay(search_time + 0.01, false, function() refresh_queue_panel(self) end)
 end
 --------------------------
 -- Жизненный цикл
@@ -447,6 +504,22 @@ function init(self)
 	self.selected_hero_id = nil
 	self.is_waiting_for_swap = false
 
+
+	self.chest_nodes = {}
+	-- Создаем визуальные объекты сундуков в контейнерах
+	local template = gui.get_node("ch_template")
+	gui.set_enabled(template, false)
+
+	for i = 1, 4 do
+		local parent = gui.get_node("ch_" .. i)
+		local nodes = gui.clone_tree(template)
+		-- Переименовываем склонированные ноды для удобного доступа
+		-- (Это упрощенная схема, лучше хранить ссылки в таблице)
+		self.chest_nodes[i] = nodes
+	end
+	refresh_chests_ui(self)
+
+	
 	-- Скрываем всё на старте
 	gui.set_enabled(gui.get_node("finger"), false)
 	gui.set_enabled(gui.get_node("help_text"), false)
@@ -478,6 +551,39 @@ function init(self)
 --	poki.gameplay_start()
 --	bridge.platform.send_message("game_ready")
 end
+
+function update(self, dt)
+	local now = os.time()
+
+	for i = 1, 4 do
+		local ch = state.chests[i]
+		if ch.id then
+			local status_label = gui.get_node("chest_status_" .. i)
+			local config = data.chest_config[ch.id]
+
+			if ch.is_opening then
+				local elapsed = now - ch.unlock_start_time
+				local remaining = config.time - elapsed
+
+				if remaining > 0 then
+					gui.set_text(status_label, format_time(remaining))
+					gui.set_scale(status_label, vmath.vector3(0.5, 0.5, 1)) -- Сброс анимации
+				else
+					-- ВРЕМЯ ВЫШЛО: Готов к открытию
+					gui.set_text(status_label, "OPEN")
+					-- Анимация пульсации
+					local scale = 0.5 + math.sin(now * 5) * 0.1
+					gui.set_scale(status_label, vmath.vector3(scale, scale, 1))
+					gui.set_color(status_label, vmath.vector4(0, 1, 0, 1))
+				end
+			else
+				gui.set_text(status_label, "Wait")
+			end
+		end
+	end
+end
+
+
 local function update_tab_sizes(self, active_index)
 	for i = 1, 3 do
 		local node = gui.get_node("tab_btn_" .. i)
@@ -527,6 +633,19 @@ function on_message(self, message_id, message, sender)
 		gui.set_text(gui.get_node("end_screen_title"), message.victory and "VICTORY" or "DEFEAT")
 		gui.set_text(gui.get_node("gold_award_txt"), message.coins)
 		gui.set_text(gui.get_node("exp_award_txt"), message.prestige)
+		if message.victory then
+			for i=1,4 do
+				if not state.chests[i].id then
+					state.chests[i].id = 1
+					state.save()
+					break
+				end
+			end
+		else
+			gui.set_enabled(gui.get_node("chest_icon"), false)
+		end
+	
+		refresh_chests_ui(self)
 		gui.set_enabled(gui.get_node("end_screen_panel"), true)
 	end
 	if message_id == hash("unit_launched") then
@@ -557,11 +676,59 @@ function on_message(self, message_id, message, sender)
 		
 	end
 end
+function open_chest(self, index)
+	local ch = state.chests[index]
+	local config = data.chest_config[ch.id]
 
+	-- 1. Даем золото
+	local gold = math.random(config.gold_min, config.gold_max)
+	state.gold = state.gold + gold
+
+	-- 2. Даем карточки (упрощенно)
+	-- Тут можно реализовать цикл по config.cards_count и рандом по config.rarity_chances
+	print("Получено золота: " .. gold)
+
+	-- 3. Очищаем слот
+	ch.id = nil
+	ch.is_opening = false
+	ch.unlock_start_time = 0
+	state.save()
+	refresh_chests_ui(self)
+	refresh_text(self)
+	-- Запускаем твою анимацию начисления денег!
+	msg.post(".", "add_money", { amount = gold })
+end
 function on_input(self, action_id, action)
 	if action_id ~= hash("touch") or not action.pressed then
 		return false
 	end
+	if gui.is_enabled(gui.get_node("main_menu")) then
+	for i = 1, 4 do
+		if gui.pick_node(gui.get_node("ch_" .. i), action.x, action.y) then
+			local ch = state.chests[i]
+			if not ch.id then return end
+
+			local now = os.time()
+			local config = data.chest_config[ch.id]
+			local remaining = config.time - (now - ch.unlock_start_time)
+
+			if not ch.is_opening then
+				-- Пытаемся поставить на открытие
+				if state.is_any_chest_opening() then
+					print("Другой сундук уже открывается!")
+				else
+					ch.is_opening = true
+					ch.unlock_start_time = now
+					state.save()
+				end
+			elseif remaining <= 0 then
+				-- ОТКРЫВАЕМ СУНДУК И ДАЕМ НАГРАДУ
+				open_chest(self, i)
+			end
+			return true
+		end
+	end
+end
 	if self.is_waiting_for_swap then
 		for i = 1, 4 do
 			local slot_node = gui.get_node("active_slot_" .. i) 

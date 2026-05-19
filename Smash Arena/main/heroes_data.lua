@@ -39,7 +39,7 @@ M.strings = {
 -- ─────────────────────────────────────────────────────────────
 M.heroes = {
 	[1]  = { id=1,  rarity=1, name_key="paladin",    desc_key="paladin_desc",    hp=88,  damage=15, mass=2.5, speed_mult=1.1, ability_value=5,   ability_method="heal_on_stop"     },
-	[2]  = { id=2,  rarity=1, name_key="berserker",  desc_key="berserker_desc",  hp=67,  damage=22, mass=1.2, speed_mult=1.3, ability_value=25,  ability_method="rage_damage"      },
+	[2]  = { id=2,  rarity=1, name_key="berserker",  desc_key="berserker_desc",  hp=67,  damage=22, mass=1.2, speed_mult=1.3, ability_value=95,  ability_method="rage_damage"      },
 	[3]  = { id=3,  rarity=1, name_key="tank",       desc_key="tank_desc",       hp=102, damage=12, mass=5.0, speed_mult=1.5, ability_value=10,  ability_method="heavy_impact"     },
 	[4]  = { id=4,  rarity=2, name_key="reaper",     desc_key="reaper_desc",     hp=48,  damage=19, mass=0.8, speed_mult=1.4, ability_value=20,  ability_method="life_steal_kill"  },
 	[5]  = { id=5,  rarity=2, name_key="ice_mage",   desc_key="ice_mage_desc",   hp=60,  damage=14, mass=1.1, speed_mult=1.0, ability_value=30,  ability_method="freeze_hit"       },
@@ -49,7 +49,41 @@ M.heroes = {
 	[9]  = { id=9,  rarity=3, name_key="golem",      desc_key="golem_desc",      hp=110, damage=14, mass=8.0, speed_mult=1.2, ability_value=100, ability_method="stationary_shield"},
 	[10] = { id=10, rarity=3, name_key="wraith",     desc_key="wraith_desc",     hp=46,  damage=21, mass=0.5, speed_mult=1.5, ability_value=25,  ability_method="evasion"          },
 }
-
+-- Добавь это в heroes_data.lua или создай chest_data.lua
+M.chest_config = {
+	[1] = { -- Common
+		name = "Common Chest",
+		color = vmath.vector4(0.5, 0.5, 0.5, 1),
+		time = 60, -- секунд
+		gold_min = 20, gold_max = 50,
+		cards_count = 5,
+		rarity_chances = { common = 1.0, rare = 0.1, epic = 0.0 }
+	},
+	[2] = { -- Rare
+		name = "Rare Chest",
+		color = vmath.vector4(0.2, 0.6, 1, 1),
+		time = 1800, -- 30 минут
+		gold_min = 100, gold_max = 250,
+		cards_count = 20,
+		rarity_chances = { common = 1.0, rare = 1.0, epic = 0.05 }
+	},
+	[3] = { -- Epic
+		name = "Epic Chest",
+		color = vmath.vector4(0.7, 0.2, 1, 1),
+		time = 21600, -- 6 часов
+		gold_min = 500, gold_max = 800,
+		cards_count = 50,
+		rarity_chances = { common = 1.0, rare = 1.0, epic = 1.0 }
+	},
+	[4] = { -- Legendary
+		name = "Legendary Chest",
+		color = vmath.vector4(1, 0.8, 0, 1),
+		time = 86400, -- 24 часа
+		gold_min = 2000, gold_max = 3500,
+		cards_count = 1,
+		rarity_chances = { common = 0, rare = 0, epic = 0, legendary = 1.0 }
+	}
+}
 -- ─────────────────────────────────────────────────────────────
 --  ТАБЛИЦА УРОВНЕЙ (Clash Royale style)
 --  Каждый уровень: { cards = карт для апгрейда, gold = стоимость }

@@ -3,13 +3,13 @@ emitters {
   duration: 1.0
   space: EMISSION_SPACE_EMITTER
   position {
-    y: 28.0
+    z: -0.1
   }
-  tile_source: "/druid/druid.atlas"
-  animation: "icon_arrow"
+  tile_source: "/builtins/graphics/particle_blob.tilesource"
+  animation: "anim"
   material: "/builtins/materials/particlefx.material"
   max_particle_count: 32
-  type: EMITTER_TYPE_BOX
+  type: EMITTER_TYPE_CIRCLE
   properties {
     key: EMITTER_KEY_SPAWN_RATE
     points {
@@ -19,13 +19,13 @@ emitters {
   properties {
     key: EMITTER_KEY_SIZE_X
     points {
-      y: 64.0
+      y: 24.0
     }
   }
   properties {
     key: EMITTER_KEY_SIZE_Y
     points {
-      y: 55.0
+      y: 24.0
     }
   }
   properties {
@@ -43,7 +43,7 @@ emitters {
   properties {
     key: EMITTER_KEY_PARTICLE_SIZE
     points {
-      y: 8.0
+      y: 12.0
     }
   }
   properties {
@@ -76,6 +76,20 @@ emitters {
       y: 90.0
     }
     spread: 10.0
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_STRETCH_FACTOR_X
+    points {
+      y: 0.0
+    }
+    spread: 0.2
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_STRETCH_FACTOR_Y
+    points {
+      y: 0.0
+    }
+    spread: 0.2
   }
   particle_properties {
     key: PARTICLE_KEY_SCALE
@@ -111,6 +125,31 @@ emitters {
     key: PARTICLE_KEY_ANGULAR_VELOCITY
     points {
       y: 1.0
+    }
+  }
+  modifiers {
+    type: MODIFIER_TYPE_VORTEX
+    properties {
+      key: MODIFIER_KEY_MAGNITUDE
+      points {
+        y: 761.0
+      }
+      spread: 250.0
+    }
+    properties {
+      key: MODIFIER_KEY_MAX_DISTANCE
+      points {
+        y: 1000.0
+      }
+    }
+  }
+  modifiers {
+    type: MODIFIER_TYPE_DRAG
+    properties {
+      key: MODIFIER_KEY_MAGNITUDE
+      points {
+        y: 5.0
+      }
     }
   }
 }

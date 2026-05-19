@@ -9,7 +9,6 @@ local function end_match(self, team_index)
 	
 end
 local function clear_scene(self)
-	print("CLEANUP: Starting scene clearance...")
 
 	-- 1. Удаляем все игровые объекты юнитов
 	-- Мы итерируемся по списку all_units, который заполняли при регистрации
@@ -23,7 +22,6 @@ local function clear_scene(self)
 	-- Это аналог команды TRUNCATE в базе данных
 	unit_manager.reset()
 	state.current_team = 1
-	print("CLEANUP: Scene is clear.")
 end
 local function open_chest(self)
 	if not state.has_unopened_chest then return end
@@ -99,11 +97,9 @@ local final_dir = vmath.normalize(messy_target - ai_pos)
 		-- Шанс, что ИИ выберет другую цель, если у него остались попытки
 		if math.random(1, 10) < 4 and self.steps_to_next_enemy > 0 then
 			self.steps_to_next_enemy = self.steps_to_next_enemy - 1
-			print("ИИ передумал! Выбирает новую цель...")
 			perform_ai_turn(self, ai_unit_id) -- Вот теперь рекурсия безопасна, т.к. таймеры выше закончились
 		else
 			-- ВЫСТРЕЛ
-			print("ИИ стреляет!")
 			msg.post("main:/input_manager", "clear_prediction")
 			msg.post(ai_unit_id, "apply_impulse", { vector = final_dir })
 		end
@@ -116,10 +112,10 @@ local function activate_next_unit(self)
 	if #team == 0 then
 		-- Команда полностью уничтожена
 		if team_id == 1 then
-			print("ПОРАЖЕНИЕ")
-			msg.post("/gui#game", "game_over", { victory = false })
+			local prestige = math.random(-30,-27) 
+			local coins = math.random(1,10) 
+			msg.post("/gui#game", "game_over", { victory = false, coins = coins, prestige = prestige })
 		else
-			print("ПОБЕДА")
 			local prestige = math.random(28,35) 
 			local coins = math.random(33,60) 
 			state.add(prestige, coins, 0)
@@ -223,7 +219,6 @@ function on_message(self, message_id, message, sender)
 		end
 
 		timer.delay(0.25, false, function()
-			print("Старт игры! Начинает команда: " .. state.current_team)
 			msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
 			activate_next_unit(self)
 		end)
@@ -262,7 +257,6 @@ function on_message(self, message_id, message, sender)
 		local force_mult = message.force -- Базовая сила из абилки (ability_value)
 		local owner_id = message.owner_id
 
-		print("Танк выпускает волну!")
 
 		-- Перебираем всех юнитов через наш менеджер
 		for target_id, _ in pairs(unit_manager.all_units) do

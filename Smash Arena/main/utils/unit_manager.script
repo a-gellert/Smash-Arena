@@ -7,7 +7,6 @@ local team_indices = { [1] = 1, [2] = 1 } -- Храним индекс для к
 
 -- В начало unit_manager.script
 local function perform_ai_turn(self, ai_unit_id)
-	print("ИИ обдумывает ход для: " .. ai_unit_id)
 
 	-- 1. Находим все цели (юниты команды 1)
 	local player_units = teams[1]
@@ -27,7 +26,6 @@ local function perform_ai_turn(self, ai_unit_id)
 
 		-- Имитируем задержку "раздумий" перед ударом
 		timer.delay(1.2, false, function()
-			print("ИИ стреляет!")
 			msg.post(ai_unit_id, "apply_impulse", { vector = impulse_vector })
 		end)
 	end
@@ -77,22 +75,14 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("register_unit") then
 		table.insert(teams[message.team], sender)
-		-- Запуск первого хода, когда зарегистрирован хотя бы один игрок
-		--if #teams[1] == 1 and message.team == 1 then
-		--	activate_next_unit(self)
-		--end
 
-		-- в unit_manager.script
+
 	elseif message_id == hash("unit_stopped") then
-		-- Блокируем любые действия на время паузы
-		print("--- СИСТЕМА: Пауза симуляции ---")
 
 		
 		timer.delay(1, false, function()
 			state.switch_turn() -- Сначала меняем ГЛОБАЛЬНЫЙ стейт
 			self.current_team = state.current_team -- Синхронизируем локальный
-
-			print("--- СИСТЕМА: Новый ход команды " .. self.current_team .. " ---")
 			msg.post("/gui#game", "show_turn_msg", { team = self.current_team })
 			activate_next_unit(self)
 		end)
@@ -106,13 +96,8 @@ function on_message(self, message_id, message, sender)
 		for i, id in ipairs(team) do
 			if id == message.id then
 				table.remove(team, i)
-				print("Юнит удален из очереди. Осталось в команде: " .. #team)
 				break
 			end
-		end
-		-- Если команда пуста — Game Over
-		if #team == 0 then
-			print("Команда " .. message.team .. " проиграла!")
 		end
 	end
 end

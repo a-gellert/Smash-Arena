@@ -45,6 +45,21 @@ M.award = {
 	prestige_win = 30,
 }
 
+-- state.lua
+M.chests = {
+	{ id = nil, unlock_start_time = 0, is_opening = false },
+	{ id = nil, unlock_start_time = 0, is_opening = false },
+	{ id = nil, unlock_start_time = 0, is_opening = false },
+	{ id = nil, unlock_start_time = 0, is_opening = false },
+}
+
+-- Проверка, открывается ли сейчас какой-нибудь сундук
+function M.is_any_chest_opening()
+	for _, ch in ipairs(M.chests) do
+		if ch.is_opening then return true end
+	end
+	return false
+end
 -- ─────────────────────────────────────────────────────────────
 --  СОСТОЯНИЕ СЕССИИ (не сохраняется)
 -- ─────────────────────────────────────────────────────────────
@@ -96,6 +111,7 @@ function M.save()
 		available_heroes = M.available_heroes,
 		hero_levels      = M.hero_levels,   -- ← сохраняем уровни
 		hero_cards       = M.hero_cards,
+		chests = M.chests
 	}
 	local ok = sys.save(SAVE_PATH, data_to_save)
 	if ok then
@@ -120,7 +136,7 @@ function M.load()
 	M.hero_cards       = d.hero_cards       or M.hero_cards
 	-- ИСПРАВЛЕНО: hero_levels тоже грузим из сохранения
 	M.hero_levels      = d.hero_levels      or M.hero_levels
-
+	M.chests = d.chests or M.chests
 	print("Profile loaded.")
 end
 

@@ -17,7 +17,6 @@ end
 function M.register_unit(id, team, hero_id, level, hp)
 	table.insert(M.teams[team], id)
 	M.all_units[id] = true
-	print("Unit registered: " .. tostring(id) .. " in team " .. team)
 	M.unit_data[id] = {
 		hero_id = hero_id,
 		level = level,
