@@ -23,13 +23,15 @@ scale_mode = stretch
 show_made_with_defold = 0
 show_console_banner = 0
 show_fullscreen_button = 0
+htmlfile = /bridge/engine_template.html
+cssfile = /builtins/manifests/web/dark_theme.css
 
 [project]
 title = Smash Arena
+bundle_resources = /res
 dependencies#0 = https://github.com/Insality/defold-event/archive/refs/tags/14.zip
 dependencies#1 = https://github.com/rgrams/rendercam/archive/1.0.3.zip
 dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip
-dependencies#3 = https://github.com/Playgama/bridge-defold/archive/refs/tags/v1.29.0.zip
+dependencies#3 = https://github.com/Playgama/bridge-defold/archive/refs/tags/v1.30.0.zip
 dependencies#4 = https://github.com/britzl/defold-richtext/archive/master.zip
-dependencies#5 = https://github.com/defold/extension-poki-sdk/archive/refs/tags/3.6.0.zip
 

@@ -429,10 +429,12 @@ local function start_lobby_search(self)
 	-- Переход в игру
 	timer.delay(search_time, false, function()
 		show_screen(self, "main_game")
+
+		poki.gameplay_start()
 		msg.post("main:/game_manager", "init_battle")
 	end)
 
-	timer.delay(search_time + 0.01, false, function() refresh_queue_panel(self) end)
+	timer.delay(search_time + 0.1, false, function() refresh_queue_panel(self) end)
 end
 --------------------------
 -- Жизненный цикл
@@ -547,9 +549,13 @@ function init(self)
 	refresh_active_deck(self)
 
 	refresh_text(self)
+	poki.init()
 
+	-- Загрузка ресурсов...
+	-- Когда ВСЁ загружено и игрок может нажать "Играть":
+	poki.send_game_ready()  -- 🔥 ЯВНЫЙ ВЫЗОВ
 --	poki.gameplay_start()
---	bridge.platform.send_message("game_ready")
+	--bridge.platform.send_message("game_ready")
 end
 
 function update(self, dt)
@@ -836,7 +842,6 @@ end
 			end)
 
 			start_lobby_search(self)
-			poki.gameplay_start()
 			--bridge.platform.send_message("level_started")
 			return true
 		end
@@ -909,6 +914,7 @@ end
 			msg.post("main:/game_manager", "cleanup_battle")
 			state.tutorial_step = 10
 			poki.gameplay_stop()
+			poki.commercial_break()
 		--	bridge.platform.send_message("level_completed")
 			refresh_queue_panel(self)
 
@@ -927,6 +933,7 @@ end
 			refresh_queue_panel(self)
 			state.tutorial_step = 3
 			gui.set_enabled(gui.get_node("end_screen_panel"), false)
+			poki.commercial_break()
 			-- 4. Скрываем окно информации, если оно было открыто
 			hide_info_box(self)
 			show_screen(self, "main_menu")
