@@ -166,3 +166,9 @@ embedded_components {
   data: "prototype: \"/entities/particle/constant.go\"\n"
   ""
 }
+embedded_components {
+  id: "effect_trail_factory"
+  type: "factory"
+  data: "prototype: \"/entities/particle/trail.go\"\n"
+  ""
+}

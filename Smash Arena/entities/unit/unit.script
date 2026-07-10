@@ -177,6 +177,14 @@ function update(self, dt)
 			})
 
 			timer.delay(2, false, function()
+				if self.constant_trail_id then
+					-- Проверяем, существует ли еще объект (pcall — это страховка)
+					local ok, err = pcall(go.delete, self.constant_trail_id)
+					if not ok then
+						print("Эффект уже был удален или недоступен: " .. tostring(err))
+					end
+					self.constant_trail_id = nil -- ОБЯЗАТЕЛЬНО зануляем
+				end
 				msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
 			end)
 		else
@@ -189,6 +197,14 @@ end
 function on_message(self, message_id, message, sender)
 	-- 1. Импульс от игрока или ИИ
 	if message_id == hash("apply_impulse") then
+		local props = { name = hash("trail") }
+
+		if not self.constant_trail_id then
+			local current_pos = go.get_world_position() -- Получаем позицию юнита
+			current_pos.z = current_pos.z -  0.25
+			self.constant_trail_id = factory.create("#effect_trail_factory", current_pos, nil, props, 1.0)
+			msg.post(self.constant_trail_id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 })
+		end
 		go.cancel_animations("#outline", "tint")
 		-- Уводим альфу в 0
 		go.set("#outline", "tint.w", 0)

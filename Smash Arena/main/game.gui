@@ -1426,6 +1426,38 @@ nodes {
 }
 nodes {
   position {
+    x: -932.0
+  }
+  color {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_BOX
+  texture: "gui/background"
+  id: "back"
+  parent: "main_game"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 932.0
+  }
+  color {
+    x: 0.101960786
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_BOX
+  texture: "gui/background"
+  id: "back1"
+  parent: "main_game"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
     x: 390.0
     y: 780.0
   }
@@ -1443,14 +1475,6 @@ nodes {
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
   visible: false
-}
-nodes {
-  type: TYPE_BOX
-  texture: "gui/background"
-  id: "tab_settings"
-  parent: "main_menu"
-  inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   type: TYPE_BOX
@@ -2857,6 +2881,46 @@ nodes {
   inherit_alpha: true
   alpha: 0.84
   outline_alpha: 0.1
+}
+nodes {
+  type: TYPE_BOX
+  texture: "gui/background"
+  id: "tab_settings"
+  parent: "main_menu"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 320.0
+    y: 400.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel2"
+  id: "box14"
+  parent: "tab_settings"
+  inherit_alpha: true
+  slice9 {
+    x: 12.0
+    y: 12.0
+    z: 12.0
+    w: 12.0
+  }
+}
+nodes {
+  position {
+    y: 247.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "SETTINGS"
+  font: "druid_text_bold"
+  id: "settings_txt"
+  parent: "tab_settings"
+  inherit_alpha: true
 }
 nodes {
   position {
