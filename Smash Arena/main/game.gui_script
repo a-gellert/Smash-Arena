@@ -8,6 +8,7 @@ local sound = require "main.sound"
 
 local LANG = "en"
 local refresh_world_ui = nil
+local refresh_wheel_ui = nil
 
 local function format_time(seconds)
 	if seconds <= 0 then return "00:00:00" end
@@ -476,6 +477,7 @@ local function show_tab(self, tab_name)
 		refresh_settings_ui(self)
 	elseif tab_name == "tab_play" then
 		refresh_world_ui(self)
+		if refresh_wheel_ui then refresh_wheel_ui(self) end
 	end
 end
 
@@ -764,6 +766,60 @@ local function spawn_flying_currency(self, currency_type, count, start_pos, targ
 			gui.animate(node, "scale", vmath.vector3(0.5, 0.5, 1), gui.EASING_INQUAD, 0.35)
 		end)
 	end
+end
+
+refresh_wheel_ui = function(self)
+	local is_free = state.is_free_spin_available()
+	local badge = gui.get_node("wheel_badge")
+	local badge_txt = gui.get_node("wheel_badge_txt")
+	local spin_btn = gui.get_node("wheel_spin_btn")
+	local spin_txt = gui.get_node("wheel_spin_txt")
+	local status_txt = gui.get_node("wheel_status_txt")
+
+	gui.set_enabled(badge, is_free)
+	if is_free then
+		gui.set_text(badge_txt, "FREE")
+		gui.set_text(spin_txt, (LANG == "ru") and "БЕСПЛАТНО" or "FREE SPIN")
+		gui.play_flipbook(spin_btn, "btn_orange")
+		gui.set_text(status_txt, (LANG == "ru") and "Бесплатный спин дня готов!" or "Daily Free Spin Ready!")
+		gui.set_color(status_txt, vmath.vector4(0.3, 1.0, 0.4, 1.0))
+	else
+		gui.set_text(spin_txt, (LANG == "ru") and "СПИН (РЕКЛАМА)" or "SPIN (AD)")
+		gui.play_flipbook(spin_btn, "btn_blue")
+		local last_info = ""
+		if self.wheel_last_win_label then
+			last_info = ((LANG == "ru") and ("Выигрыш: " .. self.wheel_last_win_label .. "! ") or ("Won: " .. self.wheel_last_win_label .. "! "))
+		end
+		gui.set_text(status_txt, last_info .. ((LANG == "ru") and "Смотри рекламу для нового спина!" or "Watch AD for new spin!"))
+		gui.set_color(status_txt, vmath.vector4(0.85, 0.85, 0.95, 1.0))
+	end
+end
+
+local function start_wheel_spin(self)
+	if self.is_wheel_spinning then return end
+
+	local overlay = gui.get_node("wheel_reward_overlay")
+	gui.set_enabled(overlay, false)
+
+	local sector_idx, sector_data = state.pick_wheel_sector()
+	self.wheel_target_sector = sector_idx
+	local turns = 5 * 360
+	local jitter = math.random(-6, 6)
+	self.wheel_target_rot = turns + 90.0 + (sector_idx - 1) * 45.0 + jitter
+	self.wheel_start_rot = 0
+	self.wheel_spin_duration = 3.6
+	self.wheel_spin_elapsed = 0
+	self.wheel_last_tick = 0
+	self.is_wheel_spinning = true
+
+	local disk = gui.get_node("wheel_disk")
+	gui.set_rotation(disk, vmath.vector3(0, 0, 0))
+
+	local status_txt = gui.get_node("wheel_status_txt")
+	local spin_btn = gui.get_node("wheel_spin_btn")
+	gui.set_color(spin_btn, vmath.vector4(0.5, 0.5, 0.5, 1.0))
+	gui.set_text(status_txt, (LANG == "ru") and "Вращаем колесо..." or "Spinning...")
+	gui.set_color(status_txt, vmath.vector4(1.0, 0.9, 0.3, 1.0))
 end
 
 local function set_modal_title(title_node, text, color)
@@ -1116,7 +1172,18 @@ function init(self)
 
 	refresh_text(self)
 	refresh_world_ui(self)
+	refresh_wheel_ui(self)
 	refresh_settings_ui(self)
+
+	self.is_wheel_spinning = false
+	gui.set_enabled(gui.get_node("wheel_modal"), false)
+	gui.set_enabled(gui.get_node("wheel_reward_overlay"), false)
+	local flash = gui.get_node("slowmo_flash")
+	if flash then
+		gui.set_enabled(flash, true)
+		gui.set_color(flash, vmath.vector4(1, 1, 1, 0))
+	end
+
 	poki.init()
 	poki.send_game_ready()
 end
@@ -1149,6 +1216,106 @@ function update(self, dt)
 				gui.set_scale(status_label, vmath.vector3(0.5, 0.5, 1))
 				gui.set_color(status_label, vmath.vector4(1, 0.9, 0.3, 1))
 			end
+		end
+	end
+
+	if self.is_wheel_spinning then
+		self.wheel_spin_elapsed = (self.wheel_spin_elapsed or 0) + dt
+		local t = math.min(1.0, self.wheel_spin_elapsed / self.wheel_spin_duration)
+		local ease = 1.0 - math.pow(1.0 - t, 3)
+		local cur_angle = self.wheel_start_rot + (self.wheel_target_rot - self.wheel_start_rot) * ease
+
+		local disk = gui.get_node("wheel_disk")
+		gui.set_rotation(disk, vmath.vector3(0, 0, cur_angle))
+
+		local sector_passed = math.floor(cur_angle / 45)
+		if sector_passed > (self.wheel_last_tick or 0) then
+			self.wheel_last_tick = sector_passed
+			sound.play_bounce(false)
+		end
+
+		if t >= 1.0 then
+			self.is_wheel_spinning = false
+			local status_txt = gui.get_node("wheel_status_txt")
+			local spin_btn = gui.get_node("wheel_spin_btn")
+			gui.set_color(spin_btn, vmath.vector4(1, 1, 1, 1))
+			sound.play_hit(1.3)
+			poki.happy_time(0.8)
+
+			local reward = state.grant_wheel_reward(self.wheel_target_sector)
+			if reward then
+				local overlay = gui.get_node("wheel_reward_overlay")
+				local card = gui.get_node("wheel_reward_card")
+				local header = gui.get_node("wheel_reward_header")
+				local icon = gui.get_node("wheel_reward_icon")
+				local title = gui.get_node("wheel_reward_title")
+				local desc = gui.get_node("wheel_reward_desc")
+				local claim_txt = gui.get_node("wheel_reward_btn_txt")
+
+				gui.set_enabled(overlay, true)
+				gui.set_text(header, (LANG == "ru") and "🎉 ВЫИГРЫШ! 🎉" or "🎉 YOU WON! 🎉")
+				gui.set_text(claim_txt, (LANG == "ru") and "ЗАБРАТЬ" or "CLAIM")
+
+				local win_label = reward.label
+				if reward.type == "gold" then
+					gui.set_texture(icon, "gui")
+					gui.play_flipbook(icon, "coin")
+					gui.set_size(icon, vmath.vector3(85, 85, 0))
+					gui.set_text(title, "+" .. reward.amount .. ((LANG == "ru") and " ЗОЛОТА" or " GOLD"))
+					gui.set_color(title, vmath.vector4(1.0, 0.9, 0.2, 1.0))
+					gui.set_text(desc, (LANG == "ru") and "Начислено на ваш счет!" or "Added to your balance!")
+					win_label = "+" .. reward.amount .. ((LANG == "ru") and " Золота" or " Gold")
+				elseif reward.type == "gems" then
+					gui.set_texture(icon, "gui")
+					gui.play_flipbook(icon, "prestige")
+					gui.set_size(icon, vmath.vector3(85, 85, 0))
+					gui.set_text(title, "+" .. reward.amount .. ((LANG == "ru") and " АЛМАЗОВ" or " GEMS"))
+					gui.set_color(title, vmath.vector4(0.3, 1.0, 0.4, 1.0))
+					gui.set_text(desc, (LANG == "ru") and "Начислено на ваш счет!" or "Added to your balance!")
+					win_label = "+" .. reward.amount .. ((LANG == "ru") and " Алмазов" or " Gems")
+				elseif reward.type == "cards" then
+					local hero = data.heroes[reward.hero_id]
+					local hero_name = (hero and data.strings[hero.name_key] and data.strings[hero.name_key][LANG]) or "Герой"
+					gui.set_texture(icon, "units")
+					gui.play_flipbook(icon, hero and hero.name_key or "paladin")
+					gui.set_size(icon, vmath.vector3(95, 95, 0))
+					gui.set_text(title, "+" .. reward.amount .. " " .. string.upper(hero_name))
+					gui.set_color(title, vmath.vector4(0.3, 0.85, 1.0, 1.0))
+					gui.set_text(desc, (LANG == "ru") and "Карты для улучшения героя!" or "Hero upgrade cards!")
+					win_label = "+" .. reward.amount .. " " .. hero_name
+				elseif reward.type == "chest" then
+					gui.set_texture(icon, "gui")
+					gui.play_flipbook(icon, "chest")
+					gui.set_size(icon, vmath.vector3(95, 95, 0))
+					if reward.slots_full then
+						gui.set_text(title, "+10 " .. ((LANG == "ru") and "АЛМАЗОВ" or "GEMS"))
+						gui.set_color(title, vmath.vector4(0.3, 1.0, 0.4, 1.0))
+						gui.set_text(desc, (LANG == "ru") and "Слоты полны! Даны алмазы." or "Slots full! Compensation granted.")
+						win_label = "+10 " .. ((LANG == "ru") and "Алмазов" or "Gems")
+					else
+						gui.set_text(title, (LANG == "ru") and "ТАИНСТВЕННЫЙ СУНДУК!" or "MYSTERY CHEST!")
+						gui.set_color(title, vmath.vector4(1.0, 0.85, 0.2, 1.0))
+						gui.set_text(desc, (LANG == "ru") and "Добавлен в слот сундуков!" or "Added to chest slots!")
+						win_label = (LANG == "ru") and "Сундук" or "Chest"
+					end
+				end
+
+				-- Анимация появления всплывающего окна
+				gui.set_scale(card, vmath.vector3(0.5, 0.5, 1))
+				gui.animate(card, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.35)
+				gui.set_scale(icon, vmath.vector3(0.6, 0.6, 1))
+				gui.animate(icon, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.4)
+
+				self.wheel_pending_reward = reward
+				self.wheel_last_win_label = win_label
+				gui.set_text(status_txt, (LANG == "ru") and ("Выигрыш: " .. win_label .. "!") or ("Won: " .. win_label .. "!"))
+				gui.set_color(status_txt, vmath.vector4(1.0, 0.95, 0.2, 1.0))
+			end
+
+			refresh_text(self)
+			refresh_chests_ui(self)
+			refresh_inventory_grid(self)
+			refresh_active_deck_ui(self)
 		end
 	end
 end
@@ -1264,6 +1431,14 @@ function on_message(self, message_id, message, sender)
 			end)
 		end
 	end
+
+	if message_id == hash("trigger_slowmo_flash") then
+		local flash = gui.get_node("slowmo_flash")
+		if flash then
+			gui.set_color(flash, vmath.vector4(1, 1, 1, 0.75))
+			gui.animate(flash, "color.w", 0, gui.EASING_OUTQUAD, 0.55)
+		end
+	end
 end
 
 function on_input(self, action_id, action)
@@ -1289,6 +1464,70 @@ function on_input(self, action_id, action)
 
 	if not action.pressed then
 		return false
+	end
+
+	-- 0.5. Обработка модального окна Колеса Фортуны
+	if gui.is_enabled(gui.get_node("wheel_modal")) then
+		local reward_overlay = gui.get_node("wheel_reward_overlay")
+		if gui.is_enabled(reward_overlay) then
+			local claim_btn = gui.get_node("wheel_reward_btn")
+			local reward_card = gui.get_node("wheel_reward_card")
+			if gui.pick_node(claim_btn, action.x, action.y) or gui.pick_node(reward_card, action.x, action.y) or gui.pick_node(reward_overlay, action.x, action.y) then
+				sound.play_bounce(false)
+				gui.set_enabled(reward_overlay, false)
+
+				local reward = self.wheel_pending_reward
+				self.wheel_pending_reward = nil
+
+				if reward then
+					if reward.type == "gold" then
+						spawn_flying_currency(self, "coin", 8, vmath.vector3(0, 45, 0), vmath.vector3(0, 350, 0), gui.get_node("gold_block"), function()
+							refresh_text(self)
+						end)
+					elseif reward.type == "gems" or (reward.type == "chest" and reward.slots_full) then
+						spawn_flying_currency(self, "prestige", 5, vmath.vector3(0, 45, 0), vmath.vector3(128, 350, 0), gui.get_node("almaz_block"), function()
+							refresh_text(self)
+						end)
+					end
+				end
+
+				refresh_text(self)
+				refresh_chests_ui(self)
+				refresh_inventory_grid(self)
+				refresh_active_deck_ui(self)
+				refresh_wheel_ui(self)
+				return true
+			end
+			return true
+		end
+
+		local close_btn = gui.get_node("wheel_close_btn")
+		local spin_btn = gui.get_node("wheel_spin_btn")
+		local panel = gui.get_node("wheel_panel")
+
+		if gui.pick_node(close_btn, action.x, action.y) or not gui.pick_node(panel, action.x, action.y) then
+			if not self.is_wheel_spinning then
+				gui.set_enabled(gui.get_node("wheel_modal"), false)
+				sound.play_bounce(false)
+			end
+			return true
+		end
+
+		if gui.pick_node(spin_btn, action.x, action.y) then
+			if not self.is_wheel_spinning then
+				if state.is_free_spin_available() then
+					state.consume_free_spin()
+					refresh_wheel_ui(self)
+					start_wheel_spin(self)
+				else
+					poki.rewarded_break(function()
+						start_wheel_spin(self)
+					end, nil, "medium")
+				end
+			end
+			return true
+		end
+		return true
 	end
 
 	-- 1. Обработка модального окна сундука (награды или ускорение)
@@ -1494,6 +1733,17 @@ function on_input(self, action_id, action)
 					gui.animate(gui.get_node("tab_play"), "scale.y", 1.0, gui.EASING_OUTBACK, 0.2)
 				end)
 				start_lobby_search(self)
+				return true
+			end
+
+			-- Кнопка Колеса Фортуны
+			if gui.pick_node(gui.get_node("btn_wheel"), action.x, action.y) then
+				sound.play_bounce(false)
+				refresh_wheel_ui(self)
+				gui.set_enabled(gui.get_node("wheel_modal"), true)
+				local panel = gui.get_node("wheel_panel")
+				gui.set_scale(panel, vmath.vector3(0.75, 0.75, 1))
+				gui.animate(panel, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.3)
 				return true
 			end
 		end

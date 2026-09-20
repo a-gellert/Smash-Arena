@@ -487,8 +487,25 @@ function on_message(self, message_id, message, sender)
 					self.constant_trail_id = nil
 				end
 				-- Сообщаем менеджеру о смерти, чтобы он удалил нас из очереди
-				msg.post(GAME_MANAGER, "unit_died", { id = go.get_id(), killer_id = sender, team = self.team_type })
-				go.delete(go.get_id(), true)
+				local my_id = go.get_id()
+				local death_pos = go.get_world_position()
+				local is_last_enemy = (self.team_type == 2 and #unit_manager.teams[2] == 1 and #unit_manager.teams[1] > 0)
+
+				msg.post(GAME_MANAGER, "unit_died", { id = my_id, killer_id = sender, team = self.team_type, pos = death_pos })
+
+				if is_last_enemy then
+					-- Кинематографическое растворение последнего врага
+					go.cancel_animations("#sprite", "tint")
+					go.set("#sprite", "tint", vmath.vector4(2.5, 2.5, 2.5, 1.0))
+					pcall(go.animate, "#sprite", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1.35, 1.35, 1), go.EASING_OUTQUAD, 0.4)
+					pcall(go.animate, "#sprite", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INQUAD, 0.45, 0.1, function()
+						if go.exists(my_id) then
+							go.delete(my_id, true)
+						end
+					end)
+				else
+					go.delete(my_id, true)
+				end
 				return
 			end
 		end

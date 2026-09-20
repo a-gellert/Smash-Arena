@@ -295,8 +295,46 @@ function on_message(self, message_id, message, sender)
 			msg.post(killer_url, "heal_reaper")
 		end
 
+		local is_final_kill = (message.team == 2 and #unit_manager.teams[2] == 1 and #unit_manager.teams[1] > 0)
+
 		unit_manager.remove_unit(victim_id, message.team)
 		msg.post("/gui#game", "refresh_queue")
+
+		if is_final_kill then
+			-- 1. Экранная вспышка в GUI
+			msg.post("/gui#game", "trigger_slowmo_flash")
+			-- 2. Сверхсочный звук завершающего удара
+			sound.play_hit(2.2)
+			-- 3. Тряска экрана
+			pcall(rendercam.shake, 14, 0.45)
+			-- 4. Замедление всех оставшихся физических тел (эффект замедленного времени)
+			for uid, _ in pairs(unit_manager.all_units) do
+				if go.exists(uid) then
+					local col = msg.url(nil, uid, "collisionobject")
+					local ok_v, v = pcall(go.get, col, "linear_velocity")
+					if ok_v and v and vmath.length(v) > 0 then
+						pcall(go.set, col, "linear_velocity", v * 0.15)
+					end
+				end
+			end
+			-- 5. Плавный зум камеры на место решающего добивания
+			local kill_pos = message.pos or vmath.vector3(0, 0, 0)
+			local orig_scale = rendercam.get_ortho_scale() or 1.0
+			rendercam.set_ortho_scale(orig_scale * 0.76)
+			local pan_offset = vmath.vector3(kill_pos.x * 0.25, kill_pos.y * 0.25, 0)
+			rendercam.pan(pan_offset.x, pan_offset.y)
+
+			-- 6. Задержка кинематографического момента перед победным экраном
+			local current_battle = self.battle_id
+			timer.delay(0.85, false, function()
+				if self.battle_active and not self.game_over_sent and self.battle_id == current_battle then
+					rendercam.set_ortho_scale(orig_scale)
+					rendercam.pan(-pan_offset.x, -pan_offset.y)
+					check_game_over(self)
+				end
+			end)
+			return
+		end
 
 		local current_battle = self.battle_id
 		timer.delay(0.2, false, function()

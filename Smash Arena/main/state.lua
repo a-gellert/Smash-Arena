@@ -179,7 +179,8 @@ function M.save()
 		tutorial_completed = M.tutorial_completed,
 		sfx_volume         = M.sfx_volume,
 		music_volume       = M.music_volume,
-		selected_world     = M.selected_world
+		selected_world     = M.selected_world,
+		last_free_spin_date = M.last_free_spin_date
 	}
 	local ok = sys.save(SAVE_PATH, data_to_save)
 	if ok then
@@ -208,6 +209,7 @@ function M.load()
 	M.chests           = d.chests           or M.chests
 	M.sfx_volume       = (d.sfx_volume ~= nil) and d.sfx_volume or M.sfx_volume
 	M.music_volume     = (d.music_volume ~= nil) and d.music_volume or M.music_volume
+	M.last_free_spin_date = d.last_free_spin_date or ""
 
 	if d.selected_world and M.is_world_unlocked(d.selected_world) then
 		M.selected_world = d.selected_world
@@ -233,6 +235,91 @@ function M.load()
 	end
 
 	print("Profile loaded. Tutorial completed: " .. tostring(M.tutorial_completed))
+end
+
+-- ─────────────────────────────────────────────────────────────
+--  КОЛЕСО ФОРТУНЫ (LUCKY WHEEL)
+-- ─────────────────────────────────────────────────────────────
+M.last_free_spin_date = ""
+
+M.WHEEL_SECTORS = {
+	{ type = "gold",  amount = 50,  label = "50 Gold",        weight = 25 },
+	{ type = "cards", amount = 5,   label = "x5 Hero Cards",  weight = 25 },
+	{ type = "gold",  amount = 150, label = "150 Gold",       weight = 15 },
+	{ type = "gems",  amount = 5,   label = "5 Gems",         weight = 8  },
+	{ type = "cards", amount = 10,  label = "x10 Hero Cards", weight = 15 },
+	{ type = "gold",  amount = 250, label = "250 Gold",       weight = 5  },
+	{ type = "cards", amount = 20,  label = "x20 Hero Cards", weight = 5  },
+	{ type = "chest", amount = 1,   label = "Mystery Chest",  weight = 2  }
+}
+
+function M.is_free_spin_available()
+	local today = os.date("%Y-%m-%d")
+	return M.last_free_spin_date ~= today
+end
+
+function M.consume_free_spin()
+	M.last_free_spin_date = os.date("%Y-%m-%d")
+	M.save()
+end
+
+function M.pick_wheel_sector()
+	local total_weight = 0
+	for _, s in ipairs(M.WHEEL_SECTORS) do
+		total_weight = total_weight + s.weight
+	end
+	local r = math.random(1, total_weight)
+	local cur = 0
+	for idx, s in ipairs(M.WHEEL_SECTORS) do
+		cur = cur + s.weight
+		if r <= cur then
+			return idx, s
+		end
+	end
+	return 1, M.WHEEL_SECTORS[1]
+end
+
+function M.grant_wheel_reward(sector_idx)
+	local s = M.WHEEL_SECTORS[sector_idx]
+	if not s then return nil end
+
+	local reward_result = { type = s.type, amount = s.amount, label = s.label }
+
+	if s.type == "gold" then
+		M.add(0, s.amount, 0)
+	elseif s.type == "gems" then
+		M.add(0, 0, s.amount)
+	elseif s.type == "cards" then
+		local pool = (M.available_heroes and #M.available_heroes > 0) and M.available_heroes or { 1, 2, 3, 4 }
+		local h_id = pool[math.random(1, #pool)]
+		M.add_cards(h_id, s.amount)
+		reward_result.hero_id = h_id
+	elseif s.type == "chest" then
+		local chest_chances = { 1, 1, 1, 2, 2, 3 }
+		local dropped_chest_id = chest_chances[math.random(1, #chest_chances)]
+		local placed_slot = nil
+		for i = 1, 4 do
+			if not M.chests[i].id then
+				M.chests[i].id = dropped_chest_id
+				M.chests[i].unlock_start_time = 0
+				M.chests[i].is_opening = false
+				placed_slot = i
+				break
+			end
+		end
+		if not placed_slot then
+			M.add(0, 0, 10)
+			reward_result.chest_id = dropped_chest_id
+			reward_result.slots_full = true
+			reward_result.compensation_gems = 10
+		else
+			reward_result.chest_id = dropped_chest_id
+			reward_result.placed_slot = placed_slot
+		end
+	end
+
+	M.save()
+	return reward_result
 end
 
 -- ─────────────────────────────────────────────────────────────

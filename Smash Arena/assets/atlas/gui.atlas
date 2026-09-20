@@ -91,4 +91,13 @@ images {
 images {
   image: "/assets/sprites/preview_arena_4.png"
 }
+images {
+  image: "/assets/sprites/wheel_disk.png"
+}
+images {
+  image: "/assets/sprites/wheel_pointer.png"
+}
+images {
+  image: "/assets/sprites/wheel_icon.png"
+}
 extrude_borders: 2

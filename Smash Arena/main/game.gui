@@ -1432,6 +1432,17 @@ nodes {
   inherit_alpha: true
 }
 nodes {
+  size {
+    x: 400.0
+    y: 800.0
+  }
+  type: TYPE_BOX
+  id: "slowmo_flash"
+  parent: "main_game"
+  inherit_alpha: true
+  alpha: 0.0
+}
+nodes {
   position {
     x: -932.0
   }
@@ -2588,6 +2599,79 @@ nodes {
 }
 nodes {
   position {
+    x: 155.0
+    y: -81.5
+  }
+  size {
+    x: 58.0
+    y: 58.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel"
+  id: "btn_wheel"
+  parent: "tab_play"
+  inherit_alpha: true
+  slice9 {
+    x: 10.0
+    y: 10.0
+    z: 10.0
+    w: 10.0
+  }
+}
+nodes {
+  size {
+    x: 50.0
+    y: 50.0
+  }
+  type: TYPE_BOX
+  texture: "gui/wheel_icon"
+  id: "wheel_btn_icon"
+  parent: "btn_wheel"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 18.0
+  }
+  size {
+    x: 34.0
+    y: 18.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_red"
+  id: "wheel_badge"
+  parent: "btn_wheel"
+  inherit_alpha: true
+  slice9 {
+    x: 4.0
+    y: 4.0
+    z: 4.0
+    w: 4.0
+  }
+}
+nodes {
+  scale {
+    x: 0.45
+    y: 0.45
+  }
+  size {
+    x: 34.0
+    y: 18.0
+  }
+  type: TYPE_TEXT
+  text: "FREE"
+  font: "druid_text_bold"
+  id: "wheel_badge_txt"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_badge"
+  inherit_alpha: true
+}
+nodes {
+  position {
     y: -240.0
   }
   size {
@@ -2911,6 +2995,359 @@ nodes {
   font: "druid_text_bold"
   id: "chest_status_4"
   parent: "ch_template_4"
+}
+nodes {
+  size {
+    x: 390.0
+    y: 800.0
+  }
+  type: TYPE_BOX
+  id: "wheel_modal"
+  parent: "main_menu"
+  enabled: false
+  visible: false
+}
+nodes {
+  size {
+    x: 390.0
+    y: 800.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "wheel_backdrop"
+  parent: "wheel_modal"
+  inherit_alpha: true
+  alpha: 0.75
+}
+nodes {
+  size {
+    x: 340.0
+    y: 470.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel"
+  id: "wheel_panel"
+  parent: "wheel_modal"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    y: 195.0
+  }
+  scale {
+    x: 0.8
+    y: 0.8
+  }
+  size {
+    x: 300.0
+    y: 40.0
+  }
+  color {
+    y: 0.85
+    z: 0.2
+  }
+  type: TYPE_TEXT
+  text: "LUCKY WHEEL"
+  font: "druid_text_bold"
+  id: "wheel_title_txt"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_panel"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 135.0
+    y: 198.0
+  }
+  size {
+    x: 34.0
+    y: 34.0
+  }
+  type: TYPE_BOX
+  texture: "gui/cancel"
+  id: "wheel_close_btn"
+  parent: "wheel_panel"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 45.0
+  }
+  size {
+    x: 230.0
+    y: 230.0
+  }
+  type: TYPE_BOX
+  texture: "gui/wheel_disk"
+  id: "wheel_disk"
+  parent: "wheel_panel"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 161.0
+  }
+  size {
+    x: 28.0
+    y: 36.0
+  }
+  type: TYPE_BOX
+  texture: "gui/wheel_pointer"
+  id: "wheel_pointer"
+  parent: "wheel_panel"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -110.0
+  }
+  scale {
+    x: 0.6
+    y: 0.6
+  }
+  size {
+    x: 320.0
+    y: 30.0
+  }
+  color {
+    x: 0.9
+    y: 0.9
+  }
+  type: TYPE_TEXT
+  text: "Spin the wheel for rewards!"
+  font: "druid_text_bold"
+  id: "wheel_status_txt"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_panel"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -165.0
+  }
+  size {
+    x: 220.0
+    y: 56.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_orange"
+  id: "wheel_spin_btn"
+  parent: "wheel_panel"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 220.0
+    y: 56.0
+  }
+  type: TYPE_TEXT
+  text: "FREE SPIN"
+  font: "druid_text_bold"
+  id: "wheel_spin_txt"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_spin_btn"
+  inherit_alpha: true
+}
+nodes {
+  size {
+    x: 340.0
+    y: 460.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "wheel_reward_overlay"
+  parent: "wheel_panel"
+  inherit_alpha: true
+  alpha: 0.85
+  enabled: false
+}
+nodes {
+  size {
+    x: 290.0
+    y: 350.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel"
+  id: "wheel_reward_card"
+  parent: "wheel_reward_overlay"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    y: 130.0
+  }
+  scale {
+    x: 0.85
+    y: 0.85
+  }
+  size {
+    x: 260.0
+    y: 40.0
+  }
+  color {
+    y: 0.9
+    z: 0.2
+  }
+  type: TYPE_TEXT
+  text: "YOU WON!"
+  font: "druid_text_bold"
+  id: "wheel_reward_header"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_reward_card"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 40.0
+  }
+  size {
+    x: 90.0
+    y: 90.0
+  }
+  type: TYPE_BOX
+  texture: "gui/coin"
+  id: "wheel_reward_icon"
+  parent: "wheel_reward_card"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -30.0
+  }
+  scale {
+    x: 0.72
+    y: 0.72
+  }
+  size {
+    x: 260.0
+    y: 35.0
+  }
+  type: TYPE_TEXT
+  text: "+150 GOLD"
+  font: "druid_text_bold"
+  id: "wheel_reward_title"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_reward_card"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -65.0
+  }
+  scale {
+    x: 0.52
+    y: 0.52
+  }
+  size {
+    x: 280.0
+    y: 30.0
+  }
+  color {
+    x: 0.75
+    y: 0.9
+  }
+  type: TYPE_TEXT
+  text: "Added to your account!"
+  font: "druid_text_bold"
+  id: "wheel_reward_desc"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_reward_card"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -120.0
+  }
+  size {
+    x: 190.0
+    y: 48.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_orange"
+  id: "wheel_reward_btn"
+  parent: "wheel_reward_card"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 190.0
+    y: 48.0
+  }
+  type: TYPE_TEXT
+  text: "CLAIM"
+  font: "druid_text_bold"
+  id: "wheel_reward_btn_txt"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  parent: "wheel_reward_btn"
+  inherit_alpha: true
 }
 nodes {
   size {
