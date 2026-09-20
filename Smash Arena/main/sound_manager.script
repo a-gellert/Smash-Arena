@@ -1,0 +1,78 @@
+-- sound_manager.script
+local sound_module = require "main.sound"
+
+function init(self)
+	self.music_url = msg.url("music", "/music_player", "sound")
+	self.proxy_loading = false
+
+	-- Отложенная фоновая загрузка музыки после полной инициализации основного экрана игры
+	timer.delay(0.2, false, function()
+		if not sound_module.music_loaded and not self.proxy_loading then
+			self.proxy_loading = true
+			msg.post("#music_proxy", "async_load")
+		end
+	end)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("proxy_loaded") then
+		self.proxy_loading = false
+		sound_module.music_loaded = true
+		msg.post(sender, "init")
+		msg.post(sender, "enable")
+
+		local vol = sound_module.current_music_volume or 0.8
+		pcall(sound.set_group_gain, hash("music"), vol)
+		pcall(sound.set_group_gain, "music", vol)
+		pcall(msg.post, self.music_url, "set_gain", { gain = vol })
+
+		-- Запускаем зацикленную музыку ТОЛЬКО если игрок в меню, хочет музыку и громкость > 0
+		if sound_module.wants_music and not sound_module.in_battle and vol > 0.001 then
+			pcall(msg.post, self.music_url, "play_sound", { gain = vol })
+			sound_module.music_playing = true
+		else
+			sound_module.music_playing = false
+		end
+
+	elseif message_id == hash("play_sound") then
+		if message.id then
+			pcall(sound.play, message.id, { gain = message.gain or 1.0 })
+		end
+
+	elseif message_id == hash("play_music") then
+		local vol = sound_module.current_music_volume or 0.8
+		if vol > 0.001 and not sound_module.in_battle then
+			sound_module.wants_music = true
+			if sound_module.music_loaded and not sound_module.music_playing then
+				pcall(sound.set_group_gain, hash("music"), vol)
+				pcall(sound.set_group_gain, "music", vol)
+				pcall(msg.post, self.music_url, "set_gain", { gain = vol })
+				pcall(msg.post, self.music_url, "play_sound", { gain = vol })
+				sound_module.music_playing = true
+			end
+		end
+
+	elseif message_id == hash("stop_music") then
+		sound_module.wants_music = false
+		if sound_module.music_loaded and sound_module.music_playing then
+			pcall(msg.post, self.music_url, "stop_sound")
+			sound_module.music_playing = false
+		end
+
+	elseif message_id == hash("set_music_gain") then
+		local vol = message.gain or sound_module.current_music_volume or 0.8
+		pcall(sound.set_group_gain, hash("music"), vol)
+		pcall(sound.set_group_gain, "music", vol)
+		if sound_module.music_loaded then
+			pcall(msg.post, self.music_url, "set_gain", { gain = vol })
+		end
+	end
+end
+
+function final(self)
+	if sound_module.music_loaded then
+		pcall(msg.post, "#music_proxy", "unload")
+		sound_module.music_loaded = false
+		sound_module.music_playing = false
+	end
+end

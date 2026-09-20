@@ -1,0 +1,76 @@
+-- entities/arena/arena_loader.script
+local state = require "main.state"
+
+function init(self)
+	state.load()
+	self.current_world = state.selected_world or 1
+	self.loaded_world = nil
+	self.loading_world = nil
+	self.pending_world = nil
+
+	-- Загружаем активную арену асинхронно
+	local proxy_id = "#proxy_" .. self.current_world
+	self.loading_world = self.current_world
+	msg.post(proxy_id, "async_load")
+end
+
+local function load_world(self, world_id)
+	if self.loading_world then
+		-- Если сейчас идет загрузка, запоминаем желаемый мир
+		self.pending_world = world_id
+		return
+	end
+
+	if self.loaded_world == world_id then
+		return
+	end
+
+	-- Выгружаем предыдущую арену (освобождает память VRAM/RAM)
+	if self.loaded_world then
+		local old_proxy = "#proxy_" .. self.loaded_world
+		pcall(msg.post, old_proxy, "disable")
+		pcall(msg.post, old_proxy, "final")
+		pcall(msg.post, old_proxy, "unload")
+		self.loaded_world = nil
+	end
+
+	self.current_world = world_id
+	self.loading_world = world_id
+	local new_proxy = "#proxy_" .. world_id
+	msg.post(new_proxy, "async_load")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("proxy_loaded") then
+		local world_loaded = self.loading_world
+		self.loading_world = nil
+		self.loaded_world = world_loaded
+
+		msg.post(sender, "init")
+		msg.post(sender, "enable")
+
+		-- Если пока грузилась эта арена, игрок уже выбрал другую
+		if self.pending_world and self.pending_world ~= self.loaded_world then
+			local next_w = self.pending_world
+			self.pending_world = nil
+			load_world(self, next_w)
+		else
+			self.pending_world = nil
+		end
+
+	elseif message_id == hash("change_world") then
+		local world_id = message.world_id or 1
+		if world_id < 1 or world_id > 4 then world_id = 1 end
+		load_world(self, world_id)
+	end
+end
+
+function final(self)
+	if self.loaded_world then
+		local p = "#proxy_" .. self.loaded_world
+		pcall(msg.post, p, "disable")
+		pcall(msg.post, p, "final")
+		pcall(msg.post, p, "unload")
+		self.loaded_world = nil
+	end
+end

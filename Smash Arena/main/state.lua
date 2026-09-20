@@ -40,10 +40,68 @@ M.hero_cards  = { [1]=10, [2]=7, [3]=15, [4]=3,  [5]=1  }
 -- hero_levels[id] = текущий уровень героя (минимум 1)
 M.hero_levels = { [1]=1,  [2]=1,  [3]=1,  [4]=1,  [5]=1  }
 
+M.selected_world = 1
+
+M.WORLDS = {
+	{
+		id = 1,
+		name_en = "Training Arena",
+		name_ru = "Тренировачная арена",
+		required_prestige = 0,
+		description_en = "Training grounds of champions.",
+		description_ru = "Тренировочная арена чемпионов.",
+		border_color = vmath.vector4(0.85, 0.75, 0.45, 1.0)
+	},
+	{
+		id = 2,
+		name_en = "Forest Grove",
+		name_ru = "Лесная арена",
+		required_prestige = 100,
+		description_en = "Enchanted grove with ancient runes.",
+		description_ru = "Древняя роща, полная магии и рун.",
+		border_color = vmath.vector4(0.3, 0.8, 0.4, 1.0)
+	},
+	{
+		id = 3,
+		name_en = "Dungeon Crypt",
+		name_ru = "Подземелье",
+		required_prestige = 300,
+		description_en = "Dark crypt with iron grates and skulls.",
+		description_ru = "Мрачные катакомбы с цепями и факелами.",
+		border_color = vmath.vector4(0.45, 0.5, 0.85, 1.0)
+	},
+	{
+		id = 4,
+		name_en = "Dragon's Lair",
+		name_ru = "Драконье логово",
+		required_prestige = 600,
+		description_en = "Molten caldera with dragon bones.",
+		description_ru = "Лавовая кальдера с костями драконов.",
+		border_color = vmath.vector4(0.95, 0.35, 0.2, 1.0)
+	}
+}
+
+function M.is_world_unlocked(world_id)
+	local w = M.WORLDS[world_id]
+	if not w then return false end
+	return (M.prestige or 0) >= w.required_prestige
+end
+
+function M.select_world(world_id)
+	if world_id < 1 or world_id > #M.WORLDS then return false end
+	if not M.is_world_unlocked(world_id) then return false end
+	M.selected_world = world_id
+	M.save()
+	return true
+end
+
 M.award = {
 	gold_win    = 20,
 	prestige_win = 30,
 }
+
+M.sfx_volume   = 1.0
+M.music_volume = 0.8
 
 -- state.lua
 M.chests = {
@@ -118,7 +176,10 @@ function M.save()
 		hero_levels        = M.hero_levels,   -- ← сохраняем уровни
 		hero_cards         = M.hero_cards,
 		chests             = M.chests,
-		tutorial_completed = M.tutorial_completed
+		tutorial_completed = M.tutorial_completed,
+		sfx_volume         = M.sfx_volume,
+		music_volume       = M.music_volume,
+		selected_world     = M.selected_world
 	}
 	local ok = sys.save(SAVE_PATH, data_to_save)
 	if ok then
@@ -145,6 +206,18 @@ function M.load()
 	-- ИСПРАВЛЕНО: hero_levels тоже грузим из сохранения
 	M.hero_levels      = d.hero_levels      or M.hero_levels
 	M.chests           = d.chests           or M.chests
+	M.sfx_volume       = (d.sfx_volume ~= nil) and d.sfx_volume or M.sfx_volume
+	M.music_volume     = (d.music_volume ~= nil) and d.music_volume or M.music_volume
+
+	if d.selected_world and M.is_world_unlocked(d.selected_world) then
+		M.selected_world = d.selected_world
+	else
+		M.selected_world = 1
+	end
+
+	local sound = require "main.sound"
+	sound.set_sfx_volume(M.sfx_volume)
+	sound.set_music_volume(M.music_volume)
 
 	if d.tutorial_completed ~= nil then
 		M.tutorial_completed = d.tutorial_completed

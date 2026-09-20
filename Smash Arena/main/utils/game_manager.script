@@ -1,6 +1,8 @@
 -- main/game_manager.script
 local unit_manager = require "main.unit_manager"
 local state = require "main.state"
+local sound = require "main.sound"
+local rendercam = require "rendercam.rendercam"
 
 local function clear_scene(self)
 	-- 1. Удаляем все игровые объекты юнитов
@@ -17,12 +19,54 @@ local function clear_scene(self)
 	state.current_team = 1
 end
 
-local function perform_ai_turn(self, ai_unit_id)
-	local player_units = unit_manager.teams[1]
-	if #player_units == 0 then return end
+local function check_game_over(self)
+	if not self.battle_active or self.game_over_sent then
+		return true
+	end
 
-	-- Очищаем все старые таймеры этого хода (если есть такая возможность)
-	-- Или просто гарантируем, что новая итерация не конфликтует
+	local player_alive = #unit_manager.teams[1]
+	local enemy_alive = #unit_manager.teams[2]
+
+	-- Если у обеих команд еще есть живые бойцы, бой продолжается
+	if player_alive > 0 and enemy_alive > 0 then
+		return false
+	end
+
+	-- Если мы здесь, одна из команд (или обе) потеряла всех бойцов
+	self.game_over_sent = true
+	self.battle_active = false
+	unit_manager.active_unit_id = nil
+	msg.post("main:/input_manager", "clear_prediction")
+	msg.post("main:/input_manager", "set_target", { id = nil })
+	msg.post("/gui#game", "refresh_queue")
+
+	if enemy_alive == 0 and player_alive > 0 then
+		-- ИСТИННАЯ ПОБЕДА: только когда все враги мертвы и игрок жив!
+		local prestige = math.random(28, 35)
+		local coins = math.random(33, 60)
+		state.add(prestige, coins, 0)
+		msg.post("/gui#game", "game_over", { victory = true, coins = coins, prestige = prestige })
+	else
+		-- ПОРАЖЕНИЕ: бойцы игрока уничтожены (или взаимное уничтожение 0 vs 0)
+		local prestige = math.random(-30, -27)
+		local coins = math.random(1, 10)
+		msg.post("/gui#game", "game_over", { victory = false, coins = coins, prestige = prestige })
+	end
+
+	return true
+end
+
+local function perform_ai_turn(self, ai_unit_id)
+	local current_battle = self.battle_id
+	if not self.battle_active or self.game_over_sent or self.battle_id ~= current_battle then
+		return
+	end
+
+	local player_units = unit_manager.teams[1]
+	if #player_units == 0 then
+		check_game_over(self)
+		return
+	end
 
 	local target_unit_id = player_units[math.random(1, #player_units)]
 	if not go.exists(ai_unit_id) or not go.exists(target_unit_id) then return end
@@ -30,23 +74,21 @@ local function perform_ai_turn(self, ai_unit_id)
 	local ai_pos = go.get_world_position(ai_unit_id)
 	local target_pos = go.get_world_position(target_unit_id)
 
-	-- Добавляем разброс в пределах 40 пикселей в любую сторону
 	local error_margin = 10 
 	local offset = vmath.vector3(
-	math.random(-error_margin, error_margin), 
-	math.random(-error_margin, error_margin), 
-	0
-)
+		math.random(-error_margin, error_margin), 
+		math.random(-error_margin, error_margin), 
+		0
+	)
 
-local messy_target = target_pos + offset
-local final_dir = vmath.normalize(messy_target - ai_pos)
-	-- Эффект "сомнения" ИИ
+	local messy_target = target_pos + offset
+	local final_dir = vmath.normalize(messy_target - ai_pos)
 	local start_angle = math.atan2(final_dir.y, final_dir.x) + (math.random() - 0.5) * 2.0 
 
-	local steps = 20 -- Фиксируем шаги для предсказуемости
+	local steps = 20
 	for i = 1, steps do
 		timer.delay(i * 0.06, false, function()
-			if not go.exists(ai_unit_id) then return end
+			if not self.battle_active or self.game_over_sent or self.battle_id ~= current_battle or not go.exists(ai_unit_id) then return end
 			local ratio = i / steps
 			local current_angle = start_angle + (math.atan2(final_dir.y, final_dir.x) - start_angle) * ratio
 			local current_dir = vmath.vector3(math.cos(current_angle), math.sin(current_angle), 0)
@@ -58,69 +100,65 @@ local final_dir = vmath.normalize(messy_target - ai_pos)
 		end)
 	end
 
-	-- ЛОГИКА "ПЕРЕДУМЫВАНИЯ"
-	-- Вместо рекурсии, делаем отложенную проверку
 	local delay_before_shot = steps * 0.05 + 0.4
 
 	timer.delay(delay_before_shot, false, function()
-		if not go.exists(ai_unit_id) then return end
+		if not self.battle_active or self.game_over_sent or self.battle_id ~= current_battle or not go.exists(ai_unit_id) then return end
 
-		-- Шанс, что ИИ выберет другую цель, если у него остались попытки
 		if math.random(1, 10) < 4 and self.steps_to_next_enemy > 0 then
 			self.steps_to_next_enemy = self.steps_to_next_enemy - 1
-			perform_ai_turn(self, ai_unit_id) -- Вот теперь рекурсия безопасна, т.к. таймеры выше закончились
+			perform_ai_turn(self, ai_unit_id)
 		else
-			-- ВЫСТРЕЛ
 			msg.post("main:/input_manager", "clear_prediction")
 			msg.post(ai_unit_id, "apply_impulse", { vector = final_dir })
 		end
 	end)
 end
+
 local function activate_next_unit(self)
+	if not self.battle_active or self.game_over_sent then
+		return
+	end
+
+	if check_game_over(self) then
+		return
+	end
+
 	local team_id = state.current_team
 	local team = unit_manager.teams[team_id]
 
 	if #team == 0 then
-		unit_manager.active_unit_id = nil
-		msg.post("/gui#game", "refresh_queue")
-		-- Команда полностью уничтожена
-		if team_id == 1 then
-			local prestige = math.random(-30,-27) 
-			local coins = math.random(1,10) 
-			msg.post("/gui#game", "game_over", { victory = false, coins = coins, prestige = prestige })
-		else
-			local prestige = math.random(28,35) 
-			local coins = math.random(33,60) 
-			state.add(prestige, coins, 0)
-			msg.post("/gui#game", "game_over", { victory = true, coins = coins, prestige = prestige})
+		state.switch_turn()
+		team_id = state.current_team
+		team = unit_manager.teams[team_id]
+		if #team == 0 then
+			check_game_over(self)
+			return
 		end
-		return
 	end
 
-	-- СБРОС: Выключаем подсветку у ВСЕЙ команды перед тем как выбрать нового
-	
 	for _, unit_id in ipairs(team) do
-		msg.post(unit_id, "set_active", { active = false })
+		if go.exists(unit_id) then
+			msg.post(unit_id, "set_active", { active = false })
+		end
 	end
 
-	local idx = unit_manager.team_indices[team_id]
+	local idx = unit_manager.team_indices[team_id] or 1
 	if idx > #team then idx = 1 end 
 
 	local next_unit = team[idx]
 
-	if next_unit then
+	if next_unit and go.exists(next_unit) then
 		unit_manager.active_unit_id = next_unit
 		msg.post("/gui#game", "refresh_queue")
 
 		if team_id == 1 then
 			msg.post("main:/input_manager", "set_target", { id = next_unit })
-			-- ВКЛЮЧАЕМ подсветку конкретно этому юниту
 			msg.post(next_unit, "set_active", { active = true })
 		else
 			msg.post("main:/input_manager", "set_target", { id = nil })
 			self.steps_to_next_enemy = 3
 			perform_ai_turn(self, next_unit)
-			-- Для ИИ тоже можно включить, чтобы игрок видел, кто сейчас будет ходить
 			msg.post(next_unit, "set_active", { active = true })
 		end
 
@@ -130,27 +168,47 @@ local function activate_next_unit(self)
 		msg.post("/gui#game", "refresh_queue")
 	end
 end
+
 function init(self)
 	state.load()
 	math.randomseed(os.time())
 	self.screen_w = sys.get_config_int("display.width", 390)
 	self.screen_h = sys.get_config_int("display.height", 780)
+	self.battle_id = 0
+	self.battle_active = false
+	self.game_over_sent = false
 end
+
 local function check_and_switch(self)
+	local current_battle = self.battle_id
+	if not self.battle_active or self.game_over_sent or self.battle_id ~= current_battle then
+		return
+	end
+
 	if unit_manager.is_everyone_stopped() then
-		-- Все замерли, переключаем ход
+		if check_game_over(self) then
+			return
+		end
 		state.switch_turn()
 		msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
 		activate_next_unit(self)
-		
 	else
-		-- Кто-то еще катится, проверяем снова через 0.2 сек
-		timer.delay(0.2, false, check_and_switch)
+		timer.delay(0.2, false, function()
+			if self.battle_active and not self.game_over_sent and self.battle_id == current_battle then
+				check_and_switch(self)
+			end
+		end)
 	end
 end
+
 function on_message(self, message_id, message, sender)
 	-- 1. Создание битвы
 	if message_id == hash("init_battle") then
+		self.battle_id = (self.battle_id or 0) + 1
+		self.battle_active = true
+		self.game_over_sent = false
+		local current_battle = self.battle_id
+
 		unit_manager.reset()
 
 		local padding_x = self.screen_w / 6
@@ -170,13 +228,12 @@ function on_message(self, message_id, message, sender)
 			local spawn_pos = vmath.vector3(0 + offset.x, player_y - offset.y, 0)
 
 			local h_id = state.active_deck[i]
-			-- Достаем уровень из state. Если уровня нет, ставим 1
 			local h_level = state.hero_levels[h_id] or 1 
 
 			factory.create("#unit_factory", spawn_pos, nil, { 
 				team_type = 1, 
 				hero_id = h_id,
-				level = h_level -- ПЕРЕДАЕМ УРОВЕНЬ
+				level = h_level
 			})
 		end
 
@@ -186,51 +243,69 @@ function on_message(self, message_id, message, sender)
 			local spawn_pos = vmath.vector3(0 + offset.x, enemy_y + offset.y, 0)
 
 			local h_id = state.enemy_deck[i]
-			-- Для врага уровень можно брать либо из state.enemy_levels, 
-			-- либо подтягивать под уровень игрока для баланса
 			local h_level = (state.enemy_levels and state.enemy_levels[h_id]) or 1
 
 			factory.create("#unit_factory", spawn_pos, nil, { 
 				team_type = 2, 
 				hero_id = h_id,
-				level = h_level -- ПЕРЕДАЕМ УРОВЕНЬ
+				level = h_level
 			})
 		end
 
 		timer.delay(0.25, false, function()
-			msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
-			activate_next_unit(self)
+			if self.battle_active and not self.game_over_sent and self.battle_id == current_battle then
+				msg.post("/gui#game", "show_turn_msg", { team = state.current_team })
+				activate_next_unit(self)
+			end
 		end)
-	end
-	if message_id == hash("cleanup_battle") then
+
+	elseif message_id == hash("cleanup_battle") then
+		self.battle_active = false
+		self.game_over_sent = true
+		self.battle_id = (self.battle_id or 0) + 1
+		msg.post("main:/input_manager", "clear_prediction")
+		msg.post("main:/input_manager", "set_target", { id = nil })
 		clear_scene(self)
 		unit_manager.active_unit_id = nil
 		msg.post("/gui#game", "refresh_queue")
-	end
+
 	-- 2. Юнит остановился -> Смена хода
-	if message_id == hash("unit_stopped") then
-		-- Когда ОДИН юнит замер, запускаем проверку ВСЕГО поля с небольшой задержкой
-		timer.delay(0.5, false, check_and_switch)
-	end
+	elseif message_id == hash("unit_stopped") then
+		if not self.battle_active or self.game_over_sent then
+			return
+		end
+		local current_battle = self.battle_id
+		timer.delay(0.35, false, function()
+			if self.battle_active and not self.game_over_sent and self.battle_id == current_battle then
+				check_and_switch(self)
+			end
+		end)
 
 	-- 3. Юнит умер
-	if message_id == hash("unit_died") then
-		local victim_id = message.id
-		local killer_url = message.killer_id -- Это уже URL (userdata)
+	elseif message_id == hash("unit_died") then
+		if not self.battle_active or self.game_over_sent then
+			return
+		end
 
-		-- 1. Проверяем, что убийца — это существующий юнит
-		-- Используем pcall, чтобы игра не вылетала, если killer_url не имеет скрипта "unit"
+		local victim_id = message.id
+		local killer_url = message.killer_id
+
 		local ok, id = pcall(go.get, killer_url, "hero_id")
-		
 		if ok and id == 4 then
-			
-			-- 3. Отправляем сообщение о лечении
 			msg.post(killer_url, "heal_reaper")
 		end
 
-		-- Стандартная очистка
 		unit_manager.remove_unit(victim_id, message.team)
 		msg.post("/gui#game", "refresh_queue")
+
+		local current_battle = self.battle_id
+		timer.delay(0.2, false, function()
+			if self.battle_active and not self.game_over_sent and self.battle_id == current_battle then
+				if unit_manager.is_everyone_stopped() then
+					check_game_over(self)
+				end
+			end
+		end)
 	end
 	if message_id == hash("trigger_wave") then
 		local wave_pos = message.pos
@@ -275,6 +350,13 @@ function on_message(self, message_id, message, sender)
 		local radius = message.radius or 160
 		local damage = message.damage or 50
 		local owner_id = message.owner_id
+
+		-- Спавн визуального взрыва через фабрику
+		pcall(factory.create, "#explosion_factory", exp_pos)
+
+		-- Сочный звук взрыва и сотрясение экрана
+		sound.play_hit(1.6)
+		pcall(rendercam.shake, 16, 0.35)
 
 		for target_id, _ in pairs(unit_manager.all_units) do
 			if target_id ~= owner_id and go.exists(target_id) then

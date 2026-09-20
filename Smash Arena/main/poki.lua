@@ -33,13 +33,12 @@ end
 ----------------------------------------------------------
 local function pause_game()
 	log("🎮 Game paused (commercial/rewarded break active)")
-	-- If using master audio buses in Defold:
-	-- pcall(function() sound.set_group_gain("master", 0) end)
+	pcall(function() sound.set_group_gain("master", 0) end)
 end
 
 local function resume_game()
 	log("🎮 Game resumed")
-	-- pcall(function() sound.set_group_gain("master", 1) end)
+	pcall(function() sound.set_group_gain("master", 1) end)
 end
 
 ----------------------------------------------------------

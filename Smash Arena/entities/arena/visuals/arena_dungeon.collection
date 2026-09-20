@@ -1,0 +1,31 @@
+name: "arena_dungeon_visual"
+scale_along_z: 0
+embedded_instances {
+  id: "arena_bg"
+  data: "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"arena_dungeon\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "size {\\n"
+  "  x: 390.0\\n"
+  "  y: 768.0\\n"
+  "}\\n"
+  "size_mode: SIZE_MODE_MANUAL\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/assets/atlas/arena_dungeon.atlas\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    z: -0.8\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    y: 10.0
+  }
+  scale3 {
+    y: 1.1
+  }
+}

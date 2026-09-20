@@ -50,9 +50,6 @@ images {
   image: "/assets/sprites/background.png"
 }
 images {
-  image: "/assets/sprites/arena_1.png"
-}
-images {
   image: "/assets/sprites/almaz.png"
 }
 images {
@@ -81,5 +78,17 @@ images {
 }
 images {
   image: "/assets/sprites/panel2.png"
+}
+images {
+  image: "/assets/sprites/preview_arena_1.png"
+}
+images {
+  image: "/assets/sprites/preview_arena_2.png"
+}
+images {
+  image: "/assets/sprites/preview_arena_3.png"
+}
+images {
+  image: "/assets/sprites/preview_arena_4.png"
 }
 extrude_borders: 2

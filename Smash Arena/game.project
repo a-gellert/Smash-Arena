@@ -26,6 +26,13 @@ cssfile = /builtins/manifests/web/dark_theme.css
 [project]
 title = Smash Arena
 bundle_resources = /res
+compress_archive = 1
+
+[sound]
+gain = 1.0
+max_sound_data = 16
+max_sound_instances = 128
+max_sound_sources = 16
 
 [android]
 version_code = 21
@@ -36,4 +43,8 @@ app_icon_96x96 = /assets/result_result_icon.png
 app_icon_72x72 = /assets/result_result_icon.png
 app_icon_48x48 = /assets/result_result_icon.png
 app_icon_36x36 = /assets/result_result_icon.png
+
+[collection_proxy]
+max_count = 16
+
 

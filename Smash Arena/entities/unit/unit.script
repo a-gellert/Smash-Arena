@@ -2,6 +2,8 @@
 local state = require "main.state"
 local data = require "main.heroes_data"
 local unit_manager = require "main.unit_manager" -- Для регистрации в БД
+local sound = require "main.sound"
+local rendercam = require "rendercam.rendercam"
 
 go.property("team_type", 1)
 go.property("max_hp", 145)
@@ -29,6 +31,9 @@ function init(self)
 	self.damage_dealt = false
 	self.stop_timer = 0
 	self.is_frozen = false
+	self.is_enraged = false
+	self.freeze_effect_id = nil
+	self.rage_effect_id = nil
 	self.constant_effect_id = nil
 	self.effect_id = nil
 	self.constant_trail_id = nil
@@ -60,6 +65,14 @@ function init(self)
 end
 
 function final(self)
+	if self.freeze_effect_id and go.exists(self.freeze_effect_id) then
+		pcall(go.delete, self.freeze_effect_id)
+		self.freeze_effect_id = nil
+	end
+	if self.rage_effect_id and go.exists(self.rage_effect_id) then
+		pcall(go.delete, self.rage_effect_id)
+		self.rage_effect_id = nil
+	end
 	if self.constant_effect_id and go.exists(self.constant_effect_id) then
 		pcall(go.delete, self.constant_effect_id)
 		self.constant_effect_id = nil
@@ -80,7 +93,7 @@ local function update_hp_bar(self)
 	go.set("#hp_fill", "scale.x",  quota * 5.7)
 end
 
-local function show_damage_fx(self, amount, is_heal)
+local function show_damage_fx(self, amount, is_heal, custom_color)
 	local p = go.get_world_position()
 	p.x = p.x + math.random(-30, 30)
 	p.y = p.y + 20
@@ -90,20 +103,72 @@ local function show_damage_fx(self, amount, is_heal)
 
 	-- Определяем текст и цвет
 	local text = ""
-	local color = vmath.vector4(1, 1, 1, 1) -- Белый по умолчанию
+	local color = custom_color or vmath.vector4(1, 1, 1, 1) -- Белый по умолчанию
 
-	if is_heal then
-		text = "+" .. tostring(amount)
-		color = vmath.vector4(0.2, 1, 0.2, 1) -- Зеленый
+	if not custom_color then
+		if is_heal then
+			text = "+" .. tostring(amount)
+			color = vmath.vector4(0.2, 1, 0.2, 1) -- Зеленый
+		elseif type(amount) == "string" then
+			text = tostring(amount)
+			color = vmath.vector4(1, 0.2, 0.2, 1)
+		else
+			text = "-" .. tostring(amount)
+			color = vmath.vector4(1, 0.2, 0.2, 1) -- Красный
+		end
 	else
-		text = "-" .. tostring(amount)
-		color = vmath.vector4(1, 0.2, 0.2, 1) -- Красный
+		text = tostring(amount)
 	end
 
 	label.set_text(label_url, text)
 	-- Устанавливаем цвет текста
 	go.set(label_url, "color", color)
 end
+
+local function update_rage_state(self)
+	if self.ability_method ~= "rage_damage" then
+		return
+	end
+
+	local is_enraged_now = (self.current_hp / self.max_hp * 100) < self.ability_value
+	if is_enraged_now and not self.is_enraged then
+		self.is_enraged = true
+		local pos = go.get_world_position()
+		pos.z = pos.z - 0.1 -- Слой чуть выше юнита
+
+		local props = {
+			name = hash("rage")
+		}
+
+		if not self.rage_effect_id then
+			self.rage_effect_id = factory.create("#effect_constant_factory", pos, nil, props, 1.0)
+			msg.post(self.rage_effect_id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 })
+		end
+
+		show_damage_fx(self, "RAGE!", false, vmath.vector4(1.0, 0.25, 0.1, 1.0))
+
+		if not self.is_frozen then
+			go.cancel_animations("#sprite", "tint")
+			go.animate("#sprite", "tint", go.PLAYBACK_LOOP_PINGPONG, vmath.vector4(1.25, 0.7, 0.6, 1.0), go.EASING_INOUTSINE, 0.6)
+			go.cancel_animations("#outline", "tint")
+			go.set("#outline", "tint", vmath.vector4(1.0, 0.2, 0.1, 0.85))
+			go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.35, go.EASING_INOUTSINE, 0.7)
+		end
+	elseif not is_enraged_now and self.is_enraged then
+		self.is_enraged = false
+		if self.rage_effect_id and go.exists(self.rage_effect_id) then
+			pcall(go.delete, self.rage_effect_id)
+			self.rage_effect_id = nil
+		end
+		if not self.is_frozen then
+			go.cancel_animations("#sprite", "tint")
+			go.animate("#sprite", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(1, 1, 1, 1), go.EASING_OUTQUAD, 0.3)
+			go.cancel_animations("#outline", "tint")
+			go.set("#outline", "tint.w", 0)
+		end
+	end
+end
+
 -- Вспомогательная функция лечения
 local function heal(self, amount)
 	-- 1. Считаем, сколько реально можем восстановить до капа
@@ -149,6 +214,7 @@ local function heal(self, amount)
 	unit_manager.update_hp(go.get_id(), self.current_hp)
 	update_hp_bar(self)
 	show_damage_fx(self, actual_heal, true)
+	update_rage_state(self)
 
 end
 function update(self, dt)
@@ -176,34 +242,39 @@ function update(self, dt)
 			-- УМЕНИЕ: Танк (Wave/Heavy Impact - отталкивание в конце хода)
 		elseif self.ability_method == "heavy_impact" then
 			-- 1. Расчеты радиуса
-			local radius = 150 -- Используем значение способности как радиус
-			local target_scale = radius / 32   -- Т.к. спрайт 64x64, его радиус 32
+			local radius = 150
+			local target_scale = radius / 32
 
-			-- 2. Визуальный эффект (спрайт #effect)
-			-- Сбрасываем состояние
-			go.set("#effect", "scale", vmath.vector3(0, 0, 1))
-			go.set("#effect", "tint.w", 1)
+			-- 2. Визуальный эффект: анимация сжатия/топота Танка (squash & stretch)
+			go.animate("#sprite", "scale.x", go.PLAYBACK_ONCE_PINGPONG, 0.28, go.EASING_OUTBOUNCE, 0.25)
+			go.animate("#sprite", "scale.y", go.PLAYBACK_ONCE_PINGPONG, 0.13, go.EASING_OUTBOUNCE, 0.25)
 
-			-- Анимация расширения и затухания
-			go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
-			go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
+			-- Золотисто-огненная ударная волна (#effect)
+			go.set("#effect", "scale", vmath.vector3(0.1, 0.1, 1))
+			go.set("#effect", "tint", vmath.vector4(1.0, 0.72, 0.18, 0.95))
+			go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale * 1.1, target_scale * 1.1, 1), go.EASING_OUTQUAD, 0.35)
+			go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.35)
+
+			-- Сокрушительный звук удара и сотрясение экрана
+			sound.play_bounce(true)
+			pcall(rendercam.shake, 9, 0.22)
 
 			-- 3. Сообщение в GameManager с передачей радиуса
 			msg.post(GAME_MANAGER, "trigger_wave", { 
 				pos = go.get_world_position(), 
 				owner_id = go.get_id(), 
 				force = self.ability_value,
-				radius = radius -- Передаем радиус для расчета коллизий в менеджере
+				radius = radius
 			})
 
-			timer.delay(2, false, function()
+			-- Динамичная передача хода через 0.55с вместо прежней задержки 2 секунды
+			timer.delay(0.55, false, function()
 				if self.constant_trail_id then
-					-- Проверяем, существует ли еще объект (pcall — это страховка)
 					local ok, err = pcall(go.delete, self.constant_trail_id)
 					if not ok then
 						print("Эффект уже был удален или недоступен: " .. tostring(err))
 					end
-					self.constant_trail_id = nil -- ОБЯЗАТЕЛЬНО зануляем
+					self.constant_trail_id = nil
 				end
 				msg.post(GAME_MANAGER, "unit_stopped", { id = go.get_id() })
 			end)
@@ -239,13 +310,34 @@ function on_message(self, message_id, message, sender)
 		if self.is_frozen then
 			base_move_speed = base_move_speed * 0.5
 			self.is_frozen = false -- Эффект на один ход
-			if self.constant_effect_id then
-				-- Проверяем, существует ли еще объект (pcall — это страховка)
-				local ok, err = pcall(go.delete, self.constant_effect_id)
+			if self.freeze_effect_id then
+				local ok, err = pcall(go.delete, self.freeze_effect_id)
 				if not ok then
 					print("Эффект уже был удален или недоступен: " .. tostring(err))
 				end
-				self.constant_effect_id = nil -- ОБЯЗАТЕЛЬНО зануляем
+				self.freeze_effect_id = nil
+			end
+			if self.constant_effect_id then
+				pcall(go.delete, self.constant_effect_id)
+				self.constant_effect_id = nil
+			end
+			-- Разморозка: всплеск разлетающихся осколков льда
+			go.set("#effect", "scale", vmath.vector3(0, 0, 1))
+			go.set("#effect", "tint", vmath.vector4(0.4, 0.85, 1.0, 0.9))
+			go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(2.5, 2.5, 1), go.EASING_OUTQUAD, 0.3)
+			go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.3)
+
+			-- Возвращаем цвет спрайта
+			go.cancel_animations("#sprite", "tint")
+			if self.is_enraged then
+				go.animate("#sprite", "tint", go.PLAYBACK_LOOP_PINGPONG, vmath.vector4(1.25, 0.7, 0.6, 1.0), go.EASING_INOUTSINE, 0.6)
+				go.cancel_animations("#outline", "tint")
+				go.set("#outline", "tint", vmath.vector4(1.0, 0.2, 0.1, 0.85))
+				go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.35, go.EASING_INOUTSINE, 0.7)
+			else
+				go.animate("#sprite", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(1, 1, 1, 1), go.EASING_OUTQUAD, 0.3)
+				go.cancel_animations("#outline", "tint")
+				go.set("#outline", "tint.w", 0)
 			end
 			print("frozen" .. base_move_speed)
 		end
@@ -264,10 +356,15 @@ function on_message(self, message_id, message, sender)
 
 			if target_team ~= self.team_type and state.current_team == self.team_type then
 				local final_damage = self.damage
+				local hit_gain = 1.0
 				-- УМЕНИЕ: Берсерк (Rage)
 				if self.ability_method == "rage_damage" and (self.current_hp / self.max_hp * 100) < self.ability_value then
 					final_damage = final_damage * 2
+					hit_gain = 1.25
 				end
+
+				-- Сочный звук удара!
+				sound.play_hit(hit_gain)
 
 				msg.post(message.other_id, "take_damage", { amount = final_damage, attacker_id = go.get_id() })
 
@@ -281,11 +378,22 @@ function on_message(self, message_id, message, sender)
 					msg.post(message.other_id, "apply_freeze", { slow_factor = self.ability_value / 100 })
 				end
 			elseif target_team == self.team_type and state.current_team == self.team_type then
+				-- Соударение с союзником: воспроизводим звук отскока только при реальном ударе
+				if message.applied_impulse and message.applied_impulse > 10 then
+					sound.play_bounce(false)
+				end
+
 				-- УМЕНИЕ: Монах (Prayer - хил союзника при контакте)
 				if self.ability_method == "touch_heal" then
 					print("touch_heal" .. self.ability_value)
 					msg.post(message.other_id, "heal", { amount = self.ability_value })
 				end
+			end
+		elseif message.group == hash("wall") then
+			-- Отскок от стены арены (только при реальном динамическом соударении)
+			if message.applied_impulse and message.applied_impulse > 15 then
+				local is_heavy = message.applied_impulse > 350
+				sound.play_bounce(is_heavy)
 			end
 		end
 
@@ -298,24 +406,6 @@ function on_message(self, message_id, message, sender)
 				return
 			end
 
-			if self.ability_method == "rage_damage" and (self.current_hp / self.max_hp * 100) < self.ability_value then
-				local pos = go.get_world_position()
-				pos.z = pos.z - 0.1 -- Слой чуть выше юнита
-
-				-- 2. Свойства для передачи в новый объект
-				-- В factory.create последний аргумент - это свойства (properties)
-				local props = {
-					name =  hash("rage") 
-				}
-
-				-- 3. СОЗДАНИЕ ЧЕРЕЗ ФАБРИКУ
-				-- factory.create(url, [pos], [rot], [properties], [scale])
-				if not self.constant_effect_id then
-					self.constant_effect_id = factory.create("#effect_constant_factory", pos, nil, props, 1.0)
-					msg.post(self.constant_effect_id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 })
-				end
-			end
-			
 			local pos = go.get_world_position()
 			pos.z = pos.z + 0.1 -- Слой чуть выше юнита
 
@@ -340,15 +430,31 @@ function on_message(self, message_id, message, sender)
 			-- Сбрасываем состояние
 			go.set("#effect", "scale", vmath.vector3(0, 0, 1))
 			go.set("#effect", "tint", vmath.vector4(.9, .3, .21, 1))
-			go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
-			go.animate("#sprite", "tint", go.PLAYBACK_ONCE_PINGPONG, vmath.vector4(3, 3, 3, 1), go.EASING_INOUTSINE, 0.2)
-			-- Анимация расширения и затухания
 			go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
 			go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
 
+			-- Вспышка урона с сохранением тинта заморозки / ярости
+			go.cancel_animations("#sprite", "tint")
+			local base_tint = vmath.vector4(1, 1, 1, 1)
+			if self.is_frozen then
+				base_tint = vmath.vector4(0.45, 0.75, 1.25, 1.0)
+			elseif self.is_enraged then
+				base_tint = vmath.vector4(1.25, 0.7, 0.6, 1.0)
+			end
+			go.set("#sprite", "tint", base_tint)
+			go.animate("#sprite", "tint", go.PLAYBACK_ONCE_PINGPONG, vmath.vector4(3, 3, 3, 1), go.EASING_INOUTSINE, 0.2, 0, function()
+				if self.is_frozen then
+					go.set("#sprite", "tint", vmath.vector4(0.45, 0.75, 1.25, 1.0))
+				elseif self.is_enraged then
+					go.animate("#sprite", "tint", go.PLAYBACK_LOOP_PINGPONG, vmath.vector4(1.25, 0.7, 0.6, 1.0), go.EASING_INOUTSINE, 0.6)
+				else
+					go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+				end
+			end)
 			
 			update_hp_bar(self)
 			show_damage_fx(self, message.amount, false)
+			update_rage_state(self)
 
 			if self.current_hp <= 0 then
 				-- УМЕНИЕ: Подрывник (Explosion on death)
@@ -363,6 +469,14 @@ function on_message(self, message_id, message, sender)
 				if self.effect_id and go.exists(self.effect_id) then
 					pcall(go.delete, self.effect_id)
 					self.effect_id = nil
+				end
+				if self.freeze_effect_id and go.exists(self.freeze_effect_id) then
+					pcall(go.delete, self.freeze_effect_id)
+					self.freeze_effect_id = nil
+				end
+				if self.rage_effect_id and go.exists(self.rage_effect_id) then
+					pcall(go.delete, self.rage_effect_id)
+					self.rage_effect_id = nil
 				end
 				if self.constant_effect_id and go.exists(self.constant_effect_id) then
 					pcall(go.delete, self.constant_effect_id)
@@ -394,12 +508,19 @@ function on_message(self, message_id, message, sender)
 
 		-- 3. СОЗДАНИЕ ЧЕРЕЗ ФАБРИКУ
 		-- factory.create(url, [pos], [rot], [properties], [scale])
-		if not self.constant_effect_id then
-			self.constant_effect_id = factory.create("#effect_constant_factory", pos, nil, props, 1.0)
-			msg.post(self.constant_effect_id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 })
+		if not self.freeze_effect_id then
+			self.freeze_effect_id = factory.create("#effect_constant_factory", pos, nil, props, 1.0)
+			msg.post(self.freeze_effect_id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 1 })
 		end
 		self.is_frozen = true
+		show_damage_fx(self, "FREEZE!", false, vmath.vector4(0.3, 0.8, 1.0, 1.0))
 
+		-- Визуальное оледенение спрайта юнита и ледяная аура
+		go.cancel_animations("#sprite", "tint")
+		go.set("#sprite", "tint", vmath.vector4(0.45, 0.75, 1.25, 1.0))
+		go.cancel_animations("#outline", "tint")
+		go.set("#outline", "tint", vmath.vector4(0.25, 0.85, 1.0, 0.85))
+		go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.35, go.EASING_INOUTSINE, 1.0)
 
 		local radius = 70 -- Используем значение способности как радиус
 		local target_scale = radius / 32   -- Т.к. спрайт 64x64, его радиус 32
@@ -407,31 +528,43 @@ function on_message(self, message_id, message, sender)
 		-- 2. Визуальный эффект (спрайт #effect)
 		-- Сбрасываем состояние
 		go.set("#effect", "scale", vmath.vector3(0, 0, 1))
-		go.set("#effect", "tint", vmath.vector4(.2, .24, .91, 1))
+		go.set("#effect", "tint", vmath.vector4(.2, .6, 1.0, 1))
 
 		-- Анимация расширения и затухания
 		go.animate("#effect", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(target_scale, target_scale, 1), go.EASING_OUTQUAD, 0.4)
-
 		go.animate("#effect", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, 0.4)
 		
 		print("isfrozen")
 	elseif message_id == hash("heal") and state.current_team == self.team_type then
 		heal(self, message.amount)
 	
-elseif message_id == hash("heal_reaper") and state.current_team == self.team_type then
-	heal(self, self.ability_value)
-	-- В unit.script
-elseif message_id == hash("set_active") then
-	-- 1. Всегда отменяем старую анимацию, чтобы не плодить слои
-	go.cancel_animations("#outline", "tint")
+	elseif message_id == hash("heal_reaper") and state.current_team == self.team_type then
+		heal(self, self.ability_value)
+	elseif message_id == hash("set_active") then
+		-- 1. Всегда отменяем старую анимацию, чтобы не плодить слои
+		go.cancel_animations("#outline", "tint")
 
-	if message.active then
-		-- ВКЛЮЧАЕМ МИГАНИЕ
-		go.set("#outline", "tint.w",1)
-		go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.5 , go.EASING_INOUTSINE, 1.0)
-	else
-		-- ВЫКЛЮЧАЕМ (прячем)
-		go.set("#outline", "tint.w", 0)
+		if message.active then
+			if self.is_frozen then
+				go.set("#outline", "tint", vmath.vector4(0.25, 0.85, 1.0, 1.0))
+				go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.4, go.EASING_INOUTSINE, 0.8)
+			elseif self.is_enraged then
+				go.set("#outline", "tint", vmath.vector4(1.0, 0.2, 0.1, 1.0))
+				go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.4, go.EASING_INOUTSINE, 0.6)
+			else
+				go.set("#outline", "tint", vmath.vector4(1.0, 1.0, 1.0, 1.0))
+				go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.5, go.EASING_INOUTSINE, 1.0)
+			end
+		else
+			if self.is_frozen then
+				go.set("#outline", "tint", vmath.vector4(0.25, 0.85, 1.0, 0.7))
+				go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.3, go.EASING_INOUTSINE, 1.2)
+			elseif self.is_enraged then
+				go.set("#outline", "tint", vmath.vector4(1.0, 0.2, 0.1, 0.7))
+				go.animate("#outline", "tint.w", go.PLAYBACK_LOOP_PINGPONG, 0.3, go.EASING_INOUTSINE, 0.8)
+			else
+				go.set("#outline", "tint.w", 0)
+			end
+		end
 	end
-end
 end

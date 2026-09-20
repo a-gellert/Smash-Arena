@@ -1,0 +1,15 @@
+-- explosion.script
+function init(self)
+	particlefx.play("#explosion")
+
+	-- Анимация расширяющейся взрывной ударной волны
+	go.set("#shockwave", "scale", vmath.vector3(0.2, 0.2, 1))
+	go.set("#shockwave", "tint", vmath.vector4(1.0, 0.55, 0.12, 0.9))
+	go.animate("#shockwave", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(5.5, 5.5, 1), go.EASING_OUTQUAD, 0.35)
+	go.animate("#shockwave", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0.0, go.EASING_OUTQUAD, 0.35)
+
+	-- Самоудаление после завершения частиц
+	timer.delay(1.2, false, function()
+		go.delete()
+	end)
+end

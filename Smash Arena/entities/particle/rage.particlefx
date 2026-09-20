@@ -1,4 +1,5 @@
 emitters {
+  id: "flames"
   mode: PLAY_MODE_LOOP
   duration: 1.0
   space: EMISSION_SPACE_EMITTER
@@ -8,60 +9,64 @@ emitters {
   tile_source: "/builtins/graphics/particle_blob.tilesource"
   animation: "anim"
   material: "/builtins/materials/particlefx.material"
-  max_particle_count: 32
+  blend_mode: BLEND_MODE_ADD
+  max_particle_count: 40
   type: EMITTER_TYPE_CIRCLE
   properties {
     key: EMITTER_KEY_SPAWN_RATE
     points {
-      y: 64.0
+      y: 40.0
     }
   }
   properties {
     key: EMITTER_KEY_SIZE_X
     points {
-      y: 24.0
+      y: 26.0
     }
   }
   properties {
     key: EMITTER_KEY_SIZE_Y
     points {
-      y: 24.0
+      y: 26.0
     }
   }
   properties {
     key: EMITTER_KEY_PARTICLE_LIFE_TIME
     points {
-      y: 0.5
+      y: 0.55
     }
+    spread: 0.1
   }
   properties {
     key: EMITTER_KEY_PARTICLE_SPEED
     points {
-      y: 64.0
+      y: 60.0
     }
+    spread: 15.0
   }
   properties {
     key: EMITTER_KEY_PARTICLE_SIZE
     points {
-      y: 12.0
+      y: 18.0
     }
+    spread: 4.0
   }
   properties {
     key: EMITTER_KEY_PARTICLE_RED
     points {
-      y: 0.9
+      y: 1.0
     }
   }
   properties {
     key: EMITTER_KEY_PARTICLE_GREEN
     points {
-      y: 0.2
+      y: 0.5
     }
   }
   properties {
     key: EMITTER_KEY_PARTICLE_BLUE
     points {
-      y: 0.4
+      y: 0.1
     }
   }
   properties {
@@ -75,26 +80,32 @@ emitters {
     points {
       y: 90.0
     }
-    spread: 10.0
+    spread: 15.0
   }
   properties {
     key: EMITTER_KEY_PARTICLE_STRETCH_FACTOR_X
     points {
       y: 0.0
     }
-    spread: 0.2
   }
   properties {
     key: EMITTER_KEY_PARTICLE_STRETCH_FACTOR_Y
     points {
-      y: 0.0
+      y: 0.2
     }
-    spread: 0.2
   }
   particle_properties {
     key: PARTICLE_KEY_SCALE
     points {
-      y: 1.0
+      y: 0.6
+    }
+    points {
+      x: 0.3
+      y: 1.15
+    }
+    points {
+      x: 1.0
+      y: 0.25
     }
   }
   particle_properties {
@@ -106,19 +117,47 @@ emitters {
   particle_properties {
     key: PARTICLE_KEY_GREEN
     points {
-      y: 1.0
+      y: 0.9
+    }
+    points {
+      x: 0.4
+      y: 0.4
+    }
+    points {
+      x: 1.0
+      y: 0.05
     }
   }
   particle_properties {
     key: PARTICLE_KEY_BLUE
     points {
-      y: 1.0
+      y: 0.2
+    }
+    points {
+      x: 0.3
+      y: 0.05
+    }
+    points {
+      x: 1.0
+      y: 0.0
     }
   }
   particle_properties {
     key: PARTICLE_KEY_ALPHA
     points {
-      y: 1.0
+      y: 0.0
+    }
+    points {
+      x: 0.15
+      y: 0.95
+    }
+    points {
+      x: 0.6
+      y: 0.75
+    }
+    points {
+      x: 1.0
+      y: 0.0
     }
   }
   particle_properties {
@@ -127,29 +166,150 @@ emitters {
       y: 1.0
     }
   }
-  modifiers {
-    type: MODIFIER_TYPE_VORTEX
-    properties {
-      key: MODIFIER_KEY_MAGNITUDE
-      points {
-        y: 761.0
-      }
-      spread: 250.0
-    }
-    properties {
-      key: MODIFIER_KEY_MAX_DISTANCE
-      points {
-        y: 1000.0
-      }
+}
+emitters {
+  id: "sparks"
+  mode: PLAY_MODE_LOOP
+  duration: 1.0
+  space: EMISSION_SPACE_WORLD
+  tile_source: "/druid/druid.atlas"
+  animation: "pixel"
+  material: "/builtins/materials/particlefx.material"
+  blend_mode: BLEND_MODE_ADD
+  max_particle_count: 32
+  type: EMITTER_TYPE_CIRCLE
+  properties {
+    key: EMITTER_KEY_SPAWN_RATE
+    points {
+      y: 30.0
     }
   }
-  modifiers {
-    type: MODIFIER_TYPE_DRAG
-    properties {
-      key: MODIFIER_KEY_MAGNITUDE
-      points {
-        y: 5.0
-      }
+  properties {
+    key: EMITTER_KEY_SIZE_X
+    points {
+      y: 30.0
+    }
+  }
+  properties {
+    key: EMITTER_KEY_SIZE_Y
+    points {
+      y: 30.0
+    }
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_LIFE_TIME
+    points {
+      y: 0.45
+    }
+    spread: 0.15
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_SPEED
+    points {
+      y: 90.0
+    }
+    spread: 35.0
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_SIZE
+    points {
+      y: 4.0
+    }
+    spread: 1.5
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_RED
+    points {
+      y: 1.0
+    }
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_GREEN
+    points {
+      y: 0.85
+    }
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_BLUE
+    points {
+      y: 0.25
+    }
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_ALPHA
+    points {
+      y: 1.0
+    }
+  }
+  properties {
+    key: EMITTER_KEY_PARTICLE_ROTATION
+    points {
+      y: 90.0
+    }
+    spread: 45.0
+  }
+  particle_properties {
+    key: PARTICLE_KEY_SCALE
+    points {
+      y: 1.0
+    }
+    points {
+      x: 0.7
+      y: 0.8
+    }
+    points {
+      x: 1.0
+      y: 0.2
+    }
+  }
+  particle_properties {
+    key: PARTICLE_KEY_RED
+    points {
+      y: 1.0
+    }
+  }
+  particle_properties {
+    key: PARTICLE_KEY_GREEN
+    points {
+      y: 0.9
+    }
+    points {
+      x: 0.6
+      y: 0.5
+    }
+    points {
+      x: 1.0
+      y: 0.1
+    }
+  }
+  particle_properties {
+    key: PARTICLE_KEY_BLUE
+    points {
+      y: 0.3
+    }
+    points {
+      x: 0.5
+      y: 0.05
+    }
+  }
+  particle_properties {
+    key: PARTICLE_KEY_ALPHA
+    points {
+      y: 1.0
+    }
+    points {
+      x: 0.75
+      y: 0.9
+    }
+    points {
+      x: 1.0
+      y: 0.0
+    }
+  }
+  particle_properties {
+    key: PARTICLE_KEY_ANGULAR_VELOCITY
+    points {
+      y: 3.0
     }
   }
 }

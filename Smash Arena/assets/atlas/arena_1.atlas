@@ -1,0 +1,4 @@
+images {
+  image: "/assets/sprites/arena_1.png"
+}
+extrude_borders: 2

@@ -1896,7 +1896,7 @@ nodes {
 }
 nodes {
   position {
-    x: -54.0
+    x: -26.5
     y: 60.5
   }
   scale {
@@ -1929,7 +1929,7 @@ nodes {
 }
 nodes {
   position {
-    x: 29.0
+    x: 56.0
     y: -45.5
   }
   size {
@@ -1964,11 +1964,11 @@ nodes {
 }
 nodes {
   position {
-    x: -101.0
+    x: -97.0
     y: -19.5
   }
   size {
-    x: 80.0
+    x: 100.0
     y: 72.0
   }
   type: TYPE_BOX
@@ -1980,7 +1980,7 @@ nodes {
 }
 nodes {
   position {
-    x: 38.5
+    x: -5.0
     y: 20.0
   }
   scale {
@@ -2001,7 +2001,7 @@ nodes {
   ""
   font: "druid_text_bold"
   id: "unit_hp_txt"
-  pivot: PIVOT_E
+  pivot: PIVOT_W
   outline {
     x: 0.101960786
     y: 0.3019608
@@ -2012,7 +2012,7 @@ nodes {
 }
 nodes {
   position {
-    x: 38.5
+    x: -5.0
   }
   scale {
     x: 0.4
@@ -2031,7 +2031,7 @@ nodes {
   text: "20"
   font: "druid_text_bold"
   id: "unit_damage_txt"
-  pivot: PIVOT_E
+  pivot: PIVOT_W
   outline {
     x: 0.101960786
     y: 0.3019608
@@ -2042,7 +2042,7 @@ nodes {
 }
 nodes {
   position {
-    x: 38.5
+    x: -5.0
     y: -20.0
   }
   scale {
@@ -2062,7 +2062,7 @@ nodes {
   text: "10"
   font: "druid_text_bold"
   id: "unit_speed_txt"
-  pivot: PIVOT_E
+  pivot: PIVOT_W
   outline {
     x: 0.101960786
     y: 0.3019608
@@ -2073,7 +2073,7 @@ nodes {
 }
 nodes {
   position {
-    x: -40.0
+    x: -46.0
     y: 30.0
   }
   scale {
@@ -2099,7 +2099,7 @@ nodes {
 }
 nodes {
   position {
-    x: -40.0
+    x: -46.0
     y: 10.0
   }
   scale {
@@ -2125,7 +2125,7 @@ nodes {
 }
 nodes {
   position {
-    x: -40.0
+    x: -46.0
     y: -10.0
   }
   scale {
@@ -2261,7 +2261,7 @@ nodes {
 }
 nodes {
   position {
-    x: 29.0
+    x: 53.5
     y: -43.5
   }
   scale {
@@ -2340,6 +2340,219 @@ nodes {
   parent: "main_menu"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 110.0
+  }
+  size {
+    x: 250.0
+    y: 266.0
+  }
+  type: TYPE_BOX
+  texture: "gui/panel"
+  id: "world_card"
+  parent: "tab_play"
+  inherit_alpha: true
+  slice9 {
+    x: 16.0
+    y: 16.0
+    z: 16.0
+    w: 16.0
+  }
+}
+nodes {
+  position {
+    y: 86.0
+  }
+  scale {
+    x: 0.7
+    y: 0.7
+  }
+  size {
+    x: 230.0
+    y: 24.0
+  }
+  color {
+    y: 0.85
+    z: 0.3
+  }
+  type: TYPE_TEXT
+  text: "ARENA 1"
+  font: "druid_text_bold"
+  id: "world_num_txt"
+  parent: "world_card"
+  inherit_alpha: true
+  shadow_alpha: 0.6
+}
+nodes {
+  position {
+    y: 64.0
+  }
+  scale {
+    x: 0.85
+    y: 0.85
+  }
+  size {
+    x: 240.0
+    y: 30.0
+  }
+  type: TYPE_TEXT
+  text: "Royal Arena"
+  font: "druid_text_bold"
+  id: "world_title_txt"
+  parent: "world_card"
+  inherit_alpha: true
+  shadow_alpha: 0.6
+}
+nodes {
+  position {
+    y: 6.0
+  }
+  size {
+    x: 200.0
+    y: 80.0
+  }
+  type: TYPE_BOX
+  texture: "gui/preview_arena_1"
+  id: "world_preview_img"
+  parent: "world_card"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -60.0
+  }
+  scale {
+    x: 0.55
+    y: 0.55
+  }
+  size {
+    x: 371.0
+    y: 25.0
+  }
+  color {
+    x: 0.8
+    y: 0.85
+    z: 0.95
+  }
+  type: TYPE_TEXT
+  text: "Training grounds"
+  font: "druid_text_bold"
+  id: "world_desc_txt"
+  line_break: true
+  parent: "world_card"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -104.5
+  }
+  size {
+    x: 170.0
+    y: 34.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_blue"
+  id: "world_status_btn"
+  parent: "world_card"
+  inherit_alpha: true
+  slice9 {
+    x: 12.0
+    y: 12.0
+    z: 12.0
+    w: 12.0
+  }
+}
+nodes {
+  scale {
+    x: 0.65
+    y: 0.65
+  }
+  size {
+    x: 170.0
+    y: 34.0
+  }
+  type: TYPE_TEXT
+  text: "SELECTED"
+  font: "druid_text_bold"
+  id: "world_status_txt"
+  parent: "world_status_btn"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -150.0
+    y: 110.0
+  }
+  size {
+    x: 48.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_blue"
+  id: "btn_world_prev"
+  parent: "tab_play"
+  inherit_alpha: true
+  slice9 {
+    x: 12.0
+    y: 12.0
+    z: 12.0
+    w: 12.0
+  }
+}
+nodes {
+  scale {
+    x: 1.3
+    y: 1.3
+  }
+  size {
+    x: 48.0
+    y: 64.0
+  }
+  type: TYPE_TEXT
+  text: "<"
+  font: "druid_text_bold"
+  id: "world_prev_txt"
+  parent: "btn_world_prev"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 150.0
+    y: 110.0
+  }
+  size {
+    x: 48.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "gui/btn_blue"
+  id: "btn_world_next"
+  parent: "tab_play"
+  inherit_alpha: true
+  slice9 {
+    x: 12.0
+    y: 12.0
+    z: 12.0
+    w: 12.0
+  }
+}
+nodes {
+  scale {
+    x: 1.3
+    y: 1.3
+  }
+  size {
+    x: 48.0
+    y: 64.0
+  }
+  type: TYPE_TEXT
+  text: ">"
+  font: "druid_text_bold"
+  id: "world_next_txt"
+  parent: "btn_world_next"
+  inherit_alpha: true
 }
 nodes {
   position {
@@ -2840,7 +3053,7 @@ nodes {
 }
 nodes {
   position {
-    x: 54.0
+    x: 28.0
   }
   scale {
     x: 0.75
@@ -2858,6 +3071,7 @@ nodes {
   text: "0"
   font: "druid_text_bold"
   id: "exp_award_txt1"
+  pivot: PIVOT_W
   outline {
     x: 0.1
     y: 0.2
@@ -2939,11 +3153,11 @@ nodes {
   text: "CLAIM"
   font: "druid_text_bold"
   id: "text7"
+  line_break: true
   parent: "end_match_btn1"
   inherit_alpha: true
   alpha: 0.84
   outline_alpha: 0.1
-  line_break: true
 }
 nodes {
   type: TYPE_BOX
@@ -2952,6 +3166,7 @@ nodes {
   parent: "main_menu"
   inherit_alpha: true
   size_mode: SIZE_MODE_AUTO
+  enabled: false
 }
 nodes {
   size {
@@ -2972,11 +3187,15 @@ nodes {
 }
 nodes {
   position {
-    y: 247.0
+    y: 150.0
+  }
+  scale {
+    x: 0.8
+    y: 0.8
   }
   size {
     x: 200.0
-    y: 100.0
+    y: 60.0
   }
   type: TYPE_TEXT
   text: "SETTINGS"
@@ -2984,6 +3203,217 @@ nodes {
   id: "settings_txt"
   parent: "tab_settings"
   inherit_alpha: true
+}
+nodes {
+  position {
+    y: 75.0
+  }
+  scale {
+    x: 0.55
+    y: 0.55
+  }
+  size {
+    x: 240.0
+    y: 40.0
+  }
+  type: TYPE_TEXT
+  text: "SOUND: 100%"
+  font: "druid_text_bold"
+  id: "sfx_label"
+  parent: "tab_settings"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 35.0
+  }
+  size {
+    x: 220.0
+    y: 24.0
+  }
+  color {
+    x: 0.12
+    y: 0.15
+    z: 0.22
+  }
+  type: TYPE_BOX
+  texture: "gui/holder"
+  id: "sfx_bar_bg"
+  parent: "tab_settings"
+  inherit_alpha: true
+  slice9 {
+    x: 8.0
+    y: 8.0
+    z: 8.0
+    w: 8.0
+  }
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  size {
+    x: 200.0
+    y: 12.0
+  }
+  color {
+    x: 0.25
+    y: 0.65
+  }
+  type: TYPE_BOX
+  texture: "gui/pixel"
+  id: "sfx_bar_fill"
+  pivot: PIVOT_W
+  parent: "sfx_bar_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 100.0
+  }
+  size {
+    x: 26.0
+    y: 26.0
+  }
+  type: TYPE_BOX
+  texture: "druid/ui_circle_32"
+  id: "sfx_pin"
+  parent: "sfx_bar_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  size {
+    x: 1.0
+    y: 1.0
+  }
+  type: TYPE_BOX
+  id: "sfx_anchor_l"
+  parent: "sfx_bar_bg"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: 100.0
+  }
+  size {
+    x: 1.0
+    y: 1.0
+  }
+  type: TYPE_BOX
+  id: "sfx_anchor_r"
+  parent: "sfx_bar_bg"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    y: -35.0
+  }
+  scale {
+    x: 0.55
+    y: 0.55
+  }
+  size {
+    x: 240.0
+    y: 40.0
+  }
+  type: TYPE_TEXT
+  text: "MUSIC: 80%"
+  font: "druid_text_bold"
+  id: "music_label"
+  parent: "tab_settings"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -75.0
+  }
+  size {
+    x: 220.0
+    y: 24.0
+  }
+  color {
+    x: 0.12
+    y: 0.15
+    z: 0.22
+  }
+  type: TYPE_BOX
+  texture: "gui/holder"
+  id: "music_bar_bg"
+  parent: "tab_settings"
+  inherit_alpha: true
+  slice9 {
+    x: 8.0
+    y: 8.0
+    z: 8.0
+    w: 8.0
+  }
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  size {
+    x: 160.0
+    y: 12.0
+  }
+  color {
+    x: 0.3
+    y: 0.9
+    z: 0.5
+  }
+  type: TYPE_BOX
+  texture: "gui/pixel"
+  id: "music_bar_fill"
+  pivot: PIVOT_W
+  parent: "music_bar_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 60.0
+  }
+  size {
+    x: 26.0
+    y: 26.0
+  }
+  type: TYPE_BOX
+  texture: "druid/ui_circle_32"
+  id: "music_pin"
+  parent: "music_bar_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: -100.0
+  }
+  size {
+    x: 1.0
+    y: 1.0
+  }
+  type: TYPE_BOX
+  id: "music_anchor_l"
+  parent: "music_bar_bg"
+  inherit_alpha: true
+  visible: false
+}
+nodes {
+  position {
+    x: 100.0
+  }
+  size {
+    x: 1.0
+    y: 1.0
+  }
+  type: TYPE_BOX
+  id: "music_anchor_r"
+  parent: "music_bar_bg"
+  inherit_alpha: true
+  visible: false
 }
 nodes {
   position {
