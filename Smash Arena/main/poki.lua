@@ -1,30 +1,22 @@
+-- main/poki.lua
+-- Official Defold Poki SDK Extension Adapter with Editor/Native Fallback Mock
+
 local M = {}
 
 ----------------------------------------------------------
--- BRIDGE LOADER
+-- CONSTANTS & FALLBACK STATUSES
 ----------------------------------------------------------
+local COMMERCIAL_BREAK_START   = 1
+local COMMERCIAL_BREAK_SUCCESS = 2
+local COMMERCIAL_BREAK_ERROR   = 3
 
-local bridge =  nil
-
-local function get_bridge()
-	if bridge then return bridge end
-	local result =  require "bridge.bridge"
---	local ok, result = pcall(require, "bridge.bridge")
-	if result then
-		bridge = result
-		print("[PLAYGAMA] Bridge loaded")
-		
-		return bridge
-	else
-		print("[PLAYGAMA] ⚠️ Bridge NOT loaded:", result)
-		return nil
-	end
-end
+local REWARDED_BREAK_START     = 1
+local REWARDED_BREAK_SUCCESS   = 2
+local REWARDED_BREAK_ERROR     = 3
 
 ----------------------------------------------------------
 -- STATE
 ----------------------------------------------------------
-
 M.initialized = false
 M.ad_showing = false
 M.gameplay_active = false
@@ -32,215 +24,282 @@ M.gameplay_active = false
 ----------------------------------------------------------
 -- LOG
 ----------------------------------------------------------
-
 local function log(...)
-	print("[PLAYGAMA]", ...)
-	
+	print("[POKI SDK]", ...)
 end
 
 ----------------------------------------------------------
--- INIT
+-- AUDIO / GAMEPLAY PAUSE HELPERS
 ----------------------------------------------------------
+local function pause_game()
+	log("🎮 Game paused (commercial/rewarded break active)")
+	-- If using master audio buses in Defold:
+	-- pcall(function() sound.set_group_gain("master", 0) end)
+end
 
+local function resume_game()
+	log("🎮 Game resumed")
+	-- pcall(function() sound.set_group_gain("master", 1) end)
+end
+
+----------------------------------------------------------
+-- SDK DETECTION HELPER
+----------------------------------------------------------
+local function get_poki_sdk()
+	if rawget(_G, "poki_sdk") ~= nil then
+		return _G.poki_sdk
+	end
+	return nil
+end
+
+----------------------------------------------------------
+-- INITIALIZATION
+----------------------------------------------------------
 function M.init()
 	if M.initialized then return end
 	M.initialized = true
 
-	local b = get_bridge()
-	if not b then
-		log("⚠️ SDK not available (editor/native build) — using mock")
-		return
+	local sdk = get_poki_sdk()
+	if sdk then
+		log("✅ Native Poki SDK extension detected in HTML5 build")
+	else
+		log("ℹ️ Running in Editor / Native build — Using Poki SDK Mock")
 	end
-
-	-- 🔥 ВАЖНО: Подписываемся на события ДО отправки game_ready
-	b.platform.on("audio_state_changed", function(_, enabled)
-		log("Audio:", enabled and "ON" or "OFF")
-		-- Ваша логика mute
-	end)
-
-	b.platform.on("pause_state_changed", function(_, paused)
-		log("Pause:", paused and "PAUSED" or "RESUMED")
-		if paused then
-		--	pause_game()
-		else
-		--	resume_game()
-		end
-	end)
-
-	-- 🔥 Отправляем game_ready ТОЛЬКО когда игра действительно готова
-	-- Не в init(), а когда закончилась загрузка ресурсов/меню
-	log("✅ SDK initialized — call M.send_game_ready() when game is playable")
 end
 
--- 🔥 НОВАЯ ФУНКЦИЯ: вызывайте явно, когда игра готова к взаимодействию
+-- Poki: gameLoadingFinished (called when game assets & main menu are ready)
 function M.send_game_ready()
-	local b = get_bridge()
-	if not b then 
-		log("Mock: game_ready")
-		return 
+	local sdk = get_poki_sdk()
+	if sdk then
+		log("📤 PokiSDK: game_loading_finished()")
+		if sdk.game_loading_finished then
+			sdk.game_loading_finished()
+		elseif sdk.gameLoadingFinished then
+			sdk.gameLoadingFinished()
+		end
+	else
+		log("Mock: game_loading_finished()")
 	end
-
-	log("📤 Sending: game_ready")
-	b.platform.send_message("game_ready")
 end
 
 ----------------------------------------------------------
--- GAMEPLAY MESSAGES
+-- GAMEPLAY START / STOP
 ----------------------------------------------------------
-
+-- gameplay_start: Call when player starts interacting or battle begins
 function M.gameplay_start(world, level)
 	if M.gameplay_active then return end
 	M.gameplay_active = true
 
-	local b = get_bridge()
-	if not b then 
-		log("Mock: level_started")
-		return 
+	local sdk = get_poki_sdk()
+	if sdk then
+		log("📤 PokiSDK: gameplay_start()", world, level)
+		if sdk.gameplay_start then
+			sdk.gameplay_start()
+		elseif sdk.gameplayStart then
+			sdk.gameplayStart()
+		end
+	else
+		log("Mock: gameplay_start()", world, level)
 	end
-
-	local params = nil
-	if world or level then
-		params = { world = world, level = level }
-	end
-
-	log("📤 Sending: level_started", world, level)
-	b.platform.send_message("level_started", params)
 end
 
+-- gameplay_stop: Call on pause, game over, victory, or return to menu
 function M.gameplay_stop(world, level)
 	if not M.gameplay_active then return end
 	M.gameplay_active = false
 
-	local b = get_bridge()
-	if not b then 
-		log("Mock: level_completed")
-		return 
+	local sdk = get_poki_sdk()
+	if sdk then
+		log("📤 PokiSDK: gameplay_stop()", world, level)
+		if sdk.gameplay_stop then
+			sdk.gameplay_stop()
+		elseif sdk.gameplayStop then
+			sdk.gameplayStop()
+		end
+	else
+		log("Mock: gameplay_stop()", world, level)
+	end
+end
+
+----------------------------------------------------------
+-- CELEBRATION / HAPPY TIME
+----------------------------------------------------------
+-- intensity: 0.0 (subtle) to 1.0 (huge achievement/win)
+function M.happy_time(intensity)
+	intensity = intensity or 1.0
+	local sdk = get_poki_sdk()
+	if sdk then
+		log("🎉 PokiSDK: happy_time(" .. tostring(intensity) .. ")")
+		if sdk.happy_time then
+			sdk.happy_time(intensity)
+		elseif sdk.happyTime then
+			sdk.happyTime(intensity)
+		end
+	else
+		log("Mock: happy_time(" .. tostring(intensity) .. ")")
+	end
+end
+
+----------------------------------------------------------
+-- CUSTOM ANALYTICS (PokiSDK.measure)
+----------------------------------------------------------
+-- Poki specification: PokiSDK.measure(category, what, action)
+-- category: broad group (e.g. 'round', 'tutorial', 'level', 'chest', 'hero')
+-- what: specific identifier (e.g. '1', 'step_1', 'arena')
+-- action: event outcome - must be strictly 'start', 'complete', or 'fail'
+M.current_round = 1
+
+function M.measure(category, what, action)
+	local sdk = get_poki_sdk()
+	if sdk and sdk.measure then
+		log("📊 PokiSDK: measure('" .. tostring(category) .. "', '" .. tostring(what) .. "', '" .. tostring(action) .. "')")
+		pcall(function() sdk.measure(tostring(category), tostring(what), tostring(action)) end)
+	else
+		log("Mock measure:", category, what, action)
+	end
+end
+
+function M.round_start(round_num)
+	M.current_round = tonumber(round_num) or M.current_round or 1
+	M.measure("round", tostring(M.current_round), "start")
+end
+
+function M.round_end(victory, round_or_reason)
+	local r = tonumber(round_or_reason) or M.current_round or 1
+	local action = victory and "complete" or "fail"
+	M.measure("round", tostring(r), action)
+end
+
+function M.tutorial_started()
+	M.measure("tutorial", "step_1", "start")
+end
+
+function M.tutorial_completed()
+	M.measure("tutorial", "step_1", "complete")
+end
+
+function M.chest_opened(chest_id, chest_name)
+	local name = tostring(chest_name or chest_id or "chest")
+	M.measure("chest", name, "complete")
+end
+
+function M.hero_upgraded(hero_id, new_level)
+	local tag = tostring(hero_id) .. "_lvl" .. tostring(new_level)
+	M.measure("hero", tag, "complete")
+end
+
+----------------------------------------------------------
+-- COMMERCIAL BREAK (INTERSTITIAL ADS)
+----------------------------------------------------------
+function M.commercial_break(callback)
+	if M.ad_showing then
+		if callback then callback() end
+		return
 	end
 
-	local params = nil
-	if world or level then
-		params = { world = world, level = level }
+	local sdk = get_poki_sdk()
+	if not sdk or not sdk.commercial_break then
+		log("📺 Mock commercial_break")
+		if callback then callback() end
+		return
 	end
 
-	log("📤 Sending: level_completed", world, level)
-	b.platform.send_message("level_completed", params)
+	M.ad_showing = true
+	local status_start = sdk.COMMERCIAL_BREAK_START or COMMERCIAL_BREAK_START
+	local status_success = sdk.COMMERCIAL_BREAK_SUCCESS or COMMERCIAL_BREAK_SUCCESS
+	local status_error = sdk.COMMERCIAL_BREAK_ERROR or COMMERCIAL_BREAK_ERROR
+
+	log("📺 Requesting Poki commercial_break...")
+	sdk.commercial_break(function(self, status)
+		log("🪧 Commercial break status:", status)
+		if status == status_start then
+			pause_game()
+		elseif status == status_success or status == status_error then
+			M.ad_showing = false
+			resume_game()
+			if callback then
+				callback()
+			end
+		end
+	end)
 end
 
 ----------------------------------------------------------
--- INTERNAL
+-- REWARDED BREAK (REWARDED ADS)
 ----------------------------------------------------------
+-- size: "small" (default), "medium", or "large"
+function M.rewarded_break(on_reward, on_close, size)
+	if M.ad_showing then
+		if on_close then on_close() end
+		return
+	end
 
-local function pause_game()
-	-- Defold example:
---	msg.post("#gameproxy", "set_time_step", { factor = 0, mode = 0 })
-	log("🎮 Game paused")
-end
-
-local function resume_game()
---	msg.post("#gameproxy", "set_time_step", { factor = 1, mode = 0 })
-	log("🎮 Game resumed")
-end
-
-----------------------------------------------------------
--- REWARDED (сокращённо — см. предыдущий ответ)
-----------------------------------------------------------
-
-function M.rewarded_break(on_reward, on_close)
-	if M.ad_showing then return end
-
-	local b = get_bridge()
-	if not b then
-		-- Mock для редактора
-		log("🎁 Mock rewarded")
+	local sdk = get_poki_sdk()
+	if not sdk or not sdk.rewarded_break then
+		log("🎁 Mock rewarded_break (granting reward)")
 		if on_reward then on_reward() end
 		if on_close then on_close() end
 		return
 	end
 
-	if not b.advertisement.is_rewarded_supported() then
-		log("⚠️ Rewarded not supported")
-		if on_close then on_close() end
-		return
-	end
-
 	M.ad_showing = true
-	pause_game()
-	M._pending_reward = on_reward
-	M._pending_close = on_close
+	local status_start = sdk.REWARDED_BREAK_START or REWARDED_BREAK_START
+	local status_success = sdk.REWARDED_BREAK_SUCCESS or REWARDED_BREAK_SUCCESS
+	local status_error = sdk.REWARDED_BREAK_ERROR or REWARDED_BREAK_ERROR
 
-	-- Подписка на состояние (если ещё не подписаны)
-	if not M._rewarded_listener then
-		M._rewarded_listener = true
-		b.advertisement.on("rewarded_state_changed", function(_, state)
-			log("🎁 Rewarded state:", state)
-			if state == "rewarded" and M._pending_reward then
-				M._pending_reward()
-				M._pending_reward = nil
-			elseif (state == "closed" or state == "failed") and M._pending_close then
-				M.ad_showing = false
-				resume_game()
-				M._pending_close()
-				M._pending_close = nil
-			end
-		end)
-	end
+	local reward_size = size or "small"
+	log("🎁 Requesting Poki rewarded_break (" .. reward_size .. ")...")
 
-	log("📺 Showing rewarded ad")
-	b.advertisement.show_rewarded()
+	sdk.rewarded_break(reward_size, function(self, status)
+		log("🎁 Rewarded break status:", status)
+		if status == status_start then
+			pause_game()
+		elseif status == status_success then
+			M.ad_showing = false
+			resume_game()
+			if on_reward then on_reward() end
+			if on_close then on_close() end
+		elseif status == status_error then
+			M.ad_showing = false
+			resume_game()
+			if on_close then on_close() end
+		end
+	end)
 end
 
 ----------------------------------------------------------
--- INTERSTITIAL
+-- UTILITIES / DEVICE INFO
 ----------------------------------------------------------
-function M.commercial_break(callback)
-
-	if M.ad_showing then
-		return
+function M.is_adblock_detected()
+	local sdk = get_poki_sdk()
+	if sdk then
+		if sdk.is_ad_blocked then
+			return sdk.is_ad_blocked()
+		elseif sdk.is_adblock_detected then
+			return sdk.is_adblock_detected()
+		end
 	end
-
-	local b = get_bridge()
-
-	if not b then
-		if callback then callback() end
-		return
-	end
-
-	if not M._interstitial_listener then
-
-		M._interstitial_listener = true
-
-		b.advertisement.on("interstitial_state_changed", function(_, state)
-
-			log("🪧 Interstitial state:", state)
-
-			if state == "opened" then
-				pause_game()
-			end
-
-			if state == "closed"
-			or state == "failed"
-			or state == "skipped" then
-
-				M.ad_showing = false
-
-				resume_game()
-
-				if M._pending_close then
-					M._pending_close()
-					M._pending_close = nil
-				end
-			end
-		end)
-	end
-
-	M.ad_showing = true
-	M._pending_close = callback
-
-	log("📺 Showing interstitial")
-
-	b.advertisement.show_interstitial()
+	return false
 end
 
-----------------------------------------------------------
+function M.get_device_info()
+	local sdk = get_poki_sdk()
+	if sdk and sdk.get_device_info then
+		return sdk.get_device_info()
+	end
+	return {
+		is_mobile = false,
+		is_tablet = false,
+		is_desktop = true
+	}
+end
+
+function M.get_shareable_url(params)
+	local sdk = get_poki_sdk()
+	if sdk and sdk.shareable_url then
+		return sdk.shareable_url(params or {})
+	end
+	return nil
+end
 
 return M

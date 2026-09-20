@@ -28,7 +28,7 @@ M.TEAM_ENEMY  = 2
 -- ─────────────────────────────────────────────────────────────
 --  ПЕРСИСТЕНТНЫЕ ДАННЫЕ
 -- ─────────────────────────────────────────────────────────────
-M.active_deck       = { 5, 4, 2, 5 }
+M.active_deck       = { 3, 1, 2, 4 }
 M.enemy_deck        = { 1, 5, 7, 10 }
 M.gold              = 100
 M.almaz             = 10
@@ -102,16 +102,23 @@ end
 -- ─────────────────────────────────────────────────────────────
 --  СОХРАНЕНИЕ / ЗАГРУЗКА
 -- ─────────────────────────────────────────────────────────────
+function M.complete_tutorial()
+	M.tutorial_completed = true
+	M.tutorial_step = 10
+	M.save()
+end
+
 function M.save()
 	local data_to_save = {
-		active_deck      = M.active_deck,
-		gold             = M.gold,
-		almaz            = M.almaz,
-		prestige         = M.prestige,
-		available_heroes = M.available_heroes,
-		hero_levels      = M.hero_levels,   -- ← сохраняем уровни
-		hero_cards       = M.hero_cards,
-		chests = M.chests
+		active_deck        = M.active_deck,
+		gold               = M.gold,
+		almaz              = M.almaz,
+		prestige           = M.prestige,
+		available_heroes   = M.available_heroes,
+		hero_levels        = M.hero_levels,   -- ← сохраняем уровни
+		hero_cards         = M.hero_cards,
+		chests             = M.chests,
+		tutorial_completed = M.tutorial_completed
 	}
 	local ok = sys.save(SAVE_PATH, data_to_save)
 	if ok then
@@ -124,7 +131,8 @@ end
 function M.load()
 	local d = sys.load(SAVE_PATH)
 	if not next(d) then
-		print("No save file. Using defaults.")
+		print("No save file. Using defaults (first launch).")
+		M.tutorial_completed = false
 		return
 	end
 
@@ -136,8 +144,22 @@ function M.load()
 	M.hero_cards       = d.hero_cards       or M.hero_cards
 	-- ИСПРАВЛЕНО: hero_levels тоже грузим из сохранения
 	M.hero_levels      = d.hero_levels      or M.hero_levels
-	M.chests = d.chests or M.chests
-	print("Profile loaded.")
+	M.chests           = d.chests           or M.chests
+
+	if d.tutorial_completed ~= nil then
+		M.tutorial_completed = d.tutorial_completed
+	elseif d.gold or d.prestige or d.active_deck then
+		-- Если сохранение уже есть (не первый запуск), обучение завершено
+		M.tutorial_completed = true
+	else
+		M.tutorial_completed = false
+	end
+
+	if M.tutorial_completed then
+		M.tutorial_step = 10
+	end
+
+	print("Profile loaded. Tutorial completed: " .. tostring(M.tutorial_completed))
 end
 
 -- ─────────────────────────────────────────────────────────────
@@ -166,5 +188,8 @@ end
 function M.switch_turn()
 	M.current_team = (M.current_team == M.TEAM_PLAYER) and M.TEAM_ENEMY or M.TEAM_PLAYER
 end
+
+-- Автоматически загружаем профиль при подключении модуля
+M.load()
 
 return M

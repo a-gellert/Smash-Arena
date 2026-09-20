@@ -7,7 +7,7 @@ emitters {
   material: "/builtins/materials/particlefx.material"
   blend_mode: BLEND_MODE_ADD
   max_particle_count: 32
-  type: EMITTER_TYPE_CIRCLE
+  type: EMITTER_TYPE_BOX
   properties {
     key: EMITTER_KEY_SPAWN_RATE
     points {
@@ -30,15 +30,16 @@ emitters {
   properties {
     key: EMITTER_KEY_PARTICLE_LIFE_TIME
     points {
-      y: 1.0
+      y: 1.5
     }
     spread: 0.5
   }
   properties {
     key: EMITTER_KEY_PARTICLE_SIZE
     points {
-      y: 20.0
+      y: 30.0
     }
+    spread: 5.0
   }
   properties {
     key: EMITTER_KEY_PARTICLE_RED
@@ -73,19 +74,19 @@ emitters {
   particle_properties {
     key: PARTICLE_KEY_RED
     points {
-      y: 0.1
+      y: 0.3
     }
   }
   particle_properties {
     key: PARTICLE_KEY_GREEN
     points {
-      y: 0.12
+      y: 0.3
     }
   }
   particle_properties {
     key: PARTICLE_KEY_BLUE
     points {
-      y: 0.1
+      y: 0.3
     }
   }
   particle_properties {

@@ -1,8 +1,0 @@
-{
-  "advertisement": {
-    "useBuiltInErrorPopup": true
-  },
-  "sendAnalyticsEvents": true,
-  "disableLoadingLogo": true,
-  "showFullLoadingLogo": true
-}

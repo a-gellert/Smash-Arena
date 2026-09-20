@@ -2,19 +2,12 @@
 local unit_manager = require "main.unit_manager"
 local state = require "main.state"
 
-local function end_match(self, team_index)
-	state.has_unopened_chest = true
-	state.tutorial_step = 4 -- Переходим к этапу открытия сундука
-	--msg.post("main:/loader", "show_screen", { screen = state.SCREEN_MENU })
-	
-end
 local function clear_scene(self)
-
 	-- 1. Удаляем все игровые объекты юнитов
 	-- Мы итерируемся по списку all_units, который заполняли при регистрации
 	for unit_id, _ in pairs(unit_manager.all_units) do
 		if go.exists(unit_id) then
-			go.delete(unit_id)
+			go.delete(unit_id, true)
 		end
 	end
 
@@ -22,28 +15,6 @@ local function clear_scene(self)
 	-- Это аналог команды TRUNCATE в базе данных
 	unit_manager.reset()
 	state.current_team = 1
-end
-local function open_chest(self)
-	if not state.has_unopened_chest then return end
-
-	-- Имитация "базы данных" наград
-	local rewards = {
-		{ type = "gold", amount = 100 },
-		{ type = "card", id = 4, amount = 5 } -- Даем карточки Жнеца
-	}
-
-	-- Поочередно показываем награды (можно через таймер или клик)
-	for i, reward in ipairs(rewards) do
-		timer.delay(i * 0.5, false, function()
-			show_reward_popup(reward) 
-			if reward.type == "gold" then state.gold = state.gold + reward.amount end
-			if reward.type == "card" then state.add_cards(reward.id, reward.amount) end
-		end)
-	end
-
-	state.has_unopened_chest = false
-	state.tutorial_step = 5 -- Теперь отправляем в инвентарь
-	state.save()
 end
 
 local function perform_ai_turn(self, ai_unit_id)
@@ -110,6 +81,8 @@ local function activate_next_unit(self)
 	local team = unit_manager.teams[team_id]
 
 	if #team == 0 then
+		unit_manager.active_unit_id = nil
+		msg.post("/gui#game", "refresh_queue")
 		-- Команда полностью уничтожена
 		if team_id == 1 then
 			local prestige = math.random(-30,-27) 
@@ -136,6 +109,9 @@ local function activate_next_unit(self)
 	local next_unit = team[idx]
 
 	if next_unit then
+		unit_manager.active_unit_id = next_unit
+		msg.post("/gui#game", "refresh_queue")
+
 		if team_id == 1 then
 			msg.post("main:/input_manager", "set_target", { id = next_unit })
 			-- ВКЛЮЧАЕМ подсветку конкретно этому юниту
@@ -149,6 +125,9 @@ local function activate_next_unit(self)
 		end
 
 		unit_manager.team_indices[team_id] = (idx % #team) + 1
+	else
+		unit_manager.active_unit_id = nil
+		msg.post("/gui#game", "refresh_queue")
 	end
 end
 function init(self)
@@ -225,6 +204,8 @@ function on_message(self, message_id, message, sender)
 	end
 	if message_id == hash("cleanup_battle") then
 		clear_scene(self)
+		unit_manager.active_unit_id = nil
+		msg.post("/gui#game", "refresh_queue")
 	end
 	-- 2. Юнит остановился -> Смена хода
 	if message_id == hash("unit_stopped") then
@@ -249,6 +230,7 @@ function on_message(self, message_id, message, sender)
 
 		-- Стандартная очистка
 		unit_manager.remove_unit(victim_id, message.team)
+		msg.post("/gui#game", "refresh_queue")
 	end
 	if message_id == hash("trigger_wave") then
 		local wave_pos = message.pos
@@ -287,5 +269,34 @@ function on_message(self, message_id, message, sender)
 			end
 		end
 		-- Здесь можно спавнить визуальный эффект кольца/волны
+	end
+	if message_id == hash("trigger_explosion") then
+		local exp_pos = message.pos
+		local radius = message.radius or 160
+		local damage = message.damage or 50
+		local owner_id = message.owner_id
+
+		for target_id, _ in pairs(unit_manager.all_units) do
+			if target_id ~= owner_id and go.exists(target_id) then
+				local target_pos = go.get_world_position(target_id)
+				local dist = vmath.length(target_pos - exp_pos)
+
+				if dist < radius then
+					local dir = dist > 1 and vmath.normalize(target_pos - exp_pos) or vmath.vector3(0, 1, 0)
+					local falloff = (radius - dist) / radius
+					local impulse_force = dir * damage * falloff * 4000
+
+					pcall(msg.post, msg.url(nil, target_id, "collisionobject"), "apply_impulse", {
+						position = target_pos,
+						impulse = impulse_force
+					})
+
+					pcall(msg.post, target_id, "take_damage", {
+						amount = math.max(1, math.floor(damage * falloff + 0.5)),
+						attacker_id = owner_id
+					})
+				end
+			end
+		end
 	end
 end

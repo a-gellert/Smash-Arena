@@ -902,6 +902,10 @@ nodes {
   position {
     y: -50.0
   }
+  scale {
+    x: 0.25
+    y: 0.25
+  }
   type: TYPE_BOX
   texture: "gui/chest"
   id: "chest_icon"
@@ -1389,12 +1393,15 @@ nodes {
     x: 0.3
     y: 0.3
   }
+  size {
+    x: 256.0
+    y: 590.0
+  }
   type: TYPE_BOX
   texture: "gui/finger"
   id: "finger"
   parent: "main_game"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -2694,14 +2701,17 @@ nodes {
 }
 nodes {
   size {
-    x: 320.0
-    y: 119.0
+    x: 390.0
+    y: 780.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
   }
   type: TYPE_BOX
-  texture: "gui/panel"
   id: "end_screen_panel1"
-  parent: "tab_play"
-  inherit_alpha: true
+  parent: "main_menu"
   enabled: false
   visible: false
 }
@@ -2724,10 +2734,14 @@ nodes {
 }
 nodes {
   position {
-    y: 200.0
+    y: 205.0
+  }
+  scale {
+    x: 0.72
+    y: 0.72
   }
   size {
-    x: 200.0
+    x: 440.0
     y: 100.0
   }
   color {
@@ -2744,19 +2758,23 @@ nodes {
     y: 0.2
     z: 0.2
   }
+  line_break: true
   parent: "end_screen1"
   inherit_alpha: true
 }
 nodes {
   position {
-    y: -50.0
+    y: -18.5
+  }
+  size {
+    x: 160.0
+    y: 160.0
   }
   type: TYPE_BOX
   texture: "gui/chest"
   id: "chest_icon1"
   parent: "end_screen1"
   inherit_alpha: true
-  size_mode: SIZE_MODE_AUTO
 }
 nodes {
   position {
@@ -2812,10 +2830,10 @@ nodes {
   }
   size {
     x: 40.0
-    y: 32.0
+    y: 36.0
   }
   type: TYPE_BOX
-  texture: "gui/prestige"
+  texture: "gui/almaz"
   id: "exp_award1"
   parent: "end_screen1"
   inherit_alpha: true
@@ -2833,19 +2851,59 @@ nodes {
     y: 100.0
   }
   color {
-    y: 0.9573771
-    z: 0.8
+    x: 0.4
+    y: 0.8
   }
   type: TYPE_TEXT
-  text: "50"
+  text: "0"
   font: "druid_text_bold"
   id: "exp_award_txt1"
   outline {
-    x: 0.3019608
-    y: 0.3019608
-    z: 0.3019608
+    x: 0.1
+    y: 0.2
+    z: 0.3
   }
   parent: "exp_award1"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -120.0
+  }
+  scale {
+    x: 0.52
+    y: 0.52
+  }
+  size {
+    x: 580.0
+    y: 130.0
+  }
+  type: TYPE_TEXT
+  text: "Cards Reward"
+  font: "druid_text_bold"
+  id: "cards_award_txt1"
+  outline {
+    x: 0.1
+    y: 0.1
+    z: 0.1
+  }
+  line_break: true
+  parent: "end_screen1"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 145.0
+    y: 220.0
+  }
+  size {
+    x: 36.0
+    y: 36.0
+  }
+  type: TYPE_BOX
+  texture: "gui/cancel"
+  id: "cancel_modal_btn1"
+  parent: "end_screen1"
   inherit_alpha: true
 }
 nodes {
@@ -2853,8 +2911,8 @@ nodes {
     y: -200.0
   }
   size {
-    x: 160.0
-    y: 70.0
+    x: 180.0
+    y: 64.0
   }
   type: TYPE_BOX
   texture: "gui/btn_orange"
@@ -2869,18 +2927,23 @@ nodes {
   }
 }
 nodes {
+  scale {
+    x: 0.55
+    y: 0.55
+  }
   size {
-    x: 200.0
-    y: 100.0
+    x: 280.0
+    y: 80.0
   }
   type: TYPE_TEXT
-  text: "OK"
+  text: "CLAIM"
   font: "druid_text_bold"
   id: "text7"
   parent: "end_match_btn1"
   inherit_alpha: true
   alpha: 0.84
   outline_alpha: 0.1
+  line_break: true
 }
 nodes {
   type: TYPE_BOX
@@ -2967,7 +3030,7 @@ nodes {
   }
   size {
     x: 40.0
-    y: 32.0
+    y: 40.0
   }
   type: TYPE_BOX
   texture: "gui/prestige"
@@ -3020,7 +3083,7 @@ nodes {
   }
   size {
     x: 40.0
-    y: 32.0
+    y: 40.0
   }
   type: TYPE_BOX
   texture: "gui/coin"
@@ -3075,7 +3138,7 @@ nodes {
   }
   size {
     x: 40.0
-    y: 32.0
+    y: 40.0
   }
   type: TYPE_BOX
   texture: "gui/almaz"

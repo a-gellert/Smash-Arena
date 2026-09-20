@@ -2,6 +2,13 @@ components {
   id: "unit"
   component: "/entities/unit/unit.script"
 }
+components {
+  id: "trail"
+  component: "/entities/particle/trail.particlefx"
+  position {
+    z: -1.0
+  }
+}
 embedded_components {
   id: "collisionobject"
   type: "collisionobject"
@@ -53,7 +60,7 @@ embedded_components {
   position {
     x: -29.0
     y: 44.0
-    z: 0.5
+    z: 0.98
   }
   scale {
     y: 0.5
@@ -76,7 +83,7 @@ embedded_components {
   "}\n"
   ""
   position {
-    z: 0.3
+    z: 0.2
   }
   scale {
     x: 0.5
@@ -100,7 +107,7 @@ embedded_components {
   position {
     x: -30.0
     y: 44.0
-    z: 0.6
+    z: 0.99
   }
   scale {
     x: 7.5
@@ -118,7 +125,7 @@ embedded_components {
   "}\n"
   ""
   position {
-    z: 0.25
+    z: 0.9
   }
   scale {
     x: 0.2

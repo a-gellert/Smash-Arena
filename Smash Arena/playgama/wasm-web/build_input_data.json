@@ -4,21 +4,5 @@
     "version" : "1.12.4",
     "timestamp" : "2026-05-04 09:07:33"
   },
-  "defold_sdk" : "402218d5544666871f07ecdfa21032a7fb59413f",
-  "dependencies" : [ {
-    "link" : "https://github.com/Insality/defold-event/archive/refs/tags/14.zip",
-    "md5" : "B190CE34AA698356B1394D72D9C2389F"
-  }, {
-    "link" : "https://github.com/rgrams/rendercam/archive/1.0.3.zip",
-    "md5" : "B26EF84FD8F6E97C55E01D9FA0CA3F7E"
-  }, {
-    "link" : "https://github.com/Playgama/bridge-defold/archive/refs/tags/v1.30.0.zip",
-    "md5" : "3DB91FE7A241E4CE5343A93175345DF9"
-  }, {
-    "link" : "https://github.com/britzl/defold-richtext/archive/master.zip",
-    "md5" : "9D2C1678F602B4B8DE18881AC4ECAAAA"
-  }, {
-    "link" : "https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip",
-    "md5" : "313180148EBBA14F66072972375D837C"
-  } ]
+  "defold_sdk" : "402218d5544666871f07ecdfa21032a7fb59413f"
 }

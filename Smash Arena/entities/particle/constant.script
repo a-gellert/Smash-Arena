@@ -3,18 +3,21 @@ go.property("name", hash("none")) -- Сюда прилетит значение 
 
 function init(self)
 	if self.name ~= hash("none") then
-		-- Запускаем нужные частицы
-		-- Превращаем хеш обратно в строку для имени компонента или используем условия
-		local particle_id
-		if self.name == hash("rage")  then
-			particle_id = "#" .. "rage"
+		if self.name == hash("rage") then
+			self.particle_id = "#rage"
 		elseif self.name == hash("freeze") then
-			particle_id = "#" .. "freeze"
-		else
-			particle_id = "#" .. "trail"
+			self.particle_id = "#freeze"
 		end
 		
-		particlefx.play(particle_id)
-
+		if self.particle_id then
+			particlefx.play(self.particle_id)
+		end
 	end
 end
+
+function final(self)
+	if self.particle_id then
+		pcall(particlefx.stop, self.particle_id)
+	end
+end
+
