@@ -1,14 +1,48 @@
--- game.gui_script
 local state = require "main.state"
-local poki = require "main.poki"
+local sdk = require "main.sdk"
 local data = require "main.heroes_data"
 local unit_manager = require "main.unit_manager"
 local chest_loot = require "main.chest_loot"
 local sound = require "main.sound"
+local i18n = require "main.i18n"
 
 local LANG = "en"
 local refresh_world_ui = nil
 local refresh_wheel_ui = nil
+
+local function apply_static_localization(self)
+	local safe_set = function(id, text)
+		local ok, node = pcall(gui.get_node, id)
+		if ok and node then
+			gui.set_text(node, text)
+		end
+	end
+
+	safe_set("text5", i18n.t("your_gang"))
+	safe_set("text6", i18n.t("enemy"))
+	safe_set("text2", i18n.t("the_enemy_team"))
+	safe_set("text3", i18n.t("your_team"))
+	safe_set("text", i18n.t("play"))
+	safe_set("text1", i18n.t("ok"))
+	safe_set("text4", i18n.t("use"))
+	safe_set("text7", i18n.t("claim"))
+	safe_set("my_deck_txt", i18n.t("my_deck"))
+	safe_set("all_cards_txt", i18n.t("all_cards"))
+	safe_set("choose_txt", i18n.t("choose_place"))
+	safe_set("settings_txt", i18n.t("settings"))
+	safe_set("wheel_title_txt", i18n.t("wheel_title"))
+	safe_set("wheel_spin_txt", i18n.t("free_spin"))
+	safe_set("wheel_reward_header", i18n.t("you_won"))
+	safe_set("wheel_reward_btn_txt", i18n.t("claim"))
+	safe_set("cards_award_txt1", i18n.t("cards_reward"))
+	safe_set("wheel_badge_txt", i18n.t("free_badge"))
+	safe_set("info_unit_hp_txt1", i18n.t("hp"))
+	safe_set("info_unit_hp_txt2", i18n.t("hp"))
+	safe_set("info_unit_damage_txt1", i18n.t("dmg"))
+	safe_set("info_unit_damage_txt2", i18n.t("dmg"))
+	safe_set("info_unit_speed_txt1", i18n.t("spd"))
+	safe_set("info_unit_speed_txt2", i18n.t("spd"))
+end
 
 local function format_time(seconds)
 	if seconds <= 0 then return "00:00:00" end
@@ -34,7 +68,7 @@ local function refresh_chests_ui(self)
 			end
 
 			if not chest_slot.is_opening then
-				gui.set_text(status_label, "WAIT")
+				gui.set_text(status_label, (LANG == "ru") and "ЖДАТЬ" or "WAIT")
 				gui.set_scale(status_label, vmath.vector3(0.5, 0.5, 1))
 				gui.set_color(status_label, vmath.vector4(1, 0.9, 0.3, 1))
 			end
@@ -44,7 +78,7 @@ end
 
 local function set_tutorial_text(self, text_key)
 	local label = gui.get_node("help_text")
-	gui.set_text(label, state.STRINGS[text_key][LANG])
+	gui.set_text(label, i18n.t(text_key))
 
 	-- "Сочное" появление текста
 	gui.set_scale(label, vmath.vector3(0.8, 0.8, 1))
@@ -75,7 +109,7 @@ local function refresh_active_deck_ui(self)
 			local level = state.hero_levels[hero_id] or 1
 
 			if hero_static then
-				gui.set_text(level_label, "Lvl " .. level)
+				gui.set_text(level_label, ((LANG == "ru") and "Ур. " or "Lvl ") .. level)
 				local anim_id = hash(hero_static.name_key)
 				gui.play_flipbook(icon_node, anim_id)
 				gui.set_enabled(icon_node, true)
@@ -143,12 +177,12 @@ local function refresh_inventory_grid(self)
 		local cards_req = stats and stats.cards_required or 0
 
 		if item.level_node then
-			gui.set_text(item.level_node, "Lvl " .. current_level)
+			gui.set_text(item.level_node, ((LANG == "ru") and "Ур. " or "Lvl ") .. current_level)
 		end
 
 		if item.count_node then
 			if current_level >= data.MAX_LEVEL then
-				gui.set_text(item.count_node, "MAX")
+				gui.set_text(item.count_node, (LANG == "ru") and "МАКС" or "MAX")
 				gui.set_color(item.count_node, vmath.vector4(1, 0.85, 0.2, 1))
 			else
 				gui.set_text(item.count_node, player_cards .. "/" .. cards_req)
@@ -171,7 +205,7 @@ local function update_info_panel(self, hero_id)
 	local next_stats = (current_level < data.MAX_LEVEL) and data.get_stats(hero_id, current_level + 1) or nil
 	local can_up, gold_cost, cards_req = data.can_upgrade(hero_id, current_level, state.gold, player_cards)
 
-	gui.set_text(gui.get_node("unit_level"), "Lvl " .. current_level)
+	gui.set_text(gui.get_node("unit_level"), ((LANG == "ru") and "Ур. " or "Lvl ") .. current_level)
 
 	local fore_exp = gui.get_node("fore_exp_fill")
 	local upgrade_cards_label = gui.get_node("upgrade_cards_label")
@@ -179,13 +213,13 @@ local function update_info_panel(self, hero_id)
 	local upgrade_btn = gui.get_node("upgrade_btn")
 
 	if current_level >= data.MAX_LEVEL then
-		gui.set_text(upgrade_cards_label, "MAX")
-		gui.set_text(upgrade_price_label, "MAX")
+		gui.set_text(upgrade_cards_label, (LANG == "ru") and "МАКС" or "MAX")
+		gui.set_text(upgrade_price_label, (LANG == "ru") and "МАКС" or "MAX")
 		gui.set_scale(fore_exp, vmath.vector3(1, 1, 1))
 		gui.set_color(upgrade_btn, vmath.vector4(0.4, 0.4, 0.4, 1))
 	else
 		gui.set_text(upgrade_cards_label, player_cards .. " / " .. cards_req)
-		gui.set_text(upgrade_price_label, gold_cost .. " gold")
+		gui.set_text(upgrade_price_label, gold_cost .. " " .. ((LANG == "ru") and "золота" or "gold"))
 
 		local ratio = math.min(1.0, player_cards / math.max(1, cards_req))
 		gui.set_scale(fore_exp, vmath.vector3(ratio, 1, 1))
@@ -237,13 +271,16 @@ local function show_info_box(self, hero_id, current_hp, max_hp, level, is_dead)
 	local hero_base = data.heroes[hero_id]
 	local stats = data.get_stats(hero_id, level)
 
-	local hero_name = data.get_name(hero_id, "en")
+	local current_lang = (LANG == "ru") and "ru" or "en"
+	local hero_name = data.get_name(hero_id, current_lang)
 	if is_dead or (current_hp and current_hp <= 0) then
-		hero_name = hero_name .. " (Dead)"
+		hero_name = hero_name .. ((current_lang == "ru") and " (Мёртв)" or " (Dead)")
 	end
 
 	gui.set_text(gui.get_node("info_unit_name"), hero_name)
-	gui.set_text(gui.get_node("info_unit_description"), data.get_description(hero_id, "en"))
+	local desc_node = gui.get_node("info_unit_description")
+	gui.set_line_break(desc_node, true)
+	gui.set_text(desc_node, data.get_description(hero_id, current_lang))
 	
 	local display_hp = (is_dead or (current_hp and current_hp <= 0)) and 0 or (current_hp or 0)
 	gui.set_text(gui.get_node("info_unit_hp_txt"), display_hp .. "/" .. (max_hp or 0))
@@ -311,12 +348,12 @@ local function run_tutorial_logic(self)
 		-- Показываем стрелку на кнопку "В БОЙ"
 		gui.set_visible(self.tutorial_arrow, true)
 		gui.set_position(self.tutorial_arrow, gui.get_position(self.btn_start_battle))
-		gui.set_text(self.tutorial_label, "Это твоя команда. Пора в бой!")
+		gui.set_text(self.tutorial_label, (LANG == "ru") and "Это твоя команда. Пора в бой!" or "This is your team. Time to battle!")
 	elseif state.tutorial_step == 4 then
 		-- Подсказка на сундук в главном меню
 		gui.set_visible(self.tutorial_arrow, true)
 		gui.set_position(self.tutorial_arrow, gui.get_position(self.chest_node))
-		gui.set_text(self.tutorial_label, "Смотри, ты заработал трофей!")
+		gui.set_text(self.tutorial_label, (LANG == "ru") and "Смотри, ты заработал трофей!" or "Look, you earned a trophy!")
 	end
 end
 
@@ -341,9 +378,9 @@ local function set_sfx_slider_ui(self, ratio)
 	gui.set_position(gui.get_node("sfx_pin"), vmath.vector3(-100 + bar_width * ratio, 0, 0))
 	local pct = math.floor(ratio * 100 + 0.5)
 	if pct == 0 then
-		gui.set_text(gui.get_node("sfx_label"), "SOUND: OFF")
+		gui.set_text(gui.get_node("sfx_label"), (LANG == "ru") and "ЗВУКИ: ВЫКЛ" or "SOUND: OFF")
 	else
-		gui.set_text(gui.get_node("sfx_label"), string.format("SOUND: %d%%", pct))
+		gui.set_text(gui.get_node("sfx_label"), (LANG == "ru") and string.format("ЗВУКИ: %d%%", pct) or string.format("SOUND: %d%%", pct))
 	end
 end
 
@@ -354,9 +391,9 @@ local function set_music_slider_ui(self, ratio)
 	gui.set_position(gui.get_node("music_pin"), vmath.vector3(-100 + bar_width * ratio, 0, 0))
 	local pct = math.floor(ratio * 100 + 0.5)
 	if pct == 0 then
-		gui.set_text(gui.get_node("music_label"), "MUSIC: OFF")
+		gui.set_text(gui.get_node("music_label"), (LANG == "ru") and "МУЗЫКА: ВЫКЛ" or "MUSIC: OFF")
 	else
-		gui.set_text(gui.get_node("music_label"), string.format("MUSIC: %d%%", pct))
+		gui.set_text(gui.get_node("music_label"), (LANG == "ru") and string.format("МУЗЫКА: %d%%", pct) or string.format("MUSIC: %d%%", pct))
 	end
 end
 
@@ -400,7 +437,7 @@ refresh_world_ui = function(self)
 	local is_active = (self.preview_world == state.selected_world)
 
 	-- Номер арены и название
-	gui.set_text(gui.get_node("world_num_txt"), "ARENA " .. w.id)
+	gui.set_text(gui.get_node("world_num_txt"), ((LANG == "ru") and "АРЕНА " or "ARENA ") .. w.id)
 	gui.set_text(gui.get_node("world_title_txt"), (LANG == "ru") and w.name_ru or w.name_en)
 
 	-- Превью арены
@@ -497,11 +534,18 @@ local function update_info_box(self, hero_id)
 
 	gui.set_scale(gui.get_node("info_box"), vmath.vector3(scale_val, scale_val, 1))
 	gui.set_position(gui.get_node("info_box"), vmath.vector3(0, y, 1))
-	gui.set_text(gui.get_node("unit_name"), data.strings[hero.name_key].en)
+	local current_lang = (LANG == "ru") and "ru" or "en"
+	local name_tbl = data.strings[hero.name_key]
+	local hero_name = (name_tbl and (name_tbl[current_lang] or name_tbl.en)) or hero.name_key
+	gui.set_text(gui.get_node("unit_name"), hero_name)
 
 	-- Заменяем плейсхолдер ability_value на реальное число
-	local desc = data.strings[hero.desc_key].en:gsub("ability_value", tostring(hero.ability_value))
-	gui.set_text(gui.get_node("unit_description"), desc)
+	local desc_tbl = data.strings[hero.desc_key]
+	local raw_desc = (desc_tbl and (desc_tbl[current_lang] or desc_tbl.en)) or ""
+	local desc = raw_desc:gsub("ability_value", tostring(hero.ability_value))
+	local desc_node = gui.get_node("unit_description")
+	gui.set_line_break(desc_node, true)
+	gui.set_text(desc_node, desc)
 
 	gui.set_text(gui.get_node("unit_hp_txt"),  stats.hp)
 	gui.set_text(gui.get_node("unit_damage_txt"),  stats.damage)
@@ -647,6 +691,8 @@ local function start_lobby_search(self)
 
 	-- 3. ТАЙМЕРЫ ПОИСКА
 	local search_time = 2.5 + math.random() * 1.5
+	sdk.in_game_loading_started()
+	sdk.hide_banner()
 
 	-- Показываем врага через половину времени
 	timer.delay(search_time / 3, false, function()
@@ -662,9 +708,11 @@ local function start_lobby_search(self)
 	timer.delay(search_time, false, function()
 		show_screen(self, "main_game")
 
-		pcall(msg.post, "/arena/arena_loader#script", "change_world", { world_id = state.selected_world or 1 })
-		poki.gameplay_start("arena", 1)
-		poki.round_start(1)
+		local current_world = state.selected_world or 1
+		pcall(msg.post, "/arena/arena_loader#script", "change_world", { world_id = current_world })
+		sdk.in_game_loading_stopped()
+		sdk.gameplay_start("arena", current_world)
+		sdk.round_start(current_world)
 		msg.post("main:/game_manager", "init_battle")
 	end)
 
@@ -778,7 +826,7 @@ refresh_wheel_ui = function(self)
 
 	gui.set_enabled(badge, is_free)
 	if is_free then
-		gui.set_text(badge_txt, "FREE")
+		gui.set_text(badge_txt, (LANG == "ru") and "БЕСПЛ." or "FREE")
 		gui.set_text(spin_txt, (LANG == "ru") and "БЕСПЛАТНО" or "FREE SPIN")
 		gui.play_flipbook(spin_btn, "btn_orange")
 		gui.set_text(status_txt, (LANG == "ru") and "Бесплатный спин дня готов!" or "Daily Free Spin Ready!")
@@ -862,11 +910,11 @@ local function render_current_reward_step(self)
 			gui.animate(chest_icon, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_INOUTQUAD, 0.2)
 		end)
 
-		set_modal_title(title, step.chest_name or "CHEST UNLOCKED", step.chest_color or vmath.vector4(1, 0.85, 0.2, 1))
+		set_modal_title(title, step.chest_name or ((LANG == "ru") and "СУНДУК ОТКРЫТ" or "CHEST UNLOCKED"), step.chest_color or vmath.vector4(1, 0.85, 0.2, 1))
 		gui.set_enabled(gold_award, false)
 		gui.set_enabled(almaz_award, false)
-		gui.set_text(cards_txt, "Tap to open rewards!")
-		gui.set_text(action_btn_txt, "OPEN")
+		gui.set_text(cards_txt, (LANG == "ru") and "Нажми, чтобы открыть!" or "Tap to open rewards!")
+		gui.set_text(action_btn_txt, (LANG == "ru") and "ОТКРЫТЬ" or "OPEN")
 
 	elseif step.type == "gold" then
 		gui.set_texture(chest_icon, "gui")
@@ -877,11 +925,11 @@ local function render_current_reward_step(self)
 			gui.animate(chest_icon, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_INOUTQUAD, 0.15)
 		end)
 
-		set_modal_title(title, "GOLD REWARD", vmath.vector4(1, 0.85, 0.2, 1))
+		set_modal_title(title, (LANG == "ru") and "НАГРАДА ЗОЛОТОМ" or "GOLD REWARD", vmath.vector4(1, 0.85, 0.2, 1))
 		gui.set_enabled(gold_award, false)
 		gui.set_enabled(almaz_award, false)
-		gui.set_text(cards_txt, "+" .. tostring(step.amount) .. " Gold")
-		gui.set_text(action_btn_txt, "CONTINUE")
+		gui.set_text(cards_txt, "+" .. tostring(step.amount) .. " " .. ((LANG == "ru") and "Золота" or "Gold"))
+		gui.set_text(action_btn_txt, (LANG == "ru") and "ДАЛЕЕ" or "CONTINUE")
 
 		-- Flying coins to header
 		spawn_flying_currency(self, "coin", 8, vmath.vector3(0, 0, 0), vmath.vector3(0, 350, 0), gui.get_node("gold_block"), function()
@@ -897,11 +945,11 @@ local function render_current_reward_step(self)
 			gui.animate(chest_icon, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_INOUTQUAD, 0.15)
 		end)
 
-		set_modal_title(title, "GEMS REWARD", vmath.vector4(0.2, 1.0, 0.4, 1))
+		set_modal_title(title, (LANG == "ru") and "НАГРАДА АЛМАЗАМИ" or "GEMS REWARD", vmath.vector4(0.2, 1.0, 0.4, 1))
 		gui.set_enabled(gold_award, false)
 		gui.set_enabled(almaz_award, false)
-		gui.set_text(cards_txt, "+" .. tostring(step.amount) .. " Diamonds!")
-		gui.set_text(action_btn_txt, "CONTINUE")
+		gui.set_text(cards_txt, "+" .. tostring(step.amount) .. " " .. ((LANG == "ru") and "Алмазов!" or "Diamonds!"))
+		gui.set_text(action_btn_txt, (LANG == "ru") and "ДАЛЕЕ" or "CONTINUE")
 
 		-- Flying gems to header
 		spawn_flying_currency(self, "almaz", 6, vmath.vector3(0, 0, 0), vmath.vector3(128, 350, 0), gui.get_node("almaz_block"), function()
@@ -931,8 +979,11 @@ local function render_current_reward_step(self)
 
 		local curr_cards = state.hero_cards[step.hero_id] or 0
 		local lvl = state.hero_levels[step.hero_id] or 1
-		gui.set_text(cards_txt, "+" .. tostring(step.amount) .. " Cards! (" .. curr_cards .. " Total)\nLevel " .. lvl)
-		gui.set_text(action_btn_txt, "CONTINUE")
+		local card_txt = (LANG == "ru")
+			and ("+" .. tostring(step.amount) .. " карт! (Всего: " .. curr_cards .. ")\nУровень " .. lvl)
+			or ("+" .. tostring(step.amount) .. " Cards! (" .. curr_cards .. " Total)\nLevel " .. lvl)
+		gui.set_text(cards_txt, card_txt)
+		gui.set_text(action_btn_txt, (LANG == "ru") and "ДАЛЕЕ" or "CONTINUE")
 
 	elseif step.type == "summary" then
 		gui.set_texture(chest_icon, "gui")
@@ -940,7 +991,7 @@ local function render_current_reward_step(self)
 		gui.set_size(chest_icon, vmath.vector3(100, 100, 0))
 		gui.set_scale(chest_icon, vmath.vector3(1.0, 1.0, 1))
 
-		set_modal_title(title, "ALL REWARDS COLLECTED!", vmath.vector4(1, 0.85, 0.2, 1))
+		set_modal_title(title, (LANG == "ru") and "ВСЕ НАГРАДЫ СОБРАНЫ!" or "ALL REWARDS COLLECTED!", vmath.vector4(1, 0.85, 0.2, 1))
 
 		if step.rewards.gold and step.rewards.gold > 0 then
 			gui.set_enabled(gold_award, true)
@@ -962,9 +1013,9 @@ local function render_current_reward_step(self)
 				table.insert(card_lines, "+" .. c.amount .. " " .. c.name)
 			end
 		end
-		local cards_str = #card_lines > 0 and table.concat(card_lines, "\n") or "All rewards added to inventory"
+		local cards_str = #card_lines > 0 and table.concat(card_lines, "\n") or ((LANG == "ru") and "Все награды добавлены в инвентарь" or "All rewards added to inventory")
 		gui.set_text(cards_txt, cards_str)
-		gui.set_text(action_btn_txt, "CLAIM")
+		gui.set_text(action_btn_txt, (LANG == "ru") and "ЗАБРАТЬ" or "CLAIM")
 	end
 end
 
@@ -1079,21 +1130,22 @@ local function show_speedup_modal(self, chest_index)
 	gui.set_size(chest_icon, vmath.vector3(120, 120, 0))
 	gui.set_scale(chest_icon, vmath.vector3(1.0, 1.0, 1))
 
-	set_modal_title(title, "Unlock Instantly?", vmath.vector4(1, 0.9, 0.3, 1))
+	set_modal_title(title, (LANG == "ru") and "Открыть сейчас?" or "Unlock Instantly?", vmath.vector4(1, 0.9, 0.3, 1))
 
 	gui.set_enabled(gold_award, false)
 	gui.set_enabled(almaz_award, true)
-	gui.set_text(almaz_txt, cost .. " Gems")
+	gui.set_text(almaz_txt, cost .. " " .. ((LANG == "ru") and "Алмазов" or "Gems"))
 
-	local info_msg = "Open " .. cfg.name .. " immediately?"
+	local chest_name = data.get_chest_name(ch.id, LANG)
+	local info_msg = (LANG == "ru") and ("Открыть " .. chest_name .. " немедленно?") or ("Open " .. chest_name .. " immediately?")
 	if remaining > 0 then
-		info_msg = info_msg .. "\nTime left: " .. format_time(remaining)
+		info_msg = info_msg .. "\n" .. ((LANG == "ru") and "Осталось: " or "Time left: ") .. format_time(remaining)
 	end
 	gui.set_text(cards_txt, info_msg)
 	gui.set_enabled(cards_txt, true)
 
 	gui.set_enabled(cancel_btn, true)
-	gui.set_text(action_btn_txt, "OPEN (" .. cost .. ")")
+	gui.set_text(action_btn_txt, ((LANG == "ru") and "ОТКРЫТЬ (" or "OPEN (") .. cost .. ")")
 
 	gui.set_enabled(panel, true)
 	gui.set_scale(gui.get_node("end_screen1"), vmath.vector3(0.8, 0.8, 1))
@@ -1106,11 +1158,11 @@ local function open_chest(self, index)
 
 	local chest_id = ch.id
 	local config = data.chest_config[chest_id]
-	local rewards = chest_loot.generate_chest_rewards(chest_id)
+	local rewards = chest_loot.generate_chest_rewards(chest_id, LANG)
 	chest_loot.apply_rewards(rewards)
 
-	poki.chest_opened(chest_id, config and config.name or "Chest")
-	poki.happy_time(0.7)
+	sdk.chest_opened(chest_id, data.get_chest_name(chest_id, LANG))
+	sdk.happy_time(0.7)
 
 	-- Очищаем слот сундука
 	ch.id = nil
@@ -1138,7 +1190,23 @@ function init(self)
 	self.modal_chest_index = nil
 	self.modal_speedup_cost = 0
 
-	state.load()
+	-- 0. Инициализация SDK и определение языка платформы через метод SDK
+	sdk.init()
+	LANG = sdk.get_language_code()
+	i18n.set_language(LANG)
+
+	-- Применяем локализацию ко всем статическим текстам GUI
+	apply_static_localization(self)
+
+	-- Загрузка локального профиля и асинхронный синк с облаком Playgama
+	state.load(function()
+		apply_static_localization(self)
+		refresh_chests_ui(self)
+		refresh_active_deck_ui(self)
+		refresh_text(self)
+		refresh_world_ui(self)
+		refresh_settings_ui(self)
+	end)
 
 	gui.set_enabled(gui.get_node("ch_template"), false)
 	gui.set_enabled(gui.get_node("end_screen_panel1"), false)
@@ -1148,7 +1216,7 @@ function init(self)
 	gui.set_enabled(gui.get_node("finger"), false)
 	gui.set_enabled(gui.get_node("help_text"), false)
 	if not state.tutorial_completed and state.tutorial_step == 0 then
-		poki.tutorial_started()
+		sdk.tutorial_started()
 		timer.delay(1, false, function()
 			if not state.tutorial_completed and state.tutorial_step == 0 then
 				gui.set_enabled(gui.get_node("help_text"), true)
@@ -1184,8 +1252,33 @@ function init(self)
 		gui.set_color(flash, vmath.vector4(1, 1, 1, 0))
 	end
 
-	poki.init()
-	poki.send_game_ready()
+	-- Автоматическая настройка переноса строк для всех текстовых блоков интерфейса
+	local wrap_nodes = {
+		"help_text",
+		"info_unit_description",
+		"unit_description",
+		"world_desc_txt",
+		"world_title_txt",
+		"wheel_status_txt",
+		"wheel_reward_desc",
+		"cards_award_txt1",
+		"end_screen_title",
+		"end_screen_title1",
+		"turn_text"
+	}
+	for _, node_id in ipairs(wrap_nodes) do
+		pcall(function()
+			gui.set_line_break(gui.get_node(node_id), true)
+		end)
+	end
+
+	sdk.send_game_ready()
+	sdk.show_banner("bottom")
+
+	-- Страховочный повторный вызов через таймер для гарантии получения платформой
+	timer.delay(0.2, false, function()
+		sdk.send_game_ready()
+	end)
 end
 
 function update(self, dt)
@@ -1206,13 +1299,13 @@ function update(self, dt)
 					gui.set_scale(status_label, vmath.vector3(0.5, 0.5, 1))
 					gui.set_color(status_label, vmath.vector4(1, 1, 1, 1))
 				else
-					gui.set_text(status_label, "OPEN")
+					gui.set_text(status_label, (LANG == "ru") and "ОТКРЫТЬ" or "OPEN")
 					local scale = 0.5 + math.sin(now * 6) * 0.08
 					gui.set_scale(status_label, vmath.vector3(scale, scale, 1))
 					gui.set_color(status_label, vmath.vector4(0.2, 1.0, 0.2, 1))
 				end
 			else
-				gui.set_text(status_label, "WAIT")
+				gui.set_text(status_label, (LANG == "ru") and "ЖДАТЬ" or "WAIT")
 				gui.set_scale(status_label, vmath.vector3(0.5, 0.5, 1))
 				gui.set_color(status_label, vmath.vector4(1, 0.9, 0.3, 1))
 			end
@@ -1240,7 +1333,7 @@ function update(self, dt)
 			local spin_btn = gui.get_node("wheel_spin_btn")
 			gui.set_color(spin_btn, vmath.vector4(1, 1, 1, 1))
 			sound.play_hit(1.3)
-			poki.happy_time(0.8)
+			sdk.happy_time(0.8)
 
 			local reward = state.grant_wheel_reward(self.wheel_target_sector)
 			if reward then
@@ -1341,10 +1434,10 @@ function on_message(self, message_id, message, sender)
 		local node = gui.get_node("turn_text")
 		local turn_string = ""
 		if message.team == 1 then
-			turn_string = "Your turn"
+			turn_string = (LANG == "ru") and "Твой ход" or "Your turn"
 			gui.set_color(node, vmath.vector4(0.55, 0.3, 1, 1))
 		else
-			turn_string = "Enemy's turn"
+			turn_string = (LANG == "ru") and "Ход противника" or "Enemy's turn"
 			gui.set_color(node, vmath.vector4(1, 0.45, 0.45, 1))
 		end
 
@@ -1363,7 +1456,7 @@ function on_message(self, message_id, message, sender)
 			return
 		end
 
-		gui.set_text(gui.get_node("end_screen_title"), message.victory and "VICTORY" or "DEFEAT")
+		gui.set_text(gui.get_node("end_screen_title"), message.victory and ((LANG == "ru") and "ПОБЕДА" or "VICTORY") or ((LANG == "ru") and "ПОРАЖЕНИЕ" or "DEFEAT"))
 		gui.set_text(gui.get_node("gold_award_txt"), message.coins)
 		gui.set_text(gui.get_node("exp_award_txt"), message.prestige)
 
@@ -1371,9 +1464,13 @@ function on_message(self, message_id, message, sender)
 		gui.set_scale(end_screen, vmath.vector3(0.5, 0.5, 1))
 		gui.animate(end_screen, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.4)
 
+		local current_world = state.selected_world or 1
+		sdk.gameplay_stop("arena", current_world)
+
 		if message.victory then
-			poki.happy_time(1.0)
-			poki.round_end(true, "victory")
+			sdk.happy_time(1.0)
+			sdk.round_end(true, current_world)
+			sdk.set_leaderboard_score("prestige", state.prestige or 0)
 
 			local dropped_chest_id = chest_loot.get_random_chest_drop()
 			local placed = false
@@ -1404,7 +1501,7 @@ function on_message(self, message_id, message, sender)
 			spawn_flying_currency(self, "prestige", 6, start_pos, vmath.vector3(-128, 350, 0), gui.get_node("prestige_block"), function() refresh_text(self) end)
 			spawn_flying_currency(self, "coin", 8, start_pos, vmath.vector3(0, 350, 0), gui.get_node("gold_block"), function() refresh_text(self) end)
 		else
-			poki.round_end(false, "defeat")
+			sdk.round_end(false, current_world)
 			gui.set_enabled(gui.get_node("chest_icon"), false)
 		end
 
@@ -1520,7 +1617,7 @@ function on_input(self, action_id, action)
 					refresh_wheel_ui(self)
 					start_wheel_spin(self)
 				else
-					poki.rewarded_break(function()
+					sdk.rewarded_break(function()
 						start_wheel_spin(self)
 					end, nil, "medium")
 				end
@@ -1553,7 +1650,10 @@ function on_input(self, action_id, action)
 					open_chest(self, self.modal_chest_index)
 				else
 					local cards_txt = gui.get_node("cards_award_txt1")
-					gui.set_text(cards_txt, "Not enough diamonds!\nYou need " .. self.modal_speedup_cost .. " diamonds.")
+					local not_enough = (LANG == "ru")
+						and ("Недостаточно кристаллов!\nНужно " .. self.modal_speedup_cost .. " шт.")
+						or ("Not enough diamonds!\nYou need " .. self.modal_speedup_cost .. " diamonds.")
+					gui.set_text(cards_txt, not_enough)
 				end
 				return true
 			elseif not gui.pick_node(gui.get_node("end_screen1"), action.x, action.y) then
@@ -1595,12 +1695,14 @@ function on_input(self, action_id, action)
 			if not state.tutorial_completed then
 				state.complete_tutorial()
 			end
-			poki.gameplay_stop("arena", 1)
-			poki.commercial_break()
+			local current_world = state.selected_world or 1
+			sdk.gameplay_stop("arena", current_world)
+			sdk.commercial_break()
 			refresh_queue_panel(self)
 			gui.set_enabled(gui.get_node("end_screen_panel"), false)
 			hide_info_box(self)
 			show_screen(self, "main_menu")
+			sdk.show_banner("bottom")
 			return true
 		end
 	end
@@ -1615,10 +1717,12 @@ function on_input(self, action_id, action)
 				state.complete_tutorial()
 			end
 			gui.set_enabled(gui.get_node("end_screen_panel"), false)
-			poki.gameplay_stop("arena", 1)
-			poki.commercial_break()
+			local current_world = state.selected_world or 1
+			sdk.gameplay_stop("arena", current_world)
+			sdk.commercial_break()
 			hide_info_box(self)
 			show_screen(self, "main_menu")
+			sdk.show_banner("bottom")
 			return true
 		end
 	end
@@ -1807,8 +1911,8 @@ function on_input(self, action_id, action)
 					state.hero_levels[h_id] = current_level + 1
 					state.save()
 
-					poki.hero_upgraded(h_id, current_level + 1)
-					poki.happy_time(0.6)
+					sdk.hero_upgraded(h_id, current_level + 1)
+					sdk.happy_time(0.6)
 
 					update_info_box(self, h_id)
 					update_info_panel(self, h_id)
@@ -1825,6 +1929,7 @@ function on_input(self, action_id, action)
 				gui.set_enabled(gui.get_node("info_box"), false)
 				start_deck_swap_highlight(self)
 				local choose_label = gui.get_node("choose_txt")
+				gui.set_text(choose_label, (LANG == "ru") and "Выбери слот" or "Choose Place")
 				gui.set_enabled(choose_label, true)
 				gui.set_color(choose_label, vmath.vector4(1, 1, 1, 1))
 				gui.cancel_animation(choose_label, "color.w")

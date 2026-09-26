@@ -833,13 +833,14 @@ nodes {
 }
 nodes {
   size {
-    x: 200.0
+    x: 360.0
     y: 100.0
   }
   type: TYPE_TEXT
   text: "<text>"
   font: "druid_text_bold"
   id: "turn_text"
+  line_break: true
   parent: "main_game"
   alpha: 0.0
 }
@@ -878,7 +879,7 @@ nodes {
     y: 200.0
   }
   size {
-    x: 200.0
+    x: 360.0
     y: 100.0
   }
   color {
@@ -895,6 +896,7 @@ nodes {
     y: 0.2
     z: 0.2
   }
+  line_break: true
   parent: "end_screen"
   inherit_alpha: true
 }
@@ -1112,7 +1114,7 @@ nodes {
   }
   size {
     x: 500.0
-    y: 50.0
+    y: 120.0
   }
   color {
     x: 0.2
@@ -1412,8 +1414,8 @@ nodes {
     y: 0.7
   }
   size {
-    x: 390.0
-    y: 100.0
+    x: 600.0
+    y: 120.0
   }
   color {
     x: 0.8
@@ -1916,7 +1918,7 @@ nodes {
   }
   size {
     x: 500.0
-    y: 50.0
+    y: 120.0
   }
   color {
     x: 0.101960786
@@ -2405,13 +2407,14 @@ nodes {
     y: 0.85
   }
   size {
-    x: 240.0
-    y: 30.0
+    x: 260.0
+    y: 50.0
   }
   type: TYPE_TEXT
   text: "Royal Arena"
   font: "druid_text_bold"
   id: "world_title_txt"
+  line_break: true
   parent: "world_card"
   inherit_alpha: true
   shadow_alpha: 0.6
@@ -2440,7 +2443,7 @@ nodes {
   }
   size {
     x: 371.0
-    y: 25.0
+    y: 60.0
   }
   color {
     x: 0.8
@@ -3120,8 +3123,8 @@ nodes {
     y: 0.6
   }
   size {
-    x: 320.0
-    y: 30.0
+    x: 340.0
+    y: 60.0
   }
   color {
     x: 0.9
@@ -3131,6 +3134,7 @@ nodes {
   text: "Spin the wheel for rewards!"
   font: "druid_text_bold"
   id: "wheel_status_txt"
+  line_break: true
   outline {
     x: 0.1
     y: 0.1
@@ -3289,8 +3293,8 @@ nodes {
     y: 0.52
   }
   size {
-    x: 280.0
-    y: 30.0
+    x: 300.0
+    y: 60.0
   }
   color {
     x: 0.75
@@ -3300,6 +3304,7 @@ nodes {
   text: "Added to your account!"
   font: "druid_text_bold"
   id: "wheel_reward_desc"
+  line_break: true
   outline {
     x: 0.1
     y: 0.1

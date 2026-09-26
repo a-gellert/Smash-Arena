@@ -53,6 +53,8 @@ M.heroes = {
 M.chest_config = {
 	[1] = { -- Common
 		name = "Common Chest",
+		name_en = "Common Chest",
+		name_ru = "Обычный сундук",
 		color = vmath.vector4(0.5, 0.5, 0.5, 1),
 		time = 60, -- секунд
 		gold_min = 20, gold_max = 50,
@@ -61,6 +63,8 @@ M.chest_config = {
 	},
 	[2] = { -- Rare
 		name = "Rare Chest",
+		name_en = "Rare Chest",
+		name_ru = "Редкий сундук",
 		color = vmath.vector4(0.2, 0.6, 1, 1),
 		time = 1800, -- 30 минут
 		gold_min = 100, gold_max = 250,
@@ -69,6 +73,8 @@ M.chest_config = {
 	},
 	[3] = { -- Epic
 		name = "Epic Chest",
+		name_en = "Epic Chest",
+		name_ru = "Эпический сундук",
 		color = vmath.vector4(0.7, 0.2, 1, 1),
 		time = 21600, -- 6 часов
 		gold_min = 500, gold_max = 800,
@@ -77,6 +83,8 @@ M.chest_config = {
 	},
 	[4] = { -- Legendary
 		name = "Legendary Chest",
+		name_en = "Legendary Chest",
+		name_ru = "Легендарный сундук",
 		color = vmath.vector4(1, 0.8, 0, 1),
 		time = 86400, -- 24 часа
 		gold_min = 2000, gold_max = 3500,
@@ -202,6 +210,17 @@ end
 
 function M.get_name_key(hero_id)
 	return M.heroes[hero_id]
+end
+
+function M.get_chest_name(chest_id, lang)
+	lang = lang or "en"
+	local cfg = M.chest_config[chest_id]
+	if not cfg then return "Chest" end
+	if lang == "ru" then
+		return cfg.name_ru or cfg.name or "Сундук"
+	else
+		return cfg.name_en or cfg.name or "Chest"
+	end
 end
 
 return M

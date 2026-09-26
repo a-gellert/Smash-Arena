@@ -43,7 +43,8 @@ local function get_heroes_by_rarity()
 end
 
 -- Генерация наград из сундука
-function M.generate_chest_rewards(chest_id)
+function M.generate_chest_rewards(chest_id, lang)
+	lang = lang or "en"
 	local cfg = data.chest_config[chest_id]
 	if not cfg then
 		cfg = data.chest_config[1]
@@ -109,7 +110,7 @@ function M.generate_chest_rewards(chest_id)
 		table.insert(cards_list, {
 			hero_id = hero_id,
 			amount = amount,
-			name = data.get_name(hero_id, "en"),
+			name = data.get_name(hero_id, lang),
 			icon = hero and hero.name_key or "paladin",
 			rarity = hero and hero.rarity or 1
 		})
@@ -117,7 +118,7 @@ function M.generate_chest_rewards(chest_id)
 
 	return {
 		chest_id = chest_id,
-		chest_name = cfg.name,
+		chest_name = data.get_chest_name(chest_id, lang),
 		chest_color = cfg.color,
 		gold = gold,
 		diamonds = diamonds,

@@ -1,16 +1,13 @@
 --state.lua
+local i18n = require "main.i18n"
+
 local M = {}
 
 M.tutorial_step = 0
 -- 0: Не начат, 1: Показ колод, 2: Бой начат, 3: Бой окончен, 4: Меню (сундук), 5: Инвентарь, 10: не показываем
 
 M.has_unopened_chest = false
-M.STRINGS = {
-	step_1 = { en = "Pull and shoot at the enemies!",                              ru = "Натяни и пуляй во врагов!"                                    },
-	step_2 = { en = "Each hero has a unique ability!",                             ru = "У каждого героя есть своя способность!"                       },
-	step_3 = { en = "The Tank deals damage to nearby enemies after its turn.",     ru = "Танк наносит урон ближайшим врагам после окончания хода."     },
-	step_4 = { en = "Players take turns sequentially. Good luck!",                 ru = "Игроки ходят по очереди. Удачи!"                              },
-}
+M.STRINGS = i18n.DICTIONARY
 
 -- Константы экранов
 M.SCREEN_MENU      = hash("main_menu")
@@ -46,7 +43,7 @@ M.WORLDS = {
 	{
 		id = 1,
 		name_en = "Training Arena",
-		name_ru = "Тренировачная арена",
+		name_ru = "Тренировочная арена",
 		required_prestige = 0,
 		description_en = "Training grounds of champions.",
 		description_ru = "Тренировочная арена чемпионов.",
@@ -160,51 +157,14 @@ end
 -- ─────────────────────────────────────────────────────────────
 --  СОХРАНЕНИЕ / ЗАГРУЗКА
 -- ─────────────────────────────────────────────────────────────
-function M.complete_tutorial()
-	M.tutorial_completed = true
-	M.tutorial_step = 10
-	M.save()
-end
-
-function M.save()
-	local data_to_save = {
-		active_deck        = M.active_deck,
-		gold               = M.gold,
-		almaz              = M.almaz,
-		prestige           = M.prestige,
-		available_heroes   = M.available_heroes,
-		hero_levels        = M.hero_levels,   -- ← сохраняем уровни
-		hero_cards         = M.hero_cards,
-		chests             = M.chests,
-		tutorial_completed = M.tutorial_completed,
-		sfx_volume         = M.sfx_volume,
-		music_volume       = M.music_volume,
-		selected_world     = M.selected_world,
-		last_free_spin_date = M.last_free_spin_date
-	}
-	local ok = sys.save(SAVE_PATH, data_to_save)
-	if ok then
-		print("Saved to: " .. SAVE_PATH)
-	else
-		print("ERROR: save failed")
-	end
-end
-
-function M.load()
-	local d = sys.load(SAVE_PATH)
-	if not next(d) then
-		print("No save file. Using defaults (first launch).")
-		M.tutorial_completed = false
-		return
-	end
-
+function M.apply_profile_data(d)
+	if not d then return end
 	M.active_deck      = d.active_deck      or M.active_deck
 	M.gold             = d.gold             or M.gold
 	M.almaz            = d.almaz            or M.almaz
 	M.prestige         = d.prestige         or M.prestige
 	M.available_heroes = d.available_heroes or M.available_heroes
 	M.hero_cards       = d.hero_cards       or M.hero_cards
-	-- ИСПРАВЛЕНО: hero_levels тоже грузим из сохранения
 	M.hero_levels      = d.hero_levels      or M.hero_levels
 	M.chests           = d.chests           or M.chests
 	M.sfx_volume       = (d.sfx_volume ~= nil) and d.sfx_volume or M.sfx_volume
@@ -224,7 +184,6 @@ function M.load()
 	if d.tutorial_completed ~= nil then
 		M.tutorial_completed = d.tutorial_completed
 	elseif d.gold or d.prestige or d.active_deck then
-		-- Если сохранение уже есть (не первый запуск), обучение завершено
 		M.tutorial_completed = true
 	else
 		M.tutorial_completed = false
@@ -233,8 +192,73 @@ function M.load()
 	if M.tutorial_completed then
 		M.tutorial_step = 10
 	end
+end
 
-	print("Profile loaded. Tutorial completed: " .. tostring(M.tutorial_completed))
+function M.complete_tutorial()
+	M.tutorial_completed = true
+	M.tutorial_step = 10
+	local sdk_ok, sdk = pcall(require, "main.sdk")
+	if sdk_ok and sdk and sdk.tutorial_completed then
+		sdk.tutorial_completed()
+	end
+	M.save()
+end
+
+function M.save()
+	local data_to_save = {
+		active_deck        = M.active_deck,
+		gold               = M.gold,
+		almaz              = M.almaz,
+		prestige           = M.prestige,
+		available_heroes   = M.available_heroes,
+		hero_levels        = M.hero_levels,
+		hero_cards         = M.hero_cards,
+		chests             = M.chests,
+		tutorial_completed = M.tutorial_completed,
+		sfx_volume         = M.sfx_volume,
+		music_volume       = M.music_volume,
+		selected_world     = M.selected_world,
+		last_free_spin_date = M.last_free_spin_date
+	}
+	local ok = sys.save(SAVE_PATH, data_to_save)
+	if ok then
+		print("Saved to: " .. SAVE_PATH)
+	else
+		print("ERROR: save failed")
+	end
+
+	-- Cloud save via Playgama Bridge Storage
+	local sdk_ok, sdk = pcall(require, "main.sdk")
+	if sdk_ok and sdk and sdk.storage_set then
+		sdk.storage_set({ player_profile = data_to_save })
+	end
+end
+
+function M.load(callback)
+	local d = sys.load(SAVE_PATH)
+	if not next(d) then
+		print("No local save file. Using defaults (first launch).")
+		M.tutorial_completed = false
+	else
+		M.apply_profile_data(d)
+		print("Local profile loaded. Tutorial completed: " .. tostring(M.tutorial_completed))
+	end
+
+	-- Async cloud load from Playgama Bridge Storage
+	local sdk_ok, sdk = pcall(require, "main.sdk")
+	if sdk_ok and sdk and sdk.storage_get then
+		sdk.storage_get({ "player_profile" }, function(err, cloud_data)
+			if cloud_data and cloud_data.player_profile then
+				local cd = cloud_data.player_profile
+				if (cd.prestige or 0) > (M.prestige or 0) or (cd.gold or 0) > (M.gold or 0) or (not next(d)) then
+					print("Cloud save restored from Playgama Storage")
+					M.apply_profile_data(cd)
+					sys.save(SAVE_PATH, cd)
+					if callback then callback() end
+				end
+			end
+		end)
+	end
 end
 
 -- ─────────────────────────────────────────────────────────────

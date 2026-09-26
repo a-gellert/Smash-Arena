@@ -1,0 +1,24 @@
+{
+  "bob_arguments" : {
+    "sha1" : "402218d5544666871f07ecdfa21032a7fb59413f",
+    "version" : "1.12.4",
+    "timestamp" : "2026-05-04 09:07:33"
+  },
+  "defold_sdk" : "402218d5544666871f07ecdfa21032a7fb59413f",
+  "dependencies" : [ {
+    "link" : "https://github.com/Insality/defold-event/archive/refs/tags/14.zip",
+    "md5" : "B190CE34AA698356B1394D72D9C2389F"
+  }, {
+    "link" : "https://github.com/rgrams/rendercam/archive/1.0.3.zip",
+    "md5" : "B26EF84FD8F6E97C55E01D9FA0CA3F7E"
+  }, {
+    "link" : "https://github.com/AGulev/defold-extension-unity-ads/archive/refs/tags/4.19.0.zip",
+    "md5" : "7B5BD5EF73054F45BCEF8DCFE0938525"
+  }, {
+    "link" : "https://github.com/Playgama/bridge-defold/archive/refs/tags/v2.2.0.zip",
+    "md5" : "12528C313862042AE610E413D9AE697C"
+  }, {
+    "link" : "https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip",
+    "md5" : "313180148EBBA14F66072972375D837C"
+  } ]
+}
