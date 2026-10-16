@@ -10,6 +10,14 @@ local LANG = "en"
 local refresh_world_ui = nil
 local refresh_wheel_ui = nil
 
+if gui then
+	if not gui.cancel_animation then
+		gui.cancel_animation = gui.cancel_animations or gui.cancelanimation or function(node, prop)
+			if gui.cancel_animations then pcall(gui.cancel_animations, node, prop) end
+		end
+	end
+end
+
 local function apply_static_localization(self)
 	local safe_set = function(id, text)
 		local ok, node = pcall(gui.get_node, id)
@@ -81,8 +89,8 @@ local function set_tutorial_text(self, text_key)
 	gui.set_text(label, i18n.t(text_key))
 
 	-- "Сочное" появление текста
-	gui.set_scale(label, vmath.vector3(0.8, 0.8, 1))
-	gui.animate(label, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.3)
+	gui.set_scale(label, vmath.vector3(0.4, 0.4, 1))
+	gui.animate(label, "scale", vmath.vector3(0.6, 0.6, 1), gui.EASING_OUTBACK, 0.3)
 end
 
 local function show_finger_anim(self)
@@ -843,11 +851,125 @@ refresh_wheel_ui = function(self)
 	end
 end
 
-local function start_wheel_spin(self)
-	if self.is_wheel_spinning then return end
+local finish_wheel_spin = nil
 
-	local overlay = gui.get_node("wheel_reward_overlay")
-	gui.set_enabled(overlay, false)
+finish_wheel_spin = function(self)
+	if not self.is_wheel_spinning and not self.wheel_pending_finish then
+		return
+	end
+	self.is_wheel_spinning = false
+	self.wheel_pending_finish = nil
+
+	print("[GAME] 🎡 Finishing wheel spin and granting reward for sector:", tostring(self.wheel_target_sector))
+	if html5 and html5.run then
+		pcall(html5.run, string.format("console.log('%%c[GAME] 🎡 Finishing wheel spin and granting reward for sector: %s', 'color: #00e676; font-weight: bold;');", tostring(self.wheel_target_sector)))
+	end
+
+	pcall(function()
+		local disk = gui.get_node("wheel_disk")
+		gui.set_rotation(disk, vmath.quat_rotation_z(math.rad(self.wheel_target_rot or 0)))
+	end)
+
+	pcall(function()
+		local spin_btn = gui.get_node("wheel_spin_btn")
+		gui.set_color(spin_btn, vmath.vector4(1, 1, 1, 1))
+	end)
+
+	sound.play_hit(1.3)
+	sdk.happy_time(0.8)
+
+	local sector_to_grant = self.wheel_target_sector or 1
+	local reward = state.grant_wheel_reward(sector_to_grant)
+	if reward then
+		self.wheel_pending_reward = reward
+		local ok_ui, ui_err = pcall(function()
+			local overlay = gui.get_node("wheel_reward_overlay")
+			local card = gui.get_node("wheel_reward_card")
+			local header = gui.get_node("wheel_reward_header")
+			local icon = gui.get_node("wheel_reward_icon")
+			local title = gui.get_node("wheel_reward_title")
+			local desc = gui.get_node("wheel_reward_desc")
+			local claim_txt = gui.get_node("wheel_reward_btn_txt")
+			local status_txt = gui.get_node("wheel_status_txt")
+
+			gui.set_enabled(overlay, true)
+			gui.set_text(header, (LANG == "ru") and "🎉 ВЫИГРЫШ! 🎉" or "🎉 YOU WON! 🎉")
+			gui.set_text(claim_txt, (LANG == "ru") and "ЗАБРАТЬ" or "CLAIM")
+
+			local win_label = reward.label
+			if reward.type == "gold" then
+				gui.set_texture(icon, "gui")
+				gui.play_flipbook(icon, "coin")
+				gui.set_size(icon, vmath.vector3(85, 85, 0))
+				gui.set_text(title, "+" .. reward.amount .. ((LANG == "ru") and " ЗОЛОТА" or " GOLD"))
+				gui.set_color(title, vmath.vector4(1.0, 0.9, 0.2, 1.0))
+				gui.set_text(desc, (LANG == "ru") and "Начислено на ваш счет!" or "Added to your balance!")
+				win_label = "+" .. reward.amount .. ((LANG == "ru") and " Золота" or " Gold")
+			elseif reward.type == "gems" then
+				gui.set_texture(icon, "gui")
+				gui.play_flipbook(icon, "prestige")
+				gui.set_size(icon, vmath.vector3(85, 85, 0))
+				gui.set_text(title, "+" .. reward.amount .. ((LANG == "ru") and " АЛМАЗОВ" or " GEMS"))
+				gui.set_color(title, vmath.vector4(0.3, 1.0, 0.4, 1.0))
+				gui.set_text(desc, (LANG == "ru") and "Начислено на ваш счет!" or "Added to your balance!")
+				win_label = "+" .. reward.amount .. ((LANG == "ru") and " Алмазов" or " Gems")
+			elseif reward.type == "cards" then
+				local hero = data.heroes[reward.hero_id]
+				local hero_name = (hero and data.strings[hero.name_key] and data.strings[hero.name_key][LANG]) or "Герой"
+				gui.set_texture(icon, "units")
+				gui.play_flipbook(icon, hero and hero.name_key or "paladin")
+				gui.set_size(icon, vmath.vector3(95, 95, 0))
+				gui.set_text(title, "+" .. reward.amount .. " " .. string.upper(hero_name))
+				gui.set_color(title, vmath.vector4(0.3, 0.85, 1.0, 1.0))
+				gui.set_text(desc, (LANG == "ru") and "Карты для улучшения героя!" or "Hero upgrade cards!")
+				win_label = "+" .. reward.amount .. " " .. hero_name
+			elseif reward.type == "chest" then
+				gui.set_texture(icon, "gui")
+				gui.play_flipbook(icon, "chest")
+				gui.set_size(icon, vmath.vector3(95, 95, 0))
+				if reward.slots_full then
+					gui.set_text(title, "+10 " .. ((LANG == "ru") and "АЛМАЗОВ" or "GEMS"))
+					gui.set_color(title, vmath.vector4(0.3, 1.0, 0.4, 1.0))
+					gui.set_text(desc, (LANG == "ru") and "Слоты полны! Даны алмазы." or "Slots full! Compensation granted.")
+					win_label = "+10 " .. ((LANG == "ru") and "Алмазов" or "Gems")
+				else
+					gui.set_text(title, (LANG == "ru") and "ТАИНСТВЕННЫЙ СУНДУК!" or "MYSTERY CHEST!")
+					gui.set_color(title, vmath.vector4(1.0, 0.85, 0.2, 1.0))
+					gui.set_text(desc, (LANG == "ru") and "Добавлен в слот сундуков!" or "Added to chest slots!")
+					win_label = (LANG == "ru") and "Сундук" or "Chest"
+				end
+			end
+
+			gui.set_scale(card, vmath.vector3(0.5, 0.5, 1))
+			gui.animate(card, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.35)
+			gui.set_scale(icon, vmath.vector3(0.6, 0.6, 1))
+			gui.animate(icon, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.4)
+
+			self.wheel_pending_reward = reward
+			self.wheel_last_win_label = win_label
+			gui.set_text(status_txt, (LANG == "ru") and ("Выигрыш: " .. win_label .. "!") or ("Won: " .. win_label .. "!"))
+			gui.set_color(status_txt, vmath.vector4(1.0, 0.95, 0.2, 1.0))
+		end)
+		if not ok_ui then
+			print("[GAME] ⚠️ Warning showing wheel reward popup:", tostring(ui_err))
+			if html5 and html5.run then
+				pcall(html5.run, string.format("console.warn('[GAME] ⚠️ Warning showing wheel reward popup: %s');", tostring(ui_err):gsub("'", "\\'")))
+			end
+		end
+	end
+
+	pcall(refresh_text, self)
+	pcall(refresh_chests_ui, self)
+	pcall(refresh_inventory_grid, self)
+	pcall(refresh_active_deck_ui, self)
+	pcall(refresh_wheel_ui, self)
+end
+
+local function start_wheel_spin(self)
+	if self.is_wheel_spinning then
+		print("[GAME] 🎡 Wheel is already spinning, ignoring duplicate request")
+		return
+	end
 
 	local sector_idx, sector_data = state.pick_wheel_sector()
 	self.wheel_target_sector = sector_idx
@@ -860,14 +982,34 @@ local function start_wheel_spin(self)
 	self.wheel_last_tick = 0
 	self.is_wheel_spinning = true
 
-	local disk = gui.get_node("wheel_disk")
-	gui.set_rotation(disk, vmath.vector3(0, 0, 0))
+	print(string.format("[GAME] 🎡 Wheel spin started! Target sector: %d (%s: %s)", sector_idx, tostring(sector_data and sector_data.type), tostring(sector_data and sector_data.amount)))
+	if html5 and html5.run then
+		pcall(html5.run, string.format("console.log('%%c[GAME] 🎡 Wheel spin started! Target sector: %d (%s: %s)', 'color: #ff9800; font-weight: bold;');", sector_idx, tostring(sector_data and sector_data.type), tostring(sector_data and sector_data.amount)))
+	end
 
-	local status_txt = gui.get_node("wheel_status_txt")
-	local spin_btn = gui.get_node("wheel_spin_btn")
-	gui.set_color(spin_btn, vmath.vector4(0.5, 0.5, 0.5, 1.0))
-	gui.set_text(status_txt, (LANG == "ru") and "Вращаем колесо..." or "Spinning...")
-	gui.set_color(status_txt, vmath.vector4(1.0, 0.9, 0.3, 1.0))
+	pcall(function()
+		local overlay = gui.get_node("wheel_reward_overlay")
+		gui.set_enabled(overlay, false)
+
+		local disk = gui.get_node("wheel_disk")
+		gui.set_rotation(disk, vmath.quat_rotation_z(0))
+
+		local status_txt = gui.get_node("wheel_status_txt")
+		local spin_btn = gui.get_node("wheel_spin_btn")
+		gui.set_color(spin_btn, vmath.vector4(0.5, 0.5, 0.5, 1.0))
+		gui.set_text(status_txt, (LANG == "ru") and "Вращаем колесо..." or "Spinning...")
+		gui.set_color(status_txt, vmath.vector4(1.0, 0.9, 0.3, 1.0))
+	end)
+
+	-- Safety timer: guarantee finish and reward even if update animation stalls
+	pcall(timer.delay, 4.2, false, function()
+		if self.is_wheel_spinning then
+			print("[GAME] ⏱️ Safety timer: Wheel spin timeout reached — force finishing spin")
+			if finish_wheel_spin then
+				finish_wheel_spin(self)
+			end
+		end
+	end)
 end
 
 local function set_modal_title(title_node, text, color)
@@ -1201,6 +1343,7 @@ function init(self)
 	-- Загрузка локального профиля и асинхронный синк с облаком Playgama
 	state.load(function()
 		apply_static_localization(self)
+		init_inventory(self)
 		refresh_chests_ui(self)
 		refresh_active_deck_ui(self)
 		refresh_text(self)
@@ -1312,14 +1455,32 @@ function update(self, dt)
 		end
 	end
 
+	-- Process queued asynchronous actions safely within GUI script context
+	if self.pending_wheel_spin then
+		self.pending_wheel_spin = nil
+		start_wheel_spin(self)
+	end
+	if self.pending_wheel_failed then
+		self.pending_wheel_failed = nil
+		pcall(function()
+			local status_txt = gui.get_node("wheel_status_txt")
+			if status_txt then
+				gui.set_text(status_txt, (LANG == "ru") and "Реклама не завершена" or "Ad not completed")
+				gui.set_color(status_txt, vmath.vector4(1.0, 0.4, 0.4, 1.0))
+			end
+		end)
+	end
+
 	if self.is_wheel_spinning then
 		self.wheel_spin_elapsed = (self.wheel_spin_elapsed or 0) + dt
 		local t = math.min(1.0, self.wheel_spin_elapsed / self.wheel_spin_duration)
 		local ease = 1.0 - math.pow(1.0 - t, 3)
 		local cur_angle = self.wheel_start_rot + (self.wheel_target_rot - self.wheel_start_rot) * ease
 
-		local disk = gui.get_node("wheel_disk")
-		gui.set_rotation(disk, vmath.vector3(0, 0, cur_angle))
+		pcall(function()
+			local disk = gui.get_node("wheel_disk")
+			gui.set_rotation(disk, vmath.quat_rotation_z(math.rad(cur_angle)))
+		end)
 
 		local sector_passed = math.floor(cur_angle / 45)
 		if sector_passed > (self.wheel_last_tick or 0) then
@@ -1327,88 +1488,8 @@ function update(self, dt)
 			sound.play_bounce(false)
 		end
 
-		if t >= 1.0 then
-			self.is_wheel_spinning = false
-			local status_txt = gui.get_node("wheel_status_txt")
-			local spin_btn = gui.get_node("wheel_spin_btn")
-			gui.set_color(spin_btn, vmath.vector4(1, 1, 1, 1))
-			sound.play_hit(1.3)
-			sdk.happy_time(0.8)
-
-			local reward = state.grant_wheel_reward(self.wheel_target_sector)
-			if reward then
-				local overlay = gui.get_node("wheel_reward_overlay")
-				local card = gui.get_node("wheel_reward_card")
-				local header = gui.get_node("wheel_reward_header")
-				local icon = gui.get_node("wheel_reward_icon")
-				local title = gui.get_node("wheel_reward_title")
-				local desc = gui.get_node("wheel_reward_desc")
-				local claim_txt = gui.get_node("wheel_reward_btn_txt")
-
-				gui.set_enabled(overlay, true)
-				gui.set_text(header, (LANG == "ru") and "🎉 ВЫИГРЫШ! 🎉" or "🎉 YOU WON! 🎉")
-				gui.set_text(claim_txt, (LANG == "ru") and "ЗАБРАТЬ" or "CLAIM")
-
-				local win_label = reward.label
-				if reward.type == "gold" then
-					gui.set_texture(icon, "gui")
-					gui.play_flipbook(icon, "coin")
-					gui.set_size(icon, vmath.vector3(85, 85, 0))
-					gui.set_text(title, "+" .. reward.amount .. ((LANG == "ru") and " ЗОЛОТА" or " GOLD"))
-					gui.set_color(title, vmath.vector4(1.0, 0.9, 0.2, 1.0))
-					gui.set_text(desc, (LANG == "ru") and "Начислено на ваш счет!" or "Added to your balance!")
-					win_label = "+" .. reward.amount .. ((LANG == "ru") and " Золота" or " Gold")
-				elseif reward.type == "gems" then
-					gui.set_texture(icon, "gui")
-					gui.play_flipbook(icon, "prestige")
-					gui.set_size(icon, vmath.vector3(85, 85, 0))
-					gui.set_text(title, "+" .. reward.amount .. ((LANG == "ru") and " АЛМАЗОВ" or " GEMS"))
-					gui.set_color(title, vmath.vector4(0.3, 1.0, 0.4, 1.0))
-					gui.set_text(desc, (LANG == "ru") and "Начислено на ваш счет!" or "Added to your balance!")
-					win_label = "+" .. reward.amount .. ((LANG == "ru") and " Алмазов" or " Gems")
-				elseif reward.type == "cards" then
-					local hero = data.heroes[reward.hero_id]
-					local hero_name = (hero and data.strings[hero.name_key] and data.strings[hero.name_key][LANG]) or "Герой"
-					gui.set_texture(icon, "units")
-					gui.play_flipbook(icon, hero and hero.name_key or "paladin")
-					gui.set_size(icon, vmath.vector3(95, 95, 0))
-					gui.set_text(title, "+" .. reward.amount .. " " .. string.upper(hero_name))
-					gui.set_color(title, vmath.vector4(0.3, 0.85, 1.0, 1.0))
-					gui.set_text(desc, (LANG == "ru") and "Карты для улучшения героя!" or "Hero upgrade cards!")
-					win_label = "+" .. reward.amount .. " " .. hero_name
-				elseif reward.type == "chest" then
-					gui.set_texture(icon, "gui")
-					gui.play_flipbook(icon, "chest")
-					gui.set_size(icon, vmath.vector3(95, 95, 0))
-					if reward.slots_full then
-						gui.set_text(title, "+10 " .. ((LANG == "ru") and "АЛМАЗОВ" or "GEMS"))
-						gui.set_color(title, vmath.vector4(0.3, 1.0, 0.4, 1.0))
-						gui.set_text(desc, (LANG == "ru") and "Слоты полны! Даны алмазы." or "Slots full! Compensation granted.")
-						win_label = "+10 " .. ((LANG == "ru") and "Алмазов" or "Gems")
-					else
-						gui.set_text(title, (LANG == "ru") and "ТАИНСТВЕННЫЙ СУНДУК!" or "MYSTERY CHEST!")
-						gui.set_color(title, vmath.vector4(1.0, 0.85, 0.2, 1.0))
-						gui.set_text(desc, (LANG == "ru") and "Добавлен в слот сундуков!" or "Added to chest slots!")
-						win_label = (LANG == "ru") and "Сундук" or "Chest"
-					end
-				end
-
-				-- Анимация появления всплывающего окна
-				gui.set_scale(card, vmath.vector3(0.5, 0.5, 1))
-				gui.animate(card, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.35)
-				gui.set_scale(icon, vmath.vector3(0.6, 0.6, 1))
-				gui.animate(icon, "scale", vmath.vector3(1.0, 1.0, 1), gui.EASING_OUTBACK, 0.4)
-
-				self.wheel_pending_reward = reward
-				self.wheel_last_win_label = win_label
-				gui.set_text(status_txt, (LANG == "ru") and ("Выигрыш: " .. win_label .. "!") or ("Won: " .. win_label .. "!"))
-				gui.set_color(status_txt, vmath.vector4(1.0, 0.95, 0.2, 1.0))
-			end
-
-			refresh_text(self)
-			refresh_chests_ui(self)
-			refresh_inventory_grid(self)
-			refresh_active_deck_ui(self)
+		if t >= 1.0 or self.wheel_spin_elapsed >= (self.wheel_spin_duration + 0.5) then
+			finish_wheel_spin(self)
 		end
 	end
 end
@@ -1448,6 +1529,18 @@ function on_message(self, message_id, message, sender)
 		gui.animate(node, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4)
 		gui.animate(node, "color.w", 0, gui.EASING_INQUAD, 0.5, 1.0)
 
+	elseif message_id == hash("start_wheel_spin") then
+		self.pending_wheel_spin = nil
+		start_wheel_spin(self)
+	elseif message_id == hash("wheel_ad_failed") then
+		self.pending_wheel_failed = nil
+		pcall(function()
+			local status_txt = gui.get_node("wheel_status_txt")
+			if status_txt then
+				gui.set_text(status_txt, (LANG == "ru") and "Реклама не завершена" or "Ad not completed")
+				gui.set_color(status_txt, vmath.vector4(1.0, 0.4, 0.4, 1.0))
+			end
+		end)
 	elseif message_id == hash("update_queue") or message_id == hash("refresh_queue") then
 		refresh_queue_panel(self)
 	elseif message_id == hash("game_over") then
@@ -1600,27 +1693,63 @@ function on_input(self, action_id, action)
 
 		local close_btn = gui.get_node("wheel_close_btn")
 		local spin_btn = gui.get_node("wheel_spin_btn")
+		local spin_txt = gui.get_node("wheel_spin_txt")
 		local panel = gui.get_node("wheel_panel")
+
+		-- Check spin button and its label FIRST before checking modal backdrop/close
+		if gui.pick_node(spin_btn, action.x, action.y) or gui.pick_node(spin_txt, action.x, action.y) then
+			if not self.is_wheel_spinning then
+				local free_spin = state.is_free_spin_available()
+				print("[GAME] 🎡 Lucky Wheel: Spin clicked. Free spin available:", tostring(free_spin))
+				if html5 and html5.run then
+					pcall(html5.run, string.format("console.log('%%c[GAME] 🎡 Lucky Wheel: Spin clicked (free_spin_available: %s)', 'color: #ffd700; font-weight: bold;');", tostring(free_spin)))
+				end
+
+				if free_spin then
+					print("[GAME] 🎡 Consuming daily free spin...")
+					if html5 and html5.run then
+						pcall(html5.run, "console.log('%c[GAME] 🎡 Daily free spin consumed — spinning wheel!', 'color: #00e676; font-weight: bold;');")
+					end
+					state.consume_free_spin()
+					refresh_wheel_ui(self)
+					start_wheel_spin(self)
+				else
+					print("[GAME] 🎬 Requesting rewarded ad for wheel spin...")
+					if html5 and html5.run then
+						pcall(html5.run, "console.log('%c[GAME] 🎬 Requesting rewarded ad for wheel spin...', 'color: #ff9800; font-weight: bold;');")
+					end
+					sdk.rewarded_break(function()
+						print("[GAME] 🎉 Rewarded ad completed! Queueing wheel spin...")
+						if html5 and html5.run then
+							pcall(html5.run, "console.log('%c[GAME] 🎉 Rewarded ad grant callback executed! Queueing wheel spin...', 'color: #4caf50; font-weight: bold;');")
+						end
+						self.pending_wheel_spin = true
+						pcall(msg.post, ".", "start_wheel_spin")
+					end, function(success)
+						print("[GAME] 🏁 Rewarded ad closed. Reward earned:", tostring(success))
+						if html5 and html5.run then
+							pcall(html5.run, string.format("console.log('%%c[GAME] 🏁 Rewarded ad closed. Reward earned: %s', 'color: #2196f3; font-weight: bold;');", tostring(success)))
+						end
+						if success then
+							-- Fallback check: ensure spin is queued if not started yet
+							if not self.is_wheel_spinning and not self.wheel_pending_reward then
+								self.pending_wheel_spin = true
+								pcall(msg.post, ".", "start_wheel_spin")
+							end
+						else
+							self.pending_wheel_failed = true
+							pcall(msg.post, ".", "wheel_ad_failed")
+						end
+					end, "wheel_spin")
+				end
+			end
+			return true
+		end
 
 		if gui.pick_node(close_btn, action.x, action.y) or not gui.pick_node(panel, action.x, action.y) then
 			if not self.is_wheel_spinning then
 				gui.set_enabled(gui.get_node("wheel_modal"), false)
 				sound.play_bounce(false)
-			end
-			return true
-		end
-
-		if gui.pick_node(spin_btn, action.x, action.y) then
-			if not self.is_wheel_spinning then
-				if state.is_free_spin_available() then
-					state.consume_free_spin()
-					refresh_wheel_ui(self)
-					start_wheel_spin(self)
-				else
-					sdk.rewarded_break(function()
-						start_wheel_spin(self)
-					end, nil, "medium")
-				end
 			end
 			return true
 		end
@@ -1695,9 +1824,12 @@ function on_input(self, action_id, action)
 			if not state.tutorial_completed then
 				state.complete_tutorial()
 			end
-			local current_world = state.selected_world or 1
-			sdk.gameplay_stop("arena", current_world)
-			sdk.commercial_break()
+			-- gameplay_stop is only called if the game_over handler hasn't already done it
+			if sdk.gameplay_active then
+				local current_world = state.selected_world or 1
+				sdk.gameplay_stop("arena", current_world)
+			end
+			sdk.try_commercial_break()
 			refresh_queue_panel(self)
 			gui.set_enabled(gui.get_node("end_screen_panel"), false)
 			hide_info_box(self)
@@ -1717,9 +1849,12 @@ function on_input(self, action_id, action)
 				state.complete_tutorial()
 			end
 			gui.set_enabled(gui.get_node("end_screen_panel"), false)
-			local current_world = state.selected_world or 1
-			sdk.gameplay_stop("arena", current_world)
-			sdk.commercial_break()
+			-- gameplay_stop already called in game_over handler; guard against double call
+			if sdk.gameplay_active then
+				local current_world = state.selected_world or 1
+				sdk.gameplay_stop("arena", current_world)
+			end
+			sdk.try_commercial_break()
 			hide_info_box(self)
 			show_screen(self, "main_menu")
 			sdk.show_banner("bottom")
@@ -1842,6 +1977,10 @@ function on_input(self, action_id, action)
 
 			-- Кнопка Колеса Фортуны
 			if gui.pick_node(gui.get_node("btn_wheel"), action.x, action.y) then
+				print("[GAME] 🎡 Lucky Wheel button clicked in main menu")
+				if html5 and html5.run then
+					pcall(html5.run, string.format("console.log('%%c[GAME] 🎡 Lucky Wheel opened (free_spin_available: %s)', 'color: #ffd700; font-weight: bold;');", tostring(state.is_free_spin_available())))
+				end
 				sound.play_bounce(false)
 				refresh_wheel_ui(self)
 				gui.set_enabled(gui.get_node("wheel_modal"), true)

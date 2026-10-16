@@ -634,8 +634,8 @@ nodes {
     y: 15.0
   }
   scale {
-    x: 0.3
-    y: 0.3
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
@@ -812,8 +812,8 @@ nodes {
     y: 12.0
   }
   scale {
-    x: 0.4
-    y: 0.4
+    x: 0.25
+    y: 0.25
   }
   size {
     x: 200.0
@@ -1105,15 +1105,15 @@ nodes {
 }
 nodes {
   position {
-    x: -54.0
+    x: -17.5
     y: 47.0
   }
   scale {
-    x: 0.4
-    y: 0.4
+    x: 0.35
+    y: 0.35
   }
   size {
-    x: 500.0
+    x: 458.0
     y: 120.0
   }
   color {
@@ -1138,11 +1138,11 @@ nodes {
 }
 nodes {
   position {
-    x: -101.0
+    x: -80.5
     y: -35.0
   }
   size {
-    x: 80.0
+    x: 123.0
     y: 80.0
   }
   type: TYPE_BOX
@@ -1154,25 +1154,24 @@ nodes {
 }
 nodes {
   position {
-    x: -3.0
+    x: -1.5
     y: 36.0
   }
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.101960786
-    y: 0.2
-    z: 0.6
+    x: 0.2
+    y: 0.4
+    z: 0.4
   }
   type: TYPE_TEXT
-  text: "100\n"
-  ""
+  text: "1000"
   font: "druid_text_bold"
   id: "info_unit_hp_txt"
   pivot: PIVOT_NW
@@ -1186,21 +1185,21 @@ nodes {
 }
 nodes {
   position {
-    x: -3.0
+    x: -1.5
     y: 10.0
   }
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.101960786
-    y: 0.2
-    z: 0.6
+    x: 0.2
+    y: 0.4
+    z: 0.4
   }
   type: TYPE_TEXT
   text: "20"
@@ -1217,21 +1216,21 @@ nodes {
 }
 nodes {
   position {
-    x: -3.0
+    x: -1.5
     y: -16.0
   }
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 100.0
     y: 50.0
   }
   color {
-    x: 0.101960786
-    y: 0.2
-    z: 0.6
+    x: 0.2
+    y: 0.4
+    z: 0.4
   }
   type: TYPE_TEXT
   text: "10"
@@ -1248,8 +1247,8 @@ nodes {
 }
 nodes {
   position {
-    x: -40.0
-    y: 33.5
+    x: -60.0
+    y: 35.5
   }
   scale {
     x: 0.4
@@ -1274,8 +1273,8 @@ nodes {
 }
 nodes {
   position {
-    x: -40.0
-    y: 7.0
+    x: -60.0
+    y: 9.0
   }
   scale {
     x: 0.4
@@ -1300,8 +1299,8 @@ nodes {
 }
 nodes {
   position {
-    x: -40.0
-    y: -18.5
+    x: -60.0
+    y: -16.5
   }
   scale {
     x: 0.4
@@ -1376,11 +1375,11 @@ nodes {
 }
 nodes {
   position {
-    x: 39.0
+    x: 63.5
     y: -1.0
   }
   size {
-    x: 189.0
+    x: 160.0
     y: 100.0
   }
   type: TYPE_BOX
@@ -1407,15 +1406,15 @@ nodes {
 }
 nodes {
   position {
-    y: -251.0
+    y: -189.5
   }
   scale {
-    x: 0.65
-    y: 0.7
+    x: 0.5
+    y: 0.5
   }
   size {
     x: 600.0
-    y: 120.0
+    y: 269.0
   }
   color {
     x: 0.8
@@ -1544,6 +1543,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
+  position {
+    y: 8.0
+  }
   size {
     x: 64.0
     y: 64.0
@@ -1556,8 +1558,8 @@ nodes {
 }
 nodes {
   position {
-    x: -25.0
-    y: 22.0
+    x: -0.5
+    y: -36.0
   }
   scale {
     x: 0.5
@@ -1594,6 +1596,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
+  position {
+    y: 8.0
+  }
   size {
     x: 64.0
     y: 64.0
@@ -1606,8 +1611,8 @@ nodes {
 }
 nodes {
   position {
-    x: -25.0
-    y: 22.0
+    x: -0.5
+    y: -36.0
   }
   scale {
     x: 0.5
@@ -1644,6 +1649,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
+  position {
+    y: 8.0
+  }
   size {
     x: 64.0
     y: 64.0
@@ -1656,8 +1664,8 @@ nodes {
 }
 nodes {
   position {
-    x: -25.0
-    y: 22.0
+    x: -0.5
+    y: -36.0
   }
   scale {
     x: 0.5
@@ -1694,6 +1702,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 nodes {
+  position {
+    y: 8.0
+  }
   size {
     x: 64.0
     y: 64.0
@@ -1706,8 +1717,8 @@ nodes {
 }
 nodes {
   position {
-    x: -25.0
-    y: 22.0
+    x: -0.5
+    y: -36.0
   }
   scale {
     x: 0.5
@@ -1828,42 +1839,41 @@ nodes {
 }
 nodes {
   position {
-    x: -32.0
-    y: 31.0
+    x: -27.0
+    y: -27.0
   }
   size {
     x: 24.0
     y: 24.0
   }
   color {
-    y: 0.7019608
-    z: 0.5019608
+    x: 0.62352943
+    y: 0.46666667
+    z: 0.003921569
   }
   type: TYPE_BOX
-  texture: "druid/ui_circle_32"
+  texture: "druid/ui_circle_64"
   id: "box1"
   parent: "unit_card_template"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: -32.0
-    y: 31.0
+    z: 0.1
   }
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.2
+    y: 0.2
   }
   size {
     x: 50.0
     y: 50.0
   }
   type: TYPE_TEXT
-  text: "1\n"
-  ""
+  text: "Lvl. 1"
   font: "druid_text_bold"
   id: "unit_level"
-  parent: "unit_card_template"
+  parent: "box1"
   inherit_alpha: true
 }
 nodes {
@@ -1890,7 +1900,6 @@ nodes {
     z: 16.0
     w: 16.0
   }
-  enabled: false
 }
 nodes {
   position {
@@ -1993,7 +2002,7 @@ nodes {
 }
 nodes {
   position {
-    x: -5.0
+    x: 4.5
     y: 20.0
   }
   scale {
@@ -2025,7 +2034,7 @@ nodes {
 }
 nodes {
   position {
-    x: -5.0
+    x: 4.5
   }
   scale {
     x: 0.4
@@ -2055,7 +2064,7 @@ nodes {
 }
 nodes {
   position {
-    x: -5.0
+    x: 4.5
     y: -20.0
   }
   scale {
@@ -2185,8 +2194,8 @@ nodes {
 }
 nodes {
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 200.0
@@ -2227,8 +2236,8 @@ nodes {
 }
 nodes {
   scale {
-    x: 0.5
-    y: 0.5
+    x: 0.4
+    y: 0.4
   }
   size {
     x: 200.0
@@ -2376,11 +2385,11 @@ nodes {
 }
 nodes {
   position {
-    y: 86.0
+    y: 115.5
   }
   scale {
-    x: 0.7
-    y: 0.7
+    x: 0.5
+    y: 0.5
   }
   size {
     x: 230.0
@@ -2400,18 +2409,18 @@ nodes {
 }
 nodes {
   position {
-    y: 64.0
+    y: 77.5
   }
   scale {
-    x: 0.85
-    y: 0.85
+    x: 0.6
+    y: 0.6
   }
   size {
-    x: 260.0
+    x: 266.0
     y: 50.0
   }
   type: TYPE_TEXT
-  text: "Royal Arena"
+  text: "Royal Arena \320\244\320\272\321\203\321\213\320\262\321\213"
   font: "druid_text_bold"
   id: "world_title_txt"
   line_break: true
@@ -2438,11 +2447,11 @@ nodes {
     y: -60.0
   }
   scale {
-    x: 0.55
-    y: 0.55
+    x: 0.3
+    y: 0.3
   }
   size {
-    x: 371.0
+    x: 816.0
     y: 60.0
   }
   color {
@@ -3048,8 +3057,8 @@ nodes {
     y: 195.0
   }
   scale {
-    x: 0.8
-    y: 0.8
+    x: 0.7
+    y: 0.7
   }
   size {
     x: 300.0
@@ -3119,11 +3128,11 @@ nodes {
     y: -110.0
   }
   scale {
-    x: 0.6
-    y: 0.6
+    x: 0.4
+    y: 0.4
   }
   size {
-    x: 340.0
+    x: 700.0
     y: 60.0
   }
   color {
@@ -3134,12 +3143,12 @@ nodes {
   text: "Spin the wheel for rewards!"
   font: "druid_text_bold"
   id: "wheel_status_txt"
-  line_break: true
   outline {
     x: 0.1
     y: 0.1
     z: 0.1
   }
+  line_break: true
   parent: "wheel_panel"
   inherit_alpha: true
 }
@@ -3165,8 +3174,8 @@ nodes {
 }
 nodes {
   scale {
-    x: 0.7
-    y: 0.7
+    x: 0.6
+    y: 0.6
   }
   size {
     x: 220.0
@@ -3248,7 +3257,7 @@ nodes {
 }
 nodes {
   position {
-    y: 40.0
+    y: 48.5
   }
   size {
     x: 90.0
@@ -3262,7 +3271,7 @@ nodes {
 }
 nodes {
   position {
-    y: -30.0
+    y: -20.5
   }
   scale {
     x: 0.72
@@ -3293,7 +3302,7 @@ nodes {
     y: 0.52
   }
   size {
-    x: 300.0
+    x: 479.0
     y: 60.0
   }
   color {
@@ -3304,12 +3313,12 @@ nodes {
   text: "Added to your account!"
   font: "druid_text_bold"
   id: "wheel_reward_desc"
-  line_break: true
   outline {
     x: 0.1
     y: 0.1
     z: 0.1
   }
+  line_break: true
   parent: "wheel_reward_card"
   inherit_alpha: true
 }
@@ -3335,8 +3344,8 @@ nodes {
 }
 nodes {
   scale {
-    x: 0.7
-    y: 0.7
+    x: 0.6
+    y: 0.6
   }
   size {
     x: 190.0

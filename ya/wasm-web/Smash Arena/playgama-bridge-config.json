@@ -1,0 +1,69 @@
+{
+    "$schema": "https://bridge.playgama.com/v2/stable/schema.json",
+    "device": {
+        "useBuiltInOrientationPopup": true,
+        "supportedOrientations": ["landscape", "portrait"]
+    },
+    "platforms": {
+        "game_distribution": {
+            "gameId": ""
+        },
+        "telegram": {
+            "adsgramBlockId": ""
+        },
+        "y8": {
+            "gameId": "",
+            "adsenseId": "",
+            "channelId": ""
+        },
+        "lagged": {
+            "devId": "",
+            "publisherId": ""
+        },
+        "huawei": {
+            "appId": ""
+        },
+        "msn": {
+            "gameId": ""
+        },
+        "discord": {
+            "appId": ""
+        },
+        "gamepush": {
+            "projectId": "",
+            "publicToken": ""
+        },
+        "crazy_games": {
+            "xsollaProjectId": "",
+            "isSandbox": false,
+            "useUserToken": false
+        },
+        "facebook": {
+            "subscribeForNotificationsOnStart": true,
+            "sendAnalyticsEvents": false
+        },
+        "yandex": {
+            "useSignedData": false,
+            "sendAnalyticsEvents": false
+        },
+        "youtube": {
+            "sendAnalyticsEvents": false
+        },
+        "xiaomi": {
+            "adSenseId": "",
+            "hostId": ""
+        }
+    },
+    "advertisement": {
+        "banner": {},
+        "interstitial": {},
+        "rewarded": {},
+        "useBuiltInErrorPopup": false,
+        "minimumDelayBetweenInterstitial": 60,
+        "initialInterstitialDelay": 0,
+        "backfillId": ""
+    },
+    "payments": [],
+    "leaderboards": [],
+    "sendAnalyticsEvents": true
+}

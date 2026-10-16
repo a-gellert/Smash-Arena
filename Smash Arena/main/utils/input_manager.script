@@ -1,4 +1,5 @@
 -- main/utils/input_manager.script
+local sdk = require "main.sdk"
 
 -- init
 function init(self)
@@ -108,7 +109,9 @@ local function update_prediction(self, from, dir)
 		msg.post(self.ghost_id, "enable")
 	end
 end
+
 function on_input(self, action_id, action)
+	if sdk.platform_paused or sdk.ad_showing or sdk.tab_hidden then return end
 	if not self.target_id or not self.is_active then return end
 
 	if action_id == hash("touch") then

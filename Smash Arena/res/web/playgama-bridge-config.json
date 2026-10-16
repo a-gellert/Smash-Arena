@@ -1,5 +1,5 @@
 {
-    "$schema": "https://bridge.playgama.com/v1/stable/schema.json",
+    "$schema": "https://bridge.playgama.com/v2/stable/schema.json",
     "device": {
         "useBuiltInOrientationPopup": true,
         "supportedOrientations": ["landscape", "portrait"]
@@ -56,13 +56,11 @@
     },
     "advertisement": {
         "banner": {},
-        "interstitial": {
-            "preloadOnStart": true
-        },
-        "rewarded": {
-            "preloadOnStart": true
-        },
-        "useBuiltInErrorPopup": true,
+        "interstitial": {},
+        "rewarded": {},
+        "useBuiltInErrorPopup": false,
+        "minimumDelayBetweenInterstitial": 60,
+        "initialInterstitialDelay": 0,
         "backfillId": ""
     },
     "payments": [],

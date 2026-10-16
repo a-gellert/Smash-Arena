@@ -157,22 +157,56 @@ end
 -- ─────────────────────────────────────────────────────────────
 --  СОХРАНЕНИЕ / ЗАГРУЗКА
 -- ─────────────────────────────────────────────────────────────
-function M.apply_profile_data(d)
-	if not d then return end
-	M.active_deck      = d.active_deck      or M.active_deck
-	M.gold             = d.gold             or M.gold
-	M.almaz            = d.almaz            or M.almaz
-	M.prestige         = d.prestige         or M.prestige
-	M.available_heroes = d.available_heroes or M.available_heroes
-	M.hero_cards       = d.hero_cards       or M.hero_cards
-	M.hero_levels      = d.hero_levels      or M.hero_levels
-	M.chests           = d.chests           or M.chests
-	M.sfx_volume       = (d.sfx_volume ~= nil) and d.sfx_volume or M.sfx_volume
-	M.music_volume     = (d.music_volume ~= nil) and d.music_volume or M.music_volume
-	M.last_free_spin_date = d.last_free_spin_date or ""
+local function normalize_num_dict(tbl, default_val)
+	if type(tbl) ~= "table" then return {} end
+	local res = {}
+	for k, v in pairs(tbl) do
+		local num_k = tonumber(k)
+		if num_k ~= nil then
+			res[num_k] = tonumber(v) or default_val or v
+		else
+			res[k] = v
+		end
+	end
+	return res
+end
 
-	if d.selected_world and M.is_world_unlocked(d.selected_world) then
-		M.selected_world = d.selected_world
+function M.apply_profile_data(d)
+	if not d or type(d) ~= "table" then return end
+	if d.active_deck and type(d.active_deck) == "table" and #d.active_deck > 0 then
+		M.active_deck = d.active_deck
+	end
+	if d.gold ~= nil then M.gold = tonumber(d.gold) or M.gold end
+	if d.almaz ~= nil then M.almaz = tonumber(d.almaz) or M.almaz end
+	if d.prestige ~= nil then M.prestige = tonumber(d.prestige) or M.prestige end
+	if d.available_heroes and type(d.available_heroes) == "table" and #d.available_heroes > 0 then
+		M.available_heroes = d.available_heroes
+	end
+
+	-- Convert numeric string keys ("1", "2") from JSON serialization back to Lua numbers (1, 2)
+	if d.hero_cards and type(d.hero_cards) == "table" then
+		M.hero_cards = normalize_num_dict(d.hero_cards, 0)
+	end
+	if d.hero_levels and type(d.hero_levels) == "table" then
+		M.hero_levels = normalize_num_dict(d.hero_levels, 1)
+	end
+
+	-- Ensure every available hero has an entry in levels and cards
+	for _, hid in ipairs(M.available_heroes) do
+		if not M.hero_levels[hid] then M.hero_levels[hid] = 1 end
+		if not M.hero_cards[hid] then M.hero_cards[hid] = 0 end
+	end
+
+	if d.chests and type(d.chests) == "table" then
+		M.chests = d.chests
+	end
+	if d.sfx_volume ~= nil then M.sfx_volume = tonumber(d.sfx_volume) or M.sfx_volume end
+	if d.music_volume ~= nil then M.music_volume = tonumber(d.music_volume) or M.music_volume end
+	if d.last_free_spin_date ~= nil then M.last_free_spin_date = tostring(d.last_free_spin_date) end
+
+	local sel_w = tonumber(d.selected_world) or 1
+	if M.is_world_unlocked(sel_w) then
+		M.selected_world = sel_w
 	else
 		M.selected_world = 1
 	end
@@ -183,7 +217,7 @@ function M.apply_profile_data(d)
 
 	if d.tutorial_completed ~= nil then
 		M.tutorial_completed = d.tutorial_completed
-	elseif d.gold or d.prestige or d.active_deck then
+	elseif (M.prestige and M.prestige > 0) or (M.gold and M.gold > 100) then
 		M.tutorial_completed = true
 	else
 		M.tutorial_completed = false
@@ -206,58 +240,103 @@ end
 
 function M.save()
 	local data_to_save = {
-		active_deck        = M.active_deck,
-		gold               = M.gold,
-		almaz              = M.almaz,
-		prestige           = M.prestige,
-		available_heroes   = M.available_heroes,
-		hero_levels        = M.hero_levels,
-		hero_cards         = M.hero_cards,
-		chests             = M.chests,
-		tutorial_completed = M.tutorial_completed,
-		sfx_volume         = M.sfx_volume,
-		music_volume       = M.music_volume,
-		selected_world     = M.selected_world,
+		active_deck         = M.active_deck,
+		gold                = M.gold,
+		almaz               = M.almaz,
+		prestige            = M.prestige,
+		available_heroes    = M.available_heroes,
+		hero_levels         = M.hero_levels,
+		hero_cards          = M.hero_cards,
+		chests              = M.chests,
+		tutorial_completed  = M.tutorial_completed,
+		sfx_volume          = M.sfx_volume,
+		music_volume        = M.music_volume,
+		selected_world      = M.selected_world,
 		last_free_spin_date = M.last_free_spin_date
 	}
+
 	local ok = sys.save(SAVE_PATH, data_to_save)
 	if ok then
-		print("Saved to: " .. SAVE_PATH)
+		print("Saved local file to: " .. SAVE_PATH)
 	else
-		print("ERROR: save failed")
+		print("ERROR: local sys.save failed")
 	end
 
-	-- Cloud save via Playgama Bridge Storage
+	-- Cloud save via Playgama Bridge Storage SDK & CrazyGames Cloud Data
 	local sdk_ok, sdk = pcall(require, "main.sdk")
 	if sdk_ok and sdk and sdk.storage_set then
-		sdk.storage_set({ player_profile = data_to_save })
+		sdk.storage_set({ player_profile = data_to_save }, function()
+			print("✅ Cloud profile saved to Playgama Storage")
+		end, function(err)
+			print("⚠️ Cloud save to Playgama Storage failed:", tostring(err))
+		end)
 	end
 end
 
 function M.load(callback)
-	local d = sys.load(SAVE_PATH)
-	if not next(d) then
-		print("No local save file. Using defaults (first launch).")
-		M.tutorial_completed = false
-	else
-		M.apply_profile_data(d)
+	local local_data = sys.load(SAVE_PATH)
+	if local_data and type(local_data) == "table" and next(local_data) ~= nil then
+		M.apply_profile_data(local_data)
 		print("Local profile loaded. Tutorial completed: " .. tostring(M.tutorial_completed))
+	else
+		print("No local save file found. Using defaults (first launch).")
+		M.tutorial_completed = false
 	end
 
-	-- Async cloud load from Playgama Bridge Storage
+	-- Async cloud load from Playgama Bridge Storage SDK & CrazyGames SDK
 	local sdk_ok, sdk = pcall(require, "main.sdk")
 	if sdk_ok and sdk and sdk.storage_get then
 		sdk.storage_get({ "player_profile" }, function(err, cloud_data)
-			if cloud_data and cloud_data.player_profile then
-				local cd = cloud_data.player_profile
-				if (cd.prestige or 0) > (M.prestige or 0) or (cd.gold or 0) > (M.gold or 0) or (not next(d)) then
-					print("Cloud save restored from Playgama Storage")
-					M.apply_profile_data(cd)
-					sys.save(SAVE_PATH, cd)
-					if callback then callback() end
+			local cd = nil
+			if type(cloud_data) == "table" then
+				if cloud_data.player_profile ~= nil then
+					cd = cloud_data.player_profile
+				elseif cloud_data[1] ~= nil then
+					cd = cloud_data[1]
+					if type(cd) == "table" and cd.player_profile ~= nil then
+						cd = cd.player_profile
+					end
+				end
+			elseif type(cloud_data) == "string" then
+				cd = cloud_data
+			end
+
+			-- If serialized as JSON string, parse safely
+			if type(cd) == "string" and cd ~= "" then
+				local json_ok, decoded = pcall(json.decode, cd)
+				if json_ok and type(decoded) == "table" then
+					cd = decoded
+				else
+					cd = nil
 				end
 			end
+
+			if type(cd) == "table" and next(cd) ~= nil then
+				local cloud_prestige = tonumber(cd.prestige) or 0
+				local local_prestige = tonumber(M.prestige) or 0
+				print("☁️ Cloud save received (cloud prestige: " .. cloud_prestige .. ", local: " .. local_prestige .. ")")
+
+				-- If cloud has equal or more progress, or local was empty
+				if cloud_prestige >= local_prestige or not local_data then
+					print("☁️ Applying cloud save profile data...")
+					M.apply_profile_data(cd)
+					sys.save(SAVE_PATH, cd)
+				else
+					print("ℹ️ Local profile is ahead of cloud save. Keeping local and syncing to cloud.")
+					M.save()
+				end
+
+				if callback then callback() end
+			else
+				print("ℹ️ No cloud profile found in Storage or storage empty.")
+				if callback then callback() end
+			end
+		end, function(err)
+			print("⚠️ Storage load error:", tostring(err))
+			if callback then callback() end
 		end)
+	else
+		if callback then callback() end
 	end
 end
 
@@ -343,6 +422,13 @@ function M.grant_wheel_reward(sector_idx)
 	end
 
 	M.save()
+
+	local diag = string.format("[STATE] 🎁 Wheel reward credited — Type: %s, Amount: %d | New Balance -> Gold: %d, Gems: %d", tostring(s.type), s.amount or 0, M.gold, M.almaz)
+	print(diag)
+	if html5 and html5.run then
+		pcall(html5.run, string.format("console.log('%%c%s', 'color: #ffffff; background: #2e7d32; font-weight: bold; padding: 3px 8px; border-radius: 4px;');", diag))
+	end
+
 	return reward_result
 end
 
@@ -373,7 +459,10 @@ function M.switch_turn()
 	M.current_team = (M.current_team == M.TEAM_PLAYER) and M.TEAM_ENEMY or M.TEAM_PLAYER
 end
 
--- Автоматически загружаем профиль при подключении модуля
-M.load()
+-- Синхронная начальная загрузка локального профиля при подключении модуля
+local local_data = sys.load(SAVE_PATH)
+if local_data and type(local_data) == "table" and next(local_data) ~= nil then
+	M.apply_profile_data(local_data)
+end
 
 return M

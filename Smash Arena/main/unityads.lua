@@ -10,21 +10,45 @@ local M = {}
 -- Android: 1401815
 -- iOS: 1425385
 -- Standard placement IDs:
--- Interstitial: "video"
--- Rewarded: "rewardedVideo"
--- Banner: "banner"
+-- Interstitial: "Interstitial_Android" or "video"
+-- Rewarded: "Rewarded_Android" or "rewardedVideo"
+-- Banner: "Banner_Android" or "banner"
 local CONFIG = {
 	game_id = {
-		android = sys.get_config_string("unityads.game_id_android", "1401815"),
-		ios     = sys.get_config_string("unityads.game_id_ios", "1425385"),
+		android = sys.get_config_string("unityads.game_id_android", "6194929"),
+		ios     = sys.get_config_string("unityads.game_id_ios", "6194928"),
 	},
 	placements = {
-		interstitial = sys.get_config_string("unityads.interstitial_placement", "video"),
-		rewarded     = sys.get_config_string("unityads.rewarded_placement", "rewardedVideo"),
-		banner       = sys.get_config_string("unityads.banner_placement", "banner"),
+		interstitial = sys.get_config_string("unityads.interstitial_placement", "Interstitial_Android"),
+		rewarded     = sys.get_config_string("unityads.rewarded_placement", "Rewarded_Android"),
+		banner       = sys.get_config_string("unityads.banner_placement", "Banner_Android"),
 	},
 	test_mode = sys.get_config_int("unityads.test_mode", 1) == 1,
 }
+
+----------------------------------------------------------
+-- ERROR DESCRIPTIONS
+----------------------------------------------------------
+local ERROR_NAMES = {
+	[1] = "INTERNAL_ERROR",
+	[2] = "INVALID_ARGUMENT",
+	[3] = "NOT_INITIALIZED",
+	[4] = "NOT_READY (Ad still loading or not loaded yet)",
+	[5] = "VIDEO_PLAYER_ERROR",
+	[6] = "NO_CONNECTION (Check internet connectivity)",
+	[7] = "ALREADY_SHOWING",
+	[8] = "NO_FILL (No ads available - enable test_mode=1 in game.project for testing)",
+	[9] = "TIMEOUT",
+	[10] = "UNKNOWN",
+	[11] = "NATIVE_ERROR",
+	[12] = "WEBVIEW_ERROR",
+	[13] = "AD_BLOCKER_DETECTED",
+}
+
+local function error_desc(code)
+	if not code then return "UNKNOWN" end
+	return ERROR_NAMES[code] or ("CODE_" .. tostring(code))
+end
 
 ----------------------------------------------------------
 -- STATE
@@ -41,6 +65,12 @@ local current_reward_cb = nil
 local current_reward_close_cb = nil
 local reward_was_earned = false
 
+local function safe_timer_delay(delay_sec, repeating, cb)
+	local ok, handle = pcall(timer.delay, delay_sec, repeating, cb)
+	if ok then return handle end
+	return nil
+end
+
 ----------------------------------------------------------
 -- LOGGING
 ----------------------------------------------------------
@@ -52,13 +82,13 @@ end
 -- AUDIO HELPERS
 ----------------------------------------------------------
 local function pause_audio()
-	log("🔇 Muting audio for ad playback")
-	pcall(function() sound.set_group_gain("master", 0) end)
+	-- Audio pause is handled by sdk.lua wrapper (which calls us).
+	log("🔇 [unityads] pause_audio (delegated to sdk.lua)")
 end
 
 local function resume_audio()
-	log("🔊 Restoring audio after ad")
-	pcall(function() sound.set_group_gain("master", 1) end)
+	-- Audio resume is handled by sdk.lua wrapper (which calls us).
+	log("🔊 [unityads] resume_audio (delegated to sdk.lua)")
 end
 
 ----------------------------------------------------------
@@ -67,7 +97,8 @@ end
 function M.is_supported()
 	if rawget(_G, "unityads") ~= nil then
 		if unityads.is_supported then
-			return unityads.is_supported()
+			local ok, sup = pcall(unityads.is_supported)
+			if ok then return sup end
 		end
 		return true
 	end
@@ -102,9 +133,12 @@ local function on_unityads_event(self, message_id, message)
 			M.load_interstitial()
 			M.load_rewarded()
 		elseif message.event == unityads.EVENT_SDK_ERROR then
-			log("❌ Unity Ads initialization error:", message.error, "code:", message.code)
+			log("❌ Unity Ads initialization error:", tostring(message.error), "code:", message.code, "[" .. error_desc(message.code) .. "]")
+			if message.code == 8 or message.code == 2 then
+				log("💡 HINT: Check Game ID and ensure test_mode=1 is enabled in game.project during development!")
+			end
 		elseif message.event == unityads.EVENT_JSON_ERROR then
-			log("❌ Unity Ads initialization JSON error:", message.error)
+			log("❌ Unity Ads initialization JSON error:", tostring(message.error))
 		end
 
 	-- 2. AD LOADING
@@ -116,14 +150,30 @@ local function on_unityads_event(self, message_id, message)
 				M.interstitial_loaded = true
 			elseif message.placement_id == placements.rewarded then
 				M.rewarded_loaded = true
+			else
+				-- Match fallback in case of placement naming difference
+				M.interstitial_loaded = true
+				M.rewarded_loaded = true
 			end
 		elseif message.event == unityads.EVENT_SDK_ERROR then
-			log("⚠️ Unity Ads failed to load placement:", message.placement_id, "error:", message.error, "code:", message.code)
+			log("⚠️ Unity Ads failed to load placement:", message.placement_id, "error:", tostring(message.error), "code:", message.code, "[" .. error_desc(message.code) .. "]")
 			if message.placement_id == placements.interstitial then
 				M.interstitial_loaded = false
 			elseif message.placement_id == placements.rewarded then
 				M.rewarded_loaded = false
 			end
+
+			-- Retry loading after 12 seconds in background
+			local failed_placement = message.placement_id
+			safe_timer_delay(12, false, function()
+				if failed_placement == placements.interstitial and not M.interstitial_loaded then
+					log("🔄 Retrying loading interstitial ad...")
+					M.load_interstitial()
+				elseif failed_placement == placements.rewarded and not M.rewarded_loaded then
+					log("🔄 Retrying loading rewarded ad...")
+					M.load_rewarded()
+				end
+			end)
 		end
 
 	-- 3. AD SHOWING
@@ -146,15 +196,8 @@ local function on_unityads_event(self, message_id, message)
 			M.is_showing = false
 			resume_audio()
 
-			if message.placement_id == placements.interstitial then
-				if current_interstitial_cb then
-					local cb = current_interstitial_cb
-					current_interstitial_cb = nil
-					cb()
-				end
-				M.load_interstitial()
-
-			elseif message.placement_id == placements.rewarded then
+			-- Check if rewarded ad was showing
+			if current_reward_close_cb or message.placement_id == placements.rewarded then
 				reward_was_earned = true
 				if current_reward_cb then
 					current_reward_cb()
@@ -166,8 +209,14 @@ local function on_unityads_event(self, message_id, message)
 					cb(true)
 				end
 				M.load_rewarded()
+			elseif current_interstitial_cb or message.placement_id == placements.interstitial then
+				if current_interstitial_cb then
+					local cb = current_interstitial_cb
+					current_interstitial_cb = nil
+					cb()
+				end
+				M.load_interstitial()
 			else
-				-- Other placement completed
 				if current_interstitial_cb then
 					local cb = current_interstitial_cb
 					current_interstitial_cb = nil
@@ -180,15 +229,7 @@ local function on_unityads_event(self, message_id, message)
 			M.is_showing = false
 			resume_audio()
 
-			if message.placement_id == placements.interstitial then
-				if current_interstitial_cb then
-					local cb = current_interstitial_cb
-					current_interstitial_cb = nil
-					cb()
-				end
-				M.load_interstitial()
-
-			elseif message.placement_id == placements.rewarded then
+			if current_reward_close_cb or message.placement_id == placements.rewarded then
 				if current_reward_close_cb then
 					local cb = current_reward_close_cb
 					current_reward_close_cb = nil
@@ -196,6 +237,13 @@ local function on_unityads_event(self, message_id, message)
 					cb(false)
 				end
 				M.load_rewarded()
+			elseif current_interstitial_cb or message.placement_id == placements.interstitial then
+				if current_interstitial_cb then
+					local cb = current_interstitial_cb
+					current_interstitial_cb = nil
+					cb()
+				end
+				M.load_interstitial()
 			else
 				if current_interstitial_cb then
 					local cb = current_interstitial_cb
@@ -205,7 +253,7 @@ local function on_unityads_event(self, message_id, message)
 			end
 
 		elseif message.event == unityads.EVENT_SDK_ERROR or message.event == unityads.EVENT_JSON_ERROR then
-			log("❌ Unity Ads show error:", message.error, "code:", message.code)
+			log("❌ Unity Ads show error:", tostring(message.error), "code:", message.code, "[" .. error_desc(message.code) .. "]")
 			M.is_showing = false
 			resume_audio()
 
@@ -233,7 +281,7 @@ local function on_unityads_event(self, message_id, message)
 				unityads.show_banner()
 			end
 		elseif message.event == unityads.EVENT_SDK_ERROR then
-			log("⚠️ Unity Ads banner error:", message.error, "code:", message.code)
+			log("⚠️ Unity Ads banner error:", tostring(message.error), "code:", message.code, "[" .. error_desc(message.code) .. "]")
 			M.banner_loaded = false
 		end
 
@@ -265,18 +313,39 @@ function M.init(custom_config)
 
 	if M.is_supported() then
 		log("📱 Initializing Unity Ads native extension...")
-		unityads.set_callback(on_unityads_event)
+		local ok_cb, err_cb = pcall(function()
+			unityads.set_callback(on_unityads_event)
+		end)
+		if not ok_cb then
+			log("⚠️ unityads.set_callback error:", err_cb)
+		end
+
+		-- Check if already initialized natively
+		if unityads.is_initialized and unityads.is_initialized() then
+			log("✅ Unity Ads is already initialized!")
+			M.initialized = true
+			M.load_interstitial()
+			M.load_rewarded()
+			return
+		end
 
 		-- iOS IDFA request before initialization
 		local sys_info = sys.get_sys_info()
 		if sys_info.system_name == "iPhone OS" and unityads.request_idfa then
-			unityads.request_idfa()
+			pcall(unityads.request_idfa)
 		end
 
 		local game_id = get_game_id()
-		unityads.set_debug_mode(CONFIG.test_mode)
+		pcall(function()
+			unityads.set_debug_mode(CONFIG.test_mode)
+		end)
 		log("📱 Initializing with Game ID: " .. tostring(game_id) .. ", test_mode: " .. tostring(CONFIG.test_mode))
-		unityads.initialize(tostring(game_id), on_unityads_event, CONFIG.test_mode)
+		local ok_init, err_init = pcall(function()
+			unityads.initialize(tostring(game_id), on_unityads_event, CONFIG.test_mode)
+		end)
+		if not ok_init then
+			log("❌ unityads.initialize call failed:", err_init)
+		end
 	else
 		log("💻 Native Unity Ads not present (Desktop/Editor/Web) — Mock active")
 		M.initialized = true
@@ -288,7 +357,12 @@ function M.load_interstitial()
 	if M.is_supported() then
 		local placements = get_placements()
 		log("⏳ Loading interstitial:", placements.interstitial)
-		unityads.load(placements.interstitial)
+		local ok, err = pcall(function()
+			unityads.load(placements.interstitial)
+		end)
+		if not ok then
+			log("⚠️ unityads.load interstitial failed:", err)
+		end
 	else
 		M.interstitial_loaded = true
 	end
@@ -315,7 +389,22 @@ function M.show_interstitial(callback)
 	if M.is_supported() then
 		local placements = get_placements()
 		log("📺 Showing native interstitial ad (" .. placements.interstitial .. ")...")
-		unityads.show(placements.interstitial)
+		if not M.interstitial_loaded then
+			log("⚠️ Interstitial not preloaded, attempting load first...")
+			M.load_interstitial()
+		end
+
+		local ok, err = pcall(function()
+			unityads.show(placements.interstitial)
+		end)
+		if not ok then
+			log("⚠️ unityads.show failed:", err, "executing callback")
+			M.is_showing = false
+			if callback then
+				current_interstitial_cb = nil
+				callback()
+			end
+		end
 	else
 		log("💻 Mock show_interstitial")
 		if callback then
@@ -330,7 +419,12 @@ function M.load_rewarded()
 	if M.is_supported() then
 		local placements = get_placements()
 		log("⏳ Loading rewarded ad:", placements.rewarded)
-		unityads.load(placements.rewarded)
+		local ok, err = pcall(function()
+			unityads.load(placements.rewarded)
+		end)
+		if not ok then
+			log("⚠️ unityads.load rewarded failed:", err)
+		end
 	else
 		M.rewarded_loaded = true
 	end
@@ -360,7 +454,21 @@ function M.show_rewarded(on_reward, on_close)
 	if M.is_supported() then
 		local placements = get_placements()
 		log("🎁 Showing native rewarded ad (" .. placements.rewarded .. ")...")
-		unityads.show(placements.rewarded)
+		if not M.rewarded_loaded then
+			log("⚠️ Rewarded ad not preloaded, attempting load first...")
+			M.load_rewarded()
+		end
+
+		local ok, err = pcall(function()
+			unityads.show(placements.rewarded)
+		end)
+		if not ok then
+			log("⚠️ unityads.show rewarded failed:", err, "granting reward fallback")
+			if on_reward then on_reward() end
+			if on_close then on_close(true) end
+			current_reward_cb = nil
+			current_reward_close_cb = nil
+		end
 	else
 		log("💻 Mock show_rewarded (granting reward)")
 		if on_reward then on_reward() end
@@ -370,18 +478,49 @@ function M.show_rewarded(on_reward, on_close)
 	end
 end
 
+local function parse_banner_position(position)
+	if type(position) == "number" then
+		return position
+	end
+	if type(position) == "string" then
+		local p = string.lower(position)
+		if p == "top" or p == "top_center" or p == "top-center" or p == "topcenter" then
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_TOP_CENTER) or 1
+		elseif p == "top_left" or p == "top-left" or p == "topleft" then
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_TOP_LEFT) or 0
+		elseif p == "top_right" or p == "top-right" or p == "topright" then
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_TOP_RIGHT) or 2
+		elseif p == "bottom_left" or p == "bottom-left" or p == "bottomleft" then
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_BOTTOM_LEFT) or 3
+		elseif p == "bottom_right" or p == "bottom-right" or p == "bottomright" then
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_BOTTOM_RIGHT) or 5
+		elseif p == "center" then
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_CENTER) or 6
+		else
+			return (rawget(_G, "unityads") and unityads.BANNER_POSITION_BOTTOM_CENTER) or 4
+		end
+	end
+	return (rawget(_G, "unityads") and unityads.BANNER_POSITION_BOTTOM_CENTER) or 4
+end
+
 --- Show Banner
--- @param position optional position (e.g. unityads.BANNER_POSITION_BOTTOM_CENTER)
+-- @param position optional position string ("bottom", "top", etc.) or number enum
 function M.show_banner(position)
 	if M.is_supported() then
 		local placements = get_placements()
-		local pos = position or (unityads.BANNER_POSITION_BOTTOM_CENTER or 4)
-		unityads.set_banner_position(pos)
+		local pos = parse_banner_position(position)
+		pcall(function()
+			unityads.set_banner_position(pos)
+		end)
 		M.is_banner_showing = true
 		if not M.banner_loaded then
-			unityads.load_banner(placements.banner)
+			pcall(function()
+				unityads.load_banner(placements.banner)
+			end)
 		else
-			unityads.show_banner()
+			pcall(function()
+				unityads.show_banner()
+			end)
 		end
 	else
 		log("💻 Mock show_banner")
@@ -392,7 +531,9 @@ end
 --- Hide Banner
 function M.hide_banner()
 	if M.is_supported() then
-		unityads.hide_banner()
+		pcall(function()
+			unityads.hide_banner()
+		end)
 	end
 	M.is_banner_showing = false
 end
@@ -400,7 +541,9 @@ end
 --- Destroy Banner
 function M.destroy_banner()
 	if M.is_supported() then
-		unityads.unload_banner()
+		pcall(function()
+			unityads.unload_banner()
+		end)
 	end
 	M.banner_loaded = false
 	M.is_banner_showing = false

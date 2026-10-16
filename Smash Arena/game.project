@@ -20,7 +20,7 @@ scale_mode = stretch
 show_made_with_defold = 0
 show_console_banner = 0
 show_fullscreen_button = 0
-htmlfile = /bridge/engine_template.html
+htmlfile = /res/web/engine_template.html
 cssfile = /builtins/manifests/web/dark_theme.css
 
 [project]
@@ -28,10 +28,16 @@ title = Smash Arena
 bundle_resources = /res
 compress_archive = 1
 dependencies#0 = https://github.com/Insality/defold-event/archive/refs/tags/14.zip
-dependencies#1 = https://github.com/rgrams/rendercam/archive/1.0.3.zip
-dependencies#2 = https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip
-dependencies#3 = https://github.com/Playgama/bridge-defold/archive/refs/tags/v2.2.0.zip
-dependencies#4 = https://github.com/AGulev/defold-extension-unity-ads/archive/refs/tags/4.19.0.zip
+dependencies#1 = https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip
+dependencies#2 = https://github.com/Playgama/bridge-defold/archive/refs/tags/v2.2.0.zip
+dependencies#3 = https://github.com/AGulev/defold-extension-unity-ads/archive/refs/tags/4.19.0.zip
+dependencies#4 = https://github.com/GameAnalytics/GA-SDK-DEFOLD/archive/master.zip
+dependencies#5 = https://github.com/defold/extension-facebook/archive/refs/tags/10.0.0.zip
+
+[adjust]
+app_token = 3fybji2hz728
+environment = production
+log_level = info
 
 [sound]
 gain = 1.0
@@ -40,9 +46,9 @@ max_sound_instances = 128
 max_sound_sources = 16
 
 [android]
-version_code = 26
+version_code = 29
 package = best.pvp.smasharena.battle
-minimum_sdk_version = 24
+minimum_sdk_version = 26
 app_icon_192x192 = /assets/result_result_icon.png
 app_icon_144x144 = /assets/result_result_icon.png
 app_icon_96x96 = /assets/result_result_icon.png
@@ -57,8 +63,29 @@ max_count = 16
 tracking_usage_description = 1946032
 game_id_android = 6194929
 game_id_ios = 6194928
-test_mode = 0
+test_mode = 1
 interstitial_placement = Interstitial_Android
 rewarded_placement = Rewarded_Android
 banner_placement = Banner_Android
+
+[gameanalytics]
+game_key_android = dd6812c0d047dcb17fc40309c5f58cb5
+secret_key_android = e40c3ad9d02b15fc86baf0751281b639addbb74f
+game_key_ios = dd6812c0d047dcb17fc40309c5f58cb5
+secret_key_ios = e40c3ad9d02b15fc86baf0751281b639addbb74f
+game_key_html5 = dd6812c0d047dcb17fc40309c5f58cb5
+secret_key_html5 = e40c3ad9d02b15fc86baf0751281b639addbb74f
+game_key_windows = dd6812c0d047dcb17fc40309c5f58cb5
+secret_key_windows = e40c3ad9d02b15fc86baf0751281b639addbb74f
+game_key_osx = dd6812c0d047dcb17fc40309c5f58cb5
+secret_key_osx = e40c3ad9d02b15fc86baf0751281b639addbb74f
+game_key_linux = dd6812c0d047dcb17fc40309c5f58cb5
+secret_key_linux = e40c3ad9d02b15fc86baf0751281b639addbb74f
+auto_detect_app_version = 1
+enable_info_log = 1
+enable_verbose_log = 0
+
+[facebook]
+appid = 1420790806822438
+clienttoken = e572f8660711fef1986c36a8bbc75b65
 

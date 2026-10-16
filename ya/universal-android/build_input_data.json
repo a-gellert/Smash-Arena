@@ -1,0 +1,33 @@
+{
+  "bob_arguments" : {
+    "sha1" : "a81dbb0478e8b73931dc2d671563204f6ac0ef82",
+    "version" : "1.14.0",
+    "timestamp" : "2026-10-12 11:39:45"
+  },
+  "defold_sdk" : "a81dbb0478e8b73931dc2d671563204f6ac0ef82",
+  "dependencies" : [ {
+    "url" : "https://github.com/Insality/defold-event/archive/refs/tags/14.zip",
+    "commit-sha1" : "3e841089340598d428bacb2acd349afa2d6e6ccf",
+    "payload-sha1" : "654486e5e5b9786a29a7bf79ec37b622639f7803"
+  }, {
+    "url" : "https://github.com/Insality/druid/archive/refs/tags/1.2.1.zip",
+    "commit-sha1" : "64029a4bbd98a48c8dc372d59df8329fa55d95c1",
+    "payload-sha1" : "73c25c3d24c7807b506843ca6f9b4d059c6f59da"
+  }, {
+    "url" : "https://github.com/Playgama/bridge-defold/archive/refs/tags/v2.2.0.zip",
+    "commit-sha1" : "d88ba2c8f1459b4b0c40e1f97b198a77e6e66cdc",
+    "payload-sha1" : "5fac2081073c61a9b716a7275db0a9874df7eb7f"
+  }, {
+    "url" : "https://github.com/AGulev/defold-extension-unity-ads/archive/refs/tags/4.19.0.zip",
+    "commit-sha1" : "a03540caff4b21adb672df2f217407d4259933d3",
+    "payload-sha1" : "60a2c35c6796a8b59ea1d6fe08165599b1977147"
+  }, {
+    "url" : "https://github.com/GameAnalytics/GA-SDK-DEFOLD/archive/master.zip",
+    "commit-sha1" : "8d659e19bbf5dee6d9b75b14bea8a94c96852eb8",
+    "payload-sha1" : "ea90f52cb61a01be1d838d67019674700c4fb08e"
+  }, {
+    "url" : "https://github.com/defold/extension-facebook/archive/refs/tags/10.0.0.zip",
+    "commit-sha1" : "6e85a35f053c62231b5985a5c1319dd6514f6823",
+    "payload-sha1" : "d8ebe3a27dbdffe4086c64438000896f598b64dc"
+  } ]
+}
